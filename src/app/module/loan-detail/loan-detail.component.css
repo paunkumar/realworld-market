@@ -1,0 +1,351 @@
+.section{
+    z-index: inherit;
+}
+.borrow-card{
+    background: var(--white);
+    border: 1px solid var(--hr);
+    padding: 14px;
+    border-radius: 12px;
+}
+.borrow-card h1, .borrow-card h3{
+    font-size:18px;
+    line-height: 26px;
+    letter-spacing: .4px;
+    color: var(--secondary-color);
+    font-weight: var(--font-semibold);
+    padding: 0;
+    margin: 0;
+}
+.backbtn{
+    padding: 8px 16px;
+    border-radius: 6px;
+    background:var(--hr);
+    color: var(--black-4);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.bd-b{
+    border-bottom:.2px solid var(--hr) ;
+}
+.product_banner{
+    margin-bottom: 20px;
+    background: rgb(255, 255, 255);
+}
+.product_banner img,
+.product_banner iframe{
+    width: 100%;
+    height: 300px;
+    object-fit: contain;
+    background: var(--white);
+    border-radius: 8px;
+    overflow: hidden;
+}
+.product_thumbnail img,
+.product_thumbnail iframe{
+    width:50px;
+    height: 51px;
+    border:1px solid var(--hr);
+    border-radius: 4px;
+    padding: 4px;
+    overflow: hidden;
+}
+.product_thumbnail iframe body {
+    overflow: hidden;
+}
+.borrownft img,
+.borrownft iframe {
+    width: 76px;
+    height: 77px;
+    object-fit: contain;
+    border-radius: 8px;
+    border: 1px solid var(--primary-color);
+    padding: 2px;
+}
+.product_thumbnail img.actives,
+.product_thumbnail iframe.actives {
+    background: rgba(0, 103, 54,.1);
+    border:2px solid var(--primary-color);
+    z-index: 5;
+}
+.borrownft img.active,
+.borrownft iframe.active {
+    background: rgba(0, 103, 54,.1);
+    border:2px solid var(--primary-color);
+    z-index: 5;
+}
+.borrownftcategory{
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    height: 100%;
+}
+.borrownftcategory h2{
+    font-size: 12px;
+    line-height: 18px;
+    letter-spacing: .4px;
+    color: var(--black-3);
+    word-break: break-word;
+    font-weight: var(--font-regular);
+    padding: 0;
+    margin: 0;
+
+}
+.borrownftcategory h3{
+    font-size: 14px;
+    line-height: 20px;
+    letter-spacing: .4px;
+    color: var(--black-2);
+    word-break: break-word;
+    font-weight: var(--fontmedium);
+    padding: 0;
+    margin: 0;
+}
+.posselectcurrency{
+    position: absolute;
+    top: 28px;
+    right: 2px;
+    min-width: 100px;
+    max-width:150px;
+}
+.loanrequest .form-control{
+    padding: .70rem .75rem;
+    border:1px solid #D1D1D6;
+    border-radius: 5px;
+    font-size:14px;
+    font-weight: var(--font-medium);
+    color: var(--black-4);
+}
+.loanrequest h4{
+    font-size:24px;
+    line-height: 30px;
+    color: var(--secondary-color);
+    font-weight: var(--font-semibold);
+    padding: 0 0 5px;
+    margin: 0;
+}
+.loanrequest h5{
+    font-size:14px;
+    line-height: 18px;
+    color: var(--black-3);
+    font-weight: var(--font-semibold);
+    word-break: break-word;
+    padding: 0;
+    margin: 0;
+}
+.owner-wallet h4 {
+    font-size: 14px;
+    line-height: 17.6px;
+    color: #636366;
+    font-weight: var(--font-semibold);
+    padding: 0 0 5px;
+    margin: 0;
+}
+.owner-wallet h5{
+    font-size:16px;
+    line-height: 20.11px;
+    color: #23273B;
+    font-weight: var(--font-semibold);
+    word-break: break-word;
+    padding: 0;
+    margin: 0;
+}
+.setloanterms .onboard{
+    display: block;
+    width: 100%;
+}
+.cancel_loan{
+    padding: 12px 20px;
+    border-radius: 6px;
+    background: rgba(244, 63, 94, 0.12);
+    border: 1px solid rgba(244, 63, 94, 0.12);
+    color: var(--error-color-2);
+    font-size:16px;
+    font-weight:var(--font-medium);
+    letter-spacing: .4px;
+    transition: .3s all ease-in-out;
+    display: block;
+    text-align: center;
+    width:100%
+}
+.cancel_loan:hover{
+    background: var(--error-color-2);
+    color: var(--white);
+    transition: .3s all ease-in-out;
+}
+.setloanterms{
+    background-color: rgba(229, 229, 234, 0.5);
+    padding: 14px;
+    border-radius: 12px;
+}
+.setloanterms label{
+    font-size: 12px;
+    line-height: 18px;
+    font-weight: var(--font-regular);
+    color: var(--grey1);
+    padding: 0;
+    margin: 0;
+}
+::placeholder{
+    color:rgba(43, 43, 46, 0.5);
+    font-size:14px
+}
+.form-select{
+    font-size: 16px;
+    background: var(--grey1);
+    color: var(--white);
+    background: var(--grey1) url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg"  width="16" height="16" fill="white" class="bi bi-caret-down" viewBox="0 0 16 16"><g><path d="M3.204 5h9.592L8 10.481 3.204 5zm-.753.659 4.796 5.48a1 1 0 0 0 1.506 0l4.796-5.48c.566-.647.106-1.659-.753-1.659H3.204a1 1 0 0 0-.753 1.659z"/></g></svg>') no-repeat;
+    background-position: right 10px center;
+}
+.form-select:focus {
+    border-color: var(--primary-color);
+    outline: 0;
+    box-shadow: 0 0 0 0.15rem rgba(0, 103, 54,.25);
+}
+input:read-only{
+    background:var(--hr);
+}
+.repay_loan{
+    padding: 12px 20px;
+    border-radius: 6px;
+    background: var(--edit);
+    border: 1px solid var(--edit);
+    color: var(--white);
+    font-size:16px;
+    font-weight:var(--font-medium);
+    letter-spacing: .4px;
+    transition: .3s all ease-in-out;
+    display: block;
+    text-align: center;
+    width:100%;
+    transition: all .5s ease-in-out ;
+}
+.repay_loan:hover, .repay_loan:focus{
+    background: var(--white);
+    color: var(--edit);
+    transition: all .5s ease-in-out ;
+}
+
+.table thead{
+    background: var(--hr);
+}
+.table{
+    background: var(--scrollbar-default);
+    border-radius: 12px;
+}
+.borrow-card .nav.nav-pills{
+    background: var(--white);
+    border: 1px solid var(--hr);
+    padding: 6px;
+    border-radius: 12px;
+    font-size:12px;
+    padding: 3px 10px;
+}
+.borrow-card .nav-item:not(:last-child){
+    margin-right: 10px;
+}
+.borrow-card .nav-pills .nav-link{
+    border-radius: 12px;
+    padding: 3px 10px;
+
+}
+.borrow-card .nav-pills .nav-link.active, .borrow-card .nav-pills .nav-link:hover  {
+    border-bottom: 0px solid var(--primary-color) !important;
+    color: var(--white) !important;
+
+}
+.borrow-card .nav-item:hover{
+    border-bottom: 0px solid var(--primary-color) !important;
+    color: var(--white) !important;
+}
+.requestloancurrency{
+    position: absolute;
+    top: 38px;
+    right: 15px;
+}
+.requestloancurrency p{
+    margin: 0;
+    font-size: 14px;
+    line-height: 20px;
+}
+
+.notfound h4{
+    font-size: 14px;
+    line-height: 18px;
+    font-weight: var(--font-medium);
+    color: var(--grey-2);
+    padding: 15px 0px 0px;
+    margin: 0;
+    text-align: center;
+    text-transform: none;
+}
+
+@media(max-width:991px){
+    .borrow-card h1, .borrow-card h3, .loanrequest h4{
+        font-size: 16px;
+        line-height: 24px;
+    }
+    .setloanterms{
+        padding: 10px;
+    }
+
+}
+@media(max-width:575px){
+    .borrownftcategory h3{
+        font-size: 14px;
+        line-height: 18px;
+    }
+    .cancel_loan{
+        padding: 7px;
+        font-size: 14px;
+    }
+}
+@media(max-width:360px){
+    .borrow-card .nav.nav-pills{
+        padding: 3px
+    }
+}
+#my-model-viewer {
+    height: 330px;
+    width: 100%;
+}
+h4.loandue {
+    color: #FF3B30 !important;
+    font-size: 13px !important;
+    line-height: 20px !important;
+    font-weight: var(--font-medium) !important;
+    padding-top: 10px !important;
+    span{
+        font-weight: var(--font-semibold) !important;
+    }
+}
+
+.clickable-wrapper {
+  cursor: pointer;
+  position: relative;
+  display: inline-block;
+}
+.clickable-wrapper >iframe{
+  pointer-events: none;
+  cursor: default;
+}
+
+.clickable-wrapper .overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+}
+.openoffertable {
+    max-height: 480px;
+    overflow-y: scroll;
+    position: relative;
+}
+.openoffertable >.borrow-card .mb-3{
+    position: sticky;
+    top: 0px;
+    width: 100%;
+    background: var(--white);
+    padding:5px 10px;
+}

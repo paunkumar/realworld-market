@@ -1,0 +1,657 @@
+.section{
+    margin-top: 0px !important;
+}
+.mywalletwarp{
+    display: flex;
+    flex-wrap:wrap;
+    column-gap: 30px;
+}
+.nft-wrap-view{
+    width: 18%;
+    border: 1px solid rgba(229, 229, 234, 1);
+    background:  #FFFFFF;
+    padding: 14px;
+    border-radius: 12px;
+    position: relative;
+    margin-bottom: 30px;
+    transition: .3s ease-in-out;
+    & h1{
+        font-size:14px;
+        line-height: 20px;
+        letter-spacing: .4px;
+        font-weight: var(--font-semibold);
+        color: #23273B;
+        padding: 0;
+        margin: 0;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+        cursor: default;
+        height: 42px;
+    }
+    & h2{
+        color: #8E8E93;
+        font-size: 8px;
+        font-weight: 500;
+        line-height: normal;
+        letter-spacing: -0.2px;
+        padding: 10px 0 3px;
+        margin: 0;
+    }
+    & h3{
+        color:#23273B;
+        font-size: 12px;
+        font-style: normal;
+        font-weight: 600;
+        line-height: normal;
+        letter-spacing: -0.3px;
+        padding: 0 0 10px;
+        margin: 0;
+    }
+    & .img-view img,
+    .img-view iframe {
+        width: 100%;
+        height: 125px;
+        object-fit: contain;
+        border: 8px;
+        background: #fff;
+    }
+    .showtooltip{
+        display: none;
+        position: relative;
+        & .tooltipinnertext{
+            position: absolute;
+            bottom: -45px;
+            transform: translateY(45px);
+            left: 50%;
+            background: #000;
+            border-radius: 6px;
+            color: #fff;
+            padding: 6px;
+            font-size: 11px;
+            font-weight: var(--font-medium);
+            line-height: normal;
+            letter-spacing: -0.66px;
+            text-align: center;
+            width: fit-content;
+            transform: translateX(-50%);
+            white-space: nowrap;
+            z-index: 99;
+        }
+        & .tooltipinnertext::before{
+            content: '';
+            position: absolute;
+            top: -12px;
+            left: 50%;
+            transform: translateX(-50%);
+            border-width: 7px;
+            border-style: solid;
+            border-color: transparent transparent #000 transparent;
+            z-index: -1;
+        }
+    }
+    & .redeemview{
+        display: flex;
+        align-items: center;
+        gap: 5px;
+    }
+    & .orderprocessing{
+        padding: 5px 10px;
+        font-size: 12px;
+        font-weight: var(--font-medium);
+        letter-spacing: -0.25px;
+        display: block;
+        width: 100%;
+        border-radius: 6px;
+        text-align: center;
+        color: #5856D6;
+        border: 1px solid #5856D6;
+        background: var(--white);
+        cursor: default;
+    }
+    & .arrangedelivery{
+        padding: 5px 10px;
+        font-size: 12px;
+        font-weight: var(--font-medium);
+        letter-spacing: -0.25px;
+        display: block;
+        width: 100%;
+        border-radius: 6px;
+        text-align: center;
+        color: #FC0;
+        border: 1px solid #FC0;
+        background: var(--white);
+        cursor: default;
+    }
+    & .deliverysent{
+        padding: 5px 10px;
+        font-size: 12px;
+        font-weight: var(--font-medium);
+        letter-spacing: -0.25px;
+        display: block;
+        width: 100%;
+        border-radius: 6px;
+        text-align: center;
+        color: #006736;
+        border: 1px solid #006736;
+        background: var(--white);
+        cursor: default;
+    }
+    & .deliveryarrived{
+        padding: 5px 10px;
+        font-size: 12px;
+        font-weight: var(--font-medium);
+        letter-spacing: -0.25px;
+        display: block;
+        width: 100%;
+        border-radius: 6px;
+        text-align: center;
+        color: #FF9500;
+        border: 1px solid #FF9500;
+        background: var(--white);
+        cursor: default;
+    }
+    .onboard{
+        padding: 5px 10px;
+        font-size: 12px;
+        font-weight: var(--font-medium);
+        letter-spacing: -0.25px;
+        display: block;
+        width: 100%;
+        border-radius: 6px;
+        text-align: center;
+        color: var(--primary-color);
+        border: 1px solid var(--primary-color);
+        cursor: default;
+        background: none;
+        cursor: default;
+    }
+    & .sell_btn{
+        padding: 5px 10px;
+        font-weight: var(--font-medium);
+        letter-spacing: -0.25px;
+        border-radius: 6px;
+        text-align: center;
+        color: #fff;
+        border: 1px solid transparent;
+        background: #FF3B30;
+        transition: .5s all ease-in-out;
+        cursor: pointer;
+    }
+    & .sell_btn:hover, .sell_btn:focus{
+        color: #FF3B30  !important;
+        border: 1px solid #FF3B30;
+        background: #fff;
+        transition: .5s all ease-in-out
+    }
+    & .sell_btn:hover .showtooltip{
+        display: block;
+    }
+    & .cancel_btn{
+        padding: 5px 10px;
+        font-size: 14px;
+        font-weight: var(--font-medium);
+        letter-spacing: -0.25px;
+        border-radius: 6px;
+        text-align: center;
+        border: 1px solid #FF3B30;
+        color: #FF3B30;
+        background: none;
+        display: block;
+        width: 100%;
+        cursor: default;
+
+        /* transition: .5s all ease-in-out;
+        z-index: 5;
+        cursor: pointer;
+        width: 100%; */
+    }
+    /* & .cancel_btn:hover, .cancel_btn:focus{
+        color: #FF3B30  !important;
+        border: 1px solid #FF3B30;
+        background: #fff;
+        transition: .5s all ease-in-out
+    } */
+}
+
+.nft-details h1{
+  font-size:14px;
+  line-height: 20px;
+  letter-spacing: .4px;
+  font-weight: var(--font-semibold);
+  color: #23273B;
+  padding: 0;
+  margin: 0;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  cursor: default;
+  height: 42px;
+}
+
+.nft-details h1{
+  width:95%
+}
+
+.nft-wrap-view.cancel-order{
+    border-radius: 12px ;
+    border: 1px solid #FF3B30 ;
+    background: linear-gradient(0deg, rgba(255, 59, 48, 0.04) 0%, rgba(255, 59, 48, 0.04) 100%), #FFF ;
+}
+.nft-wrap-view.order-success{
+    border-radius: 12px ;
+    border: 1px solid var(--primary-color) ;
+    background: linear-gradient(0deg, rgba(0, 103, 54, 0.04) 0%, rgba(0, 103, 54, 0.04) 100%), #FFF ;
+}
+.dropdown-toggle::after {
+    display: none;
+    margin-left: .255em;
+    vertical-align: .255em;
+    content: "";
+    border-top: .3em solid;
+    border-right: .3em solid transparent;
+    border-bottom: 0;
+    border-left: .3em solid transparent;
+}
+
+ /*
+.orderprocessing:hover,.orderprocessing:focus{
+    border: 1px solid #FF9500;
+    color: #FF9500;
+    background: #fff;
+    transition: .5s all ease-in-out;
+} */
+.sell_btn{
+    padding: 6px 14px;
+    font-weight: var(--font-medium);
+    letter-spacing: -0.25px;
+    border-radius: 6px;
+    text-align: center;
+    color: #fff;
+    border: 1px solid transparent;
+    background: #FF3B30;
+    transition: .5s all ease-in-out;
+    cursor: pointer;
+}
+.sell_btn:hover, .sell_btn:focus{
+    color: #FF3B30  !important;
+    border: 1px solid #FF3B30;
+    background: #fff;
+    transition: .5s all ease-in-out
+}
+.sell_btn:hover .showtooltip{
+    display: block;
+}
+.pr-4{
+    padding-right: 20px;
+}
+.cancel_btn{
+    padding: 6px 14px;
+    font-size: 12px;
+    font-weight: var(--font-medium);
+    letter-spacing: -0.25px;
+    border-radius: 6px;
+    text-align: center;
+    color: #FF3B30;
+    border: 1px solid #FF3B30;
+    background: none;
+    transition: .5s all ease-in-out;
+    cursor: default;
+    display: block;
+    width: 100%;
+        cursor: default !important;
+}.orderprocessing{
+    padding: 5px 10px;
+    font-size: 12px;
+    font-weight: var(--font-medium);
+    letter-spacing: -0.25px;
+    display: block;
+    width: 100%;
+    border-radius: 6px;
+    text-align: center;
+    color: #5856D6;
+    border: 1px solid #5856D6;
+    background: var(--white);
+    cursor: default;
+}
+.arrangedelivery{
+    padding: 5px 10px;
+    font-size: 12px;
+    font-weight: var(--font-medium);
+    letter-spacing: -0.25px;
+    display: block;
+    width: 100%;
+    border-radius: 6px;
+    text-align: center;
+    color: #FC0;
+    border: 1px solid #FC0;
+    background: var(--white);
+    cursor: default;
+}
+.deliverysent{
+    padding: 5px 10px;
+    font-size: 12px;
+    font-weight: var(--font-medium);
+    letter-spacing: -0.25px;
+    display: block;
+    width: 100%;
+    border-radius: 6px;
+    text-align: center;
+    color: #006736;
+    border: 1px solid #006736;
+    background: var(--white);
+    cursor: default;
+}
+.deliveryarrived{
+    padding: 5px 10px;
+    font-size: 12px;
+    font-weight: var(--font-medium);
+    letter-spacing: -0.25px;
+    display: block;
+    width: 100%;
+    border-radius: 6px;
+    text-align: center;
+    color: #FF9500;
+    border: 1px solid #FF9500;
+    background: var(--white);
+    cursor: default;
+}
+.onboard{
+    padding: 5px 10px;
+    font-size: 12px;
+    font-weight: var(--font-medium);
+    letter-spacing: -0.25px;
+    display: block;
+    width: 100%;
+    border-radius: 6px;
+    text-align: center;
+    color: var(--primary-color);
+    border: 1px solid var(--primary-color);
+    cursor: default;
+    background: none;
+    cursor: default;
+}
+ .sell_btn{
+    padding: 5px 10px;
+    font-weight: var(--font-medium);
+    letter-spacing: -0.25px;
+    border-radius: 6px;
+    text-align: center;
+    color: #fff;
+    border: 1px solid transparent;
+    background: #FF3B30;
+    transition: .5s all ease-in-out;
+    cursor: pointer;
+}
+.sell_btn:hover, .sell_btn:focus{
+    color: #FF3B30  !important;
+    border: 1px solid #FF3B30;
+    background: #fff;
+    transition: .5s all ease-in-out
+}
+.cancel_btn{
+    padding: 5px 10px;
+    font-size: 14px;
+    font-weight: var(--font-medium);
+    letter-spacing: -0.25px;
+    border-radius: 6px;
+    text-align: center;
+    border: 1px solid #FF3B30;
+    color: #FF3B30;
+    background: none;
+    display: block;
+    width: 100%;
+    cursor: default;
+
+    /* transition: .5s all ease-in-out;
+    z-index: 5;
+    cursor: pointer;
+    width: 100%; */
+}
+.showtooltip{
+    display: none;
+    position: relative;
+    & .tooltipinnertext{
+        position: absolute;
+        bottom: -45px;
+        transform: translateY(45px);
+        left: 50%;
+        background: #000;
+        border-radius: 6px;
+        color: #fff;
+        padding: 6px;
+        font-size: 11px;
+        font-weight: var(--font-medium);
+        line-height: normal;
+        letter-spacing: -0.66px;
+        text-align: center;
+        width: fit-content;
+        transform: translateX(-50%);
+        white-space: nowrap;
+        z-index: 99;
+    }
+    & .tooltipinnertext::before{
+        content: '';
+        position: absolute;
+        top: -12px;
+        left: 50%;
+        transform: translateX(-50%);
+        border-width: 7px;
+        border-style: solid;
+        border-color: transparent transparent #000 transparent;
+        z-index: -1;
+    }
+}
+.commonspaces{
+    display: flex;
+    flex-direction: row;
+    padding: 0px 16px 0 0;
+}
+
+.btn.btn-light{
+    padding: 8px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    font-size: 12px;
+    transition: .3s ease-in-out;
+}
+.commonspaces.sampleview .newfilter{
+    top: 90px !important;
+
+}
+.gridview.sampleview{
+    width: calc(100% - 400px);
+    position: relative;
+    left: 400px;
+    & .nft-wrap-view{
+        width: 22%;
+        margin-bottom: 0;
+    }
+    .mywalletwarp{
+        gap: 24px;
+    }
+}
+.youritems {
+    position: absolute;
+    bottom: 160px;
+    left:0;
+    background: var(--secondary-color);
+    border-radius: 0px 8px 8px;
+    width: 100%;
+    font-size:12px;
+    line-height:18px;
+    font-weight: 400;
+    color: var(--white);
+    padding: 5px 7px;
+    display:none !important;
+    box-shadow: rgba(233, 230, 230, 0.19) 0px 10px 20px, rgba(233, 230, 230, 0.23) 0px 6px 6px;
+    border:1px solid var(--secondary-color);
+    word-break: break-word;
+  }
+  .youritems:before{
+    content: '';
+    position: absolute;
+    bottom: -6px;
+    left: 12px;
+    width: 10px;
+    height: 10px;
+    background: var(--secondary-color);
+    transform: rotate(222deg);
+    border-width: 1px 0px 0px 1px;
+    border-style: solid;
+    border-color: var(--secondary-color)
+  }
+  .tooltip-details:hover + .youritems {
+    display: block !important;
+    opacity: 1;
+  }
+.add-content{
+  display: -webkit-box;
+}
+.nft-wrap-view.show{
+  width: 22%;
+}
+.nft-wrap-view.one{
+  width: 22%;
+}
+
+/** 5.2 enhancement**/
+.buying-value{
+  & .buying-value-one{
+      padding: 10px 0px;
+  }
+  & h3{
+      font-size: 8px;
+      color: #8E8E93;
+      font-weight: var(--font-medium);
+      line-height: normal;
+      letter-spacing: -0.2px;
+      padding: 0 0 3px;
+      margin: 0;
+  }
+  & h4{
+      font-size: 12px;
+      color: #23273B;
+      font-weight: var(--font-semibold);
+      line-height: normal;
+      letter-spacing: -0.3px;
+      padding: 0;
+      margin: 0;
+  }
+  .notsale{
+      font-size: 10px;
+      color: #23273B;
+      font-weight: var(--font-medium);
+      letter-spacing: -0.25px;
+      border-radius: 6px;
+      background:#F2F2F7;
+      padding: 3px;
+      display: block;
+      width: 100%;
+      display: block;
+      text-align: center;
+  }
+}
+@media(max-width:1199px){
+    .mywalletwarp.show .nft-wrap-view{
+        width: 28%;
+    }
+    .nft-wrap-view{
+        width: 22%;
+    }
+}
+@media(max-width:1024px){
+    .nft-wrap-view {
+        width: 46%;
+    }
+    .mywalletwarp.show{
+        width: 100%;
+    }
+    .common{
+        flex-wrap: wrap;
+        row-gap: 1rem;
+    }
+    .mywalletwarp.show .nft-wrap-view {
+        width: 47%;
+    }
+    .gridview.sampleview{
+        width: calc(100% - 280px);
+        position: relative;
+        left: 280px;
+        & .nft-wrap-view{
+            width: 100%;
+            margin-bottom: 0;
+        }
+    }
+}
+@media(max-width:767px){
+    .nft-wrap-view {
+        width: 100%;
+    }
+    .mywalletwarp.show{
+        width: 100%;
+    }
+    .common{
+        flex-wrap: wrap;
+        row-gap: 1rem;
+    }
+    .mywalletwarp.show .nft-wrap-view {
+        width: 100%;
+    }
+    .loanrequest.show{
+        width: 100%;
+    }
+    .pr-0{
+        padding-right: -15px !important;
+    }
+    .loanrequest{
+        padding: 10px 10px;
+    }
+    .loanrequest h4{
+        font-size: 16px;
+        line-height: 30px;
+    }
+    .loanrequest{
+        z-index: inherit;
+    }
+    .gridview.sampleview{
+        & .nft-wrap-view{
+            width: 29%;
+            margin-bottom: 0;
+        }
+    }
+}
+
+@media(max-width:575px){
+    .gridview.sampleview{
+        & .nft-wrap-view{
+            width: 46%;
+            margin-bottom: 0;
+        }
+    }
+}
+@media(max-width:480px){
+    .gridview.sampleview{
+        & .nft-wrap-view{
+            width: 90%;
+            margin-bottom: 0;
+        }
+    }
+}
+.burned{
+    padding: 5px 10px;
+    font-size: 12px;
+    font-weight: var(--font-regular);
+    letter-spacing: -0.25px;
+    border-radius: 6px;
+    text-align: center;
+    color: rgba(174, 174, 178, 1);
+    border: 1px solid rgba(174, 174, 178, 1);
+    background: var(--white);
+    transition: .5s all ease-in-out;
+    cursor: not-allowed;
+    width: 100%;
+}

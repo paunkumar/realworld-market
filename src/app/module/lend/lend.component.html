@@ -1,0 +1,213 @@
+<div class="main-wrap" >
+    <app-sidebar class="sidebarview"></app-sidebar>
+    <app-contract-transactions></app-contract-transactions>
+    <section infiniteScroll [infiniteScrollDistance]="1" [infiniteScrollThrottle]="100"
+    [infiniteScrollDisabled]="disableInfiniteScroll" (scrolled)="getAllLoanRequests()" class="section">
+        <div class="container-fluid">
+            <div class="row pb-3 align-items-center justify-content-between">
+                <div class="col-lg-9 col-sm-7 col-12 mb-3 sm-mb-0">
+                   <ul class="borrow-submenus">
+                        <li class="nav-item "  [routerLink]="['/lend']" routerLinkActive="menuactivities" [routerLinkActiveOptions]="{exact: true}">Lending opportunities.</li>
+                        <li class="nav-item" (click)="onClickingLend()" [routerLink]="['/lending-history']" >Lending activity.</li>
+                   </ul>
+                </div>
+            </div>
+            <!--your loan nft gridview-->
+            <div class="gridview" *ngIf="isGridView">
+                <div class="row row-cols-1 row-cols-sm-2  row-cols-lg-4 row-cols-xl-5">
+                    <div class="col mb-4" *ngFor="let request of loanRequests;let i=index;">
+                        <div class="nft-wrap-view"  >
+                            <a [routerLink]="['/lending-detail', request._id]" [queryParams]="{regulated}" (click)="onClick(request)">
+                                <div class="row">
+                                    <div class="col-12" *ngIf="request.collateral_assets.length===1">
+                                        <div class="img-view mb-2" *ngFor="let asset of request.collateral_assets">
+                                            <img *ngIf="asset?.fileType != 'html'" [src]="asset?.preview_image ? asset?.preview_image : asset.primary_media" onerror="this.src='assets/images/default-nft.svg'" (load)="imageLoading = false" class="img-fluid">
+                                            <div class="gemsView" *ngIf="asset?.fileType === 'html'">
+                                                <img [src]="asset?.preview_image ? asset?.preview_image : asset?.secondary_media[0] "  class="img-fluid" onerror="this.src='assets/images/default-nft.svg'" (load)="imageLoading = false" alt="nft">
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <ng-container *ngIf="request.collateral_assets.length===2">
+                                        <div class="twoimages mb-2">
+                                            <div *ngFor="let asset of request.collateral_assets">
+                                                <img *ngIf="asset?.fileType != 'html'" [src]="asset?.preview_image ? asset?.preview_image : asset.primary_media" onerror="this.src='assets/images/default-nft.svg'" (load)="imageLoading = false" class="img-fluid">
+                                                <div class="gemsView" *ngIf="asset?.fileType === 'html'">
+                                                    <img [src]="asset?.preview_image ? asset?.preview_image : asset?.secondary_media[0]"  class="img-fluid" onerror="this.src='assets/images/default-nft.svg'" (load)="imageLoading = false" alt="nft">
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </ng-container>
+                                    <ng-container *ngIf="request.collateral_assets.length===3">
+                                        <div class="third_img mb-2">
+                                            <div  *ngFor="let asset of request.collateral_assets">
+                                                <img *ngIf="asset?.fileType != 'html'" [src]="asset?.preview_image ? asset?.preview_image : asset.primary_media" onerror="this.src='assets/images/default-nft.svg'" (load)="imageLoading = false" class="img-fluid">
+                                                <div class="gemsView" *ngIf="asset?.fileType === 'html'">
+                                                    <img [src]="asset?.preview_image ? asset?.preview_image : asset?.secondary_media[0] "  class="img-fluid" onerror="this.src='assets/images/default-nft.svg'" (load)="imageLoading = false" alt="nft">
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </ng-container>
+                                    <ng-container *ngIf="request.collateral_assets.length===4">
+                                        <div class="third_img mb-2">
+                                            <div  *ngFor="let asset of request.collateral_assets">
+                                                <img *ngIf="asset?.fileType != 'html'" [src]="asset?.preview_image ? asset?.preview_image : asset.primary_media" onerror="this.src='assets/images/default-nft.svg'" (load)="imageLoading = false" class="img-fluid">
+                                                <div class="gemsView" *ngIf="asset?.fileType === 'html'">
+                                                    <img [src]="asset?.preview_image ? asset?.preview_image : asset?.secondary_media[0] "  class="img-fluid" onerror="this.src='assets/images/default-nft.svg'" (load)="imageLoading = false" alt="nft">
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </ng-container>
+                                     <ng-container *ngIf="request.collateral_assets.length === 5 ">
+                                        <div class="mb-2 fourth_img">
+                                            <div *ngFor="let asset of request.collateral_assets; let j=index;">
+                                                <img *ngIf="j <= 8" src="{{asset?.preview_image ? asset?.preview_image  : asset?.primary_media}}" onerror="this.src='assets/images/default-nft.svg'" class="img-fluid">
+                                                <div class="gemsView" *ngIf="j <= 8 && asset?.fileType === 'html'">
+                                                    <img *ngIf="j <= 8 && asset?.fileType != 'html'" [src]="asset?.preview_image ? asset?.preview_image : asset.primary_media" onerror="this.src='assets/images/default-nft.svg'" (load)="imageLoading = false" class="img-fluid">
+                                                    <div class="gemsView" *ngIf="j <= 8 && asset?.fileType === 'html'">
+                                                        <img [src]="asset?.preview_image ? asset?.preview_image : asset?.secondary_media[0]"  class="img-fluid" onerror="this.src='assets/images/default-nft.svg'" (load)="imageLoading = false" alt="nft">
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </ng-container>
+                                    <ng-container *ngIf="request.collateral_assets.length === 6 ">
+                                        <div class="mb-2 fifth_img">
+                                            <div *ngFor="let asset of request.collateral_assets; let j=index;">
+                                                <img *ngIf="j <= 8 && asset?.fileType != 'html'" [src]="asset?.preview_image ? asset?.preview_image : asset.primary_media" onerror="this.src='assets/images/default-nft.svg'" (load)="imageLoading = false" class="img-fluid">
+                                                <div class="gemsView" *ngIf="j <= 8 && asset?.fileType === 'html'">
+                                                    <img [src]="asset?.preview_image ? asset?.preview_image : asset?.secondary_media[0]"  class="img-fluid"  onerror="this.src='assets/images/default-nft.svg'" (load)="imageLoading = false" alt="nft">                                              </div>
+                                            </div>
+                                        </div>
+                                    </ng-container>
+                                    <ng-container *ngIf="request.collateral_assets.length > 6 ">
+                                        <div class="mb-2 threeimages">
+                                            <div *ngFor="let asset of request.collateral_assets; let j=index;">
+                                                <img *ngIf="((request.collateral_assets.length > 9 && j <= 7) || (request.collateral_assets.length <= 9 && j <= 8)) && asset?.fileType === 'html'" [src]="asset?.preview_image ? asset?.preview_image  : asset?.primary_media" onerror="this.src='assets/images/default-nft.svg'" (load)="imageLoading = false" class="img-fluid">
+                                                <div class="gemsView" *ngIf="((request.collateral_assets.length > 9 && j <= 7) || (request.collateral_assets.length <= 9 && j <= 8)) && asset?.fileType === 'html'">
+                                                    <img [src]="asset?.preview_image ? asset?.preview_image : asset?.secondary_media[0]"  class="img-fluid" onerror="this.src='assets/images/default-nft.svg'" (load)="imageLoading = false" alt="nft">
+                                                </div>
+                                                <div *ngIf="request.collateral_assets.length > 9 && j === 8" class="img-fluidtext-center">+{{request.collateral_assets.length - 8}}</div>
+                                            </div>
+                                        </div>
+                                    </ng-container>
+                                    <div class="nft-details d-flex align-items-start justify-content-between gap-3 row-gap-0">
+                                        <div class="position-relative">
+                                            <div class="truncate" id="tooltip-head{{i}}">
+                                                <h1 (window:resize)="setTooltipSize(i)" id="tooltip-title{{i}}">{{request.collateral_assets[0].name}}
+                                                </h1>
+
+                                            </div>
+                                                <div class="tooltip" id="tooltip-description{{i}}">{{request.collateral_assets[0].name}}</div>
+
+                                        </div>
+                                        <span class="position-relative">
+                                            <img src="/assets/images/for-loan.svg" alt="loan-status">
+                                            <span class="loan-details-tooltip for-loan-tooltip">Collateral for Loan - This item is currently being offered as collateral for lending.</span>
+                                        </span>
+                                    </div>
+                                </div>
+
+                                <div class="noloan d-flex justify-content-between">
+                                    <div>
+                                        <h6>Loan request amount.</h6>
+                                        <h5>{{Math.ceil(request.requested_loan_amount)| thousandSeparator}} {{request.currency_data.symbol}}</h5>
+                                    </div>
+                                    <div>
+                                        <h6 class="text-right">Annual interest.</h6>
+                                        <h5 class="text-right">{{request.loan_percentage}}%</h5>
+                                    </div>
+                                </div>
+                                <div class=" d-flex justify-content-between flex-wrap">
+                                    <div>
+                                        <h6>Duration.</h6>
+                                        <h5>{{request.loan_duration_days}} Days.</h5>
+                                    </div>
+                                    <div>
+                                        <h6>Appraisal value.</h6>
+                                        <h5 class="text-right">{{request.appraisalValue | thousandSeparator}} USD</h5>
+                                    </div>
+                                </div>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                <div class="loadingview" *ngIf="scrollLoader">
+                  <h6>Loading...</h6>
+                  <span class="Loaders"></span>
+              </div>
+            </div>
+            <!--end-->
+            <!--table view-->
+            <div class="tableview" *ngIf="!isGridView && loanRequests?.length > 0">
+                <div class="table-responsive">
+                    <table class="table">
+                        <thead>
+                            <th width="9%">Item.</th>
+                            <th>Item name.</th>
+                            <th>Total Assets.</th>
+                            <th>Collection.</th>
+                            <th>Status.</th>
+                            <th class="text-right pr-4">Amount.</th>
+                            <th>Duration.</th>
+                            <th>APR(%).</th>
+                        </thead>
+                        <tbody>
+                            <tr *ngFor="let request of loanRequests;let i=index;" [routerLink]="['/lending-detail', request._id]" [queryParams]="{regulated}" (click)="onClick(request)" class="cursor">
+                                <td >
+                                    <div class="tableviewnft">
+                                        <img *ngIf="request.collateral_assets[0]?.fileType != 'html'" src="{{request.collateral_assets[0].primary_media}}" onerror="this.src='assets/images/default-nft.svg'" (load)="imageLoading = false" class="img-fluid">
+                                        <img *ngIf="request.collateral_assets[0]?.fileType === 'html'" [src]="request.collateral_assets[0]?.preview_image ? request.collateral_assets[0]?.preview_image : request.collateral_assets[0]?.secondary_media "  class="img-fluid" onerror="this.src='assets/images/default-nft.svg'" (load)="imageLoading = false" alt="nft">
+                                    </div>
+                                </td>
+                                <td>
+                                    <p clas="text-break">{{request.collateral_assets[0].name}}</p>
+                                </td>
+                                <td>
+                                    <p class="text-center">{{request.collateral_assets.length}}</p>
+                                </td>
+                                <td>
+                                    <p class="text-center text-break">{{request.collateral_assets[0].collections.name}}</p>
+                                </td>
+                                <td>
+                                    <span class="position-relative">
+                                        <img src="assets/images/for-loan.svg" alt="for-loan" >
+                                        <span class="loan-details-tooltip for-loan-tooltip">Collateral for Loan - This item is currently being offered as collateral for lending.</span>
+                                    </span>
+                                </td>
+                                <td>
+                                    <p class="text-break text-right fw-5 pr-4" style="white-space:nowrap;"> {{Math.ceil(request.requested_loan_amount)| thousandSeparator}} {{request.currency_data.symbol}}</p>
+                                </td>
+                                <td>
+                                    <p> {{request.loan_duration_days}} <span *ngIf=""></span> {{request.loan_duration_days > 1 ? 'days' : 'day' }} </p>
+                                </td>
+                                <td>
+                                    <p> {{request.loan_percentage}} </p>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <div class="loadingview" *ngIf="scrollLoader">
+                      <h6>Loading...</h6>
+                      <span class="Loaders"></span>
+                  </div>
+                </div>
+            </div>
+            <!--end-->
+            <ng-container *ngIf="!loader && loanRequests?.length == 0">
+                <div class="col-md-6 mx-auto text-center">
+                  <div class="not-found">
+                    <p>There are currently no lending opportunities available to you. Check back later.</p>
+                  </div>
+                </div>
+            </ng-container>
+            <ng-container *ngIf="loader">
+                <div class="col-md-10 mx-auto text-center" >
+                    <div class="not-found">
+                      <p>Please wait while we load your items.</p>&nbsp;
+                      <span class="Loaders"></span>
+                    </div>
+                </div>
+            </ng-container>
+        </div>
+    </section>
+</div>

@@ -1,0 +1,32 @@
+<div class="modal-dialog modal-dialog-centered ">
+    <div class="modal-content">
+    <div class="modal-header">
+        <!-- <h4>{{confirmationData?.title || 'Confirm purchase.'}}</h4> -->
+        <button type="button" class="btn-close" (click)="closeModal.emit()"></button>
+    </div>
+    <div class="modal-body">
+        <!--steps wards-->
+        <div class="stepwizard">
+            <div class="stepcounts-initate">
+                <div class="list-sale mb-3">
+                    <div class="row">
+                        <div class="col-12" >
+                            <div class="img-view mb-2 d-flex align-center gap-3 flex-wrap" >
+                                <div  *ngFor="let asset of confirmationData?.image">
+                                    <img src="{{asset?.image?.displayImage}}" onerror="this.src='assets/images/default-nft.svg'" (load)="imageLoading = false" class="img-fluid">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div [innerHTML]="confirmationData.content"></div>
+        </div>
+        <!--end-->
+    </div>
+    <div class="modal-footer">
+      <button class="btn" type="button" (click)="closeModal.emit()">Cancel.</button>
+      <button class="btn btn-outline-success" type="button" (click)="confirmPurchase.emit()">Confirm.</button>
+    </div>
+    </div>
+</div>

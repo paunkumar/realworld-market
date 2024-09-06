@@ -1,0 +1,19 @@
+<div class="main-wrap">
+    <app-sidebar class="sidebarview"></app-sidebar>
+    <app-contract-transactions></app-contract-transactions>
+    <section class="section">
+        <div class="container-fluid" *ngIf="account">
+            <div class="row align-items-center justify-content-between">
+                <div class="col-lg-9 col-sm-7 col-12 mb-3 sm-mb-0">
+                    <ul class="borrow-submenus">
+                        <li class="nav-item" [routerLink]="['/loan-request']" routerLinkActive="menuactivities"
+                            [routerLinkActiveOptions]="{exact: true}">New loan request.</li>
+                        <li class="nav-item " [routerLink]="['/borrow']">Live borrowing.</li>
+                        <li class="nav-item" [routerLink]="['/borrow-history']">Borrowing history.</li>
+                    </ul>
+                </div>
+            </div>
+            <app-nfts-listing></app-nfts-listing>
+        </div>
+    </section>
+</div>

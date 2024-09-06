@@ -1,0 +1,349 @@
+<!--NEW CHANGES 5.20-->
+<div class="newfilter">
+    <div class="d-flex align-items-center justify-content-between">
+        <h3>Filters.</h3>
+        <img src="assets/images/transacation-arrow.svg" alt="exit icon" width="16" height="16"
+            class="rotate-icon cursor-pointer" (click)="closeNewfilter()">
+    </div>
+
+    <!-- start - search ui -->
+    <div class="searchicon">
+        <div class="position-relative">
+            <input type="text" class="form-control" placeholder="Search Collections, Locations, Category"
+                (keyup)="searchData($event)">
+            <div class="search-icon-pos">
+                <img src="assets/images/search.svg" alt="search" width="16" height="16">
+            </div>
+        </div>
+    </div>
+    <!-- end - search ui -->
+
+    <div class="common-filter-wrap">
+
+        <!--category-->
+        <div class="filter-wrap mb-3">
+            <div class="d-flex align-items-center justify-content-between flex-wrap"
+                [ngClass]="category_expand?'mb-12':''">
+                <div class="d-flex align-items-baseline gap-6">
+                    <h4>Category.</h4>
+                    <span class="position-relative"><img src="assets/images/infoquestion.svg" alt="question"><span
+                            class="pos_tooltip_coll">List of categories of the various items our platform.</span></span>
+                </div>
+                <div class="d-flex align-items-center justify-content-end gap-12">
+                    <a class="cursor-pointer" (click)="reset('category')">Reset.</a>
+                    <a class="cursor-pointer" (click)="categoryViewFilter()"><img src="assets/images/caret.svg"
+                            alt="dropdwown" [ngClass]="category_expand?'':'rotate-180'"></a>
+
+                </div>
+            </div>
+            <div *ngIf="category_expand">
+                <div class="mb-12" *ngFor="let category of categories; let i=index; trackBy: trackByCategory">
+                    <div *ngIf="!seeAllCategory && i <= 2">
+                        <label (mouseenter)="onHoveringLabel(i,'category')" (mouseleave)="showOnlyButtonCategory=false">
+                            <input #checkbox [id]="category.name" type="checkbox"
+                                (change)="onFilter($event, 'category')" [value]="category.name"
+                                [checked]="category.checked">
+                            <span class="pl-2 cursor-pointer"
+                                [ngClass]="{'selected': category.checked}">{{category.name}}</span>
+                            <span class="onlytext cursor-pointer" *ngIf="showOnlyButtonCategory && hoveredIndex === i"
+                                appDebounceClick (debounceClick)="selectOnly('category',category.name)">only.</span>
+                        </label>
+                    </div>
+                    <div *ngIf="seeAllCategory">
+                        <label (mouseenter)="onHoveringLabel(i,'category')" (mouseleave)="showOnlyButtonCategory=false">
+                            <input #checkbox [id]="category.name" type="checkbox"
+                                (change)="onFilter($event, 'category')" [value]="category.name"
+                                [checked]="category.checked">
+                            <span class="pl-2 cursor-pointer"
+                                [ngClass]="{'selected': category.checked}">{{category.name}}</span>
+                            <span class="onlytext cursor-pointer" *ngIf="showOnlyButtonCategory && hoveredIndex === i"
+                                appDebounceClick (debounceClick)="selectOnly('category',category.name)">only.</span>
+                        </label>
+                    </div>
+                </div>
+                <label *ngIf="!nftTraitsLoader && categories.length == 0">No category available.</label>
+                <label *ngIf="nftTraitsLoader">Loading.</label>
+                <a *ngIf="!nftTraitsLoader && categories.length > 3" class="seeall cursor-pointer"
+                    (click)="changeCategoryList()">{{seeAllCategory ? 'See less.' : 'See all.'}}</a>
+            </div>
+        </div>
+        <!--end-->
+
+        <!--for sale-->
+        <div class="filter-wrap mb-3">
+            <div class="d-flex align-items-center justify-content-between flex-wrap" [ngClass]="sale_expand?'mb-12':''">
+                <div class="d-flex align-items-baseline gap-6">
+                    <h4>For sale.</h4>
+                    <span class="position-relative"><img src="assets/images/infoquestion.svg" alt="question"><span
+                            class="pos_tooltip_coll">List of your Items
+                            that are currently listed For sale. on our marketplace.</span></span>
+                </div>
+                <div class="d-flex align-items-center justify-content-end gap-12">
+                    <a (click)="reset('sale')" class="cursor-pointer clear-filter">Reset.</a>
+                    <a class="cursor-pointer" (click)="saleExpand()"><img src="assets/images/caret.svg" alt="dropdwown"
+                            [ngClass]="sale_expand?'':'rotate-180'"></a>
+                </div>
+            </div>
+            <div class="d-flex align-items-center  gap-4" *ngIf="sale_expand">
+                <div>
+                    <input #checkbox type="radio" name="sale" (change)="onFilter($event, 'sale')" [value]="options[0]"
+                        id="For sale." [checked]="saleOptions[0].checked" class="btn-check">
+                    <label class="btn btn-custom mb-0" for="For sale.">Yes.</label>
+                </div>
+                <div>
+                    <input #checkbox type="radio" name="sale" (change)="onFilter($event, 'sale')" [value]="options[1]"
+                        id="Not for sale." [checked]="saleOptions[1].checked" class="btn-check">
+                    <label class="btn btn-custom mb-0" for="Not for sale.">No.</label>
+                </div>
+            </div>
+        </div>
+        <!--end-->
+
+        <!-- Collateral -->
+        <div class="filter-wrap mb-3">
+            <div class="d-flex align-items-center justify-content-between flex-wrap"
+                [ngClass]="collateral_expand?'mb-12':''">
+                <div class="d-flex align-items-baseline gap-6">
+                    <h4>Collateral.</h4>
+                    <span class="position-relative"><img src="assets/images/infoquestion.svg" alt="question"><span
+                            class="pos_tooltip_coll">
+                            List of
+                            items that are available for collateral on a loan request, or being used as collateral on a
+                            live
+                            loan.</span></span>
+                </div>
+                <div class="d-flex align-items-center justify-content-end gap-12">
+                    <a (click)="reset('collateral')" class="cursor-pointer">Reset.</a>
+                    <a class="cursor-pointer" (click)="colletralExpand()"><img src="assets/images/caret.svg"
+                            alt="dropdwown" [ngClass]="collateral_expand?'':'rotate-180'"></a>
+                </div>
+            </div>
+            <div class="d-flex align-items-center  gap-4" *ngIf="collateral_expand">
+                <div>
+                    <input #checkbox type="radio" name="collateral" (change)="onFilter($event, 'collateral')"
+                        [value]="options[0]" [checked]="collateralOptions[0].checked" id="In collateral"
+                        class="btn-check" id="In collateral">
+                    <label class="btn btn-custom mb-0" for="In collateral">Yes.</label>
+                </div>
+                <div>
+                    <input #checkbox type="radio" name="collateral" (change)="onFilter($event, 'collateral')"
+                        [value]="options[1]" [checked]="collateralOptions[1].checked" id="Not in collateral"
+                        class="btn-check">
+                    <label class="btn btn-custom mb-0" for="Not in collateral">No.</label>
+                </div>
+            </div>
+        </div>
+        <!-- End -->
+
+        <!--price-->
+        <div class="filter-wrap mb-3" *ngIf="isInSale">
+            <div class="d-flex align-items-center justify-content-between flex-wrap"
+                [ngClass]="price_expand?'mb-12':''">
+                <div class="d-flex align-items-baseline gap-6">
+                    <h4>Price.</h4>
+                    <span class="position-relative"><img src="assets/images/infoquestion.svg" alt="question"><span
+                            class="pos_tooltip_coll">List of items for sale
+                            in between these two prices.</span></span>
+                </div>
+                <div class="d-flex align-items-center justify-content-end gap-12">
+                    <a class="cursor-pointer" (click)="reset('price')" *ngIf="!priceSlider.loader">Reset.</a>
+                    <a class="cursor-pointer" (click)="priceExpand()"> <img src="assets/images/caret.svg"
+                            alt="dropdwown" [ngClass]="price_expand?'':'rotate-180'"></a>
+                </div>
+            </div>
+            <!-- Price Slider -->
+            <div *ngIf="price_expand">
+                <div class="mb-12" [ngClass]="priceSlider.loader ? 'show' : ''">
+                    <div class="pricefilter-wrap">
+                        <div class="d-flex align-items-center justify-content-between">
+                            <h3>Price range.</h3>
+                        </div>
+                        <div class="myslider">
+                            <ngx-slider [(value)]="priceSlider.minValue" [(highValue)]="priceSlider.maxValue"
+                                [options]="priceSlider"></ngx-slider>
+                            <div class="d-flex align-items-center justify-content-between pt-2">
+                                <h4>{{priceSlider.floor}}$</h4>
+                                <h4>{{priceSlider.ceil}}$</h4>
+                            </div>
+                        </div>
+                        <div class="pricerangeview">
+                            <input type="number" class="form-control" [value]="priceSlider.minValue" min="0"
+                                appPreventNegative (change)="onSliderMinValueChange($event)"
+                                (wheel)="onSliderMinValueChange($event)">
+                            <input type="number" class="form-control" [value]="priceSlider.maxValue" min="0"
+                                appPreventNegative (change)="onSliderMaxValueChange($event)"
+                                (wheel)="onSliderMaxValueChange($event)">
+                        </div>
+                        <div class="input--error pricerangeview"
+                            *ngIf="minValueError && priceSlider.minValue>0 && priceSlider.maxValue >0">Min
+                            value can't be equal or greater than max</div>
+                        <button class="pricefilter" (click)="setPriceFilter()"
+                            [disabled]="priceSlider.minValue === priceSlider.maxValue || minValueError || priceSlider.loader"
+                            [ngClass]="{'disabled': priceSlider.minValue === priceSlider.maxValue || minValueError || priceSlider.loader}">
+                            Apply.
+                        </button>
+                    </div>
+                </div>
+                <!-- </div> -->
+            </div>
+        </div>
+        <!--end-->
+
+        <!--Apparisal-->
+        <div class="filter-wrap mb-3">
+            <div class="d-flex align-items-center justify-content-between flex-wrap"
+                [ngClass]="appraisal_expand?'mb-12':'' ">
+                <div class="d-flex align-items-baseline gap-6">
+                    <h4>Appraisal.</h4>
+                    <span class="position-relative"><img src="assets/images/infoquestion.svg" alt="question"><span
+                            class="pos_tooltip_coll">List of items in
+                            between these two appraisal value.</span></span>
+                </div>
+                <div class="d-flex align-items-center justify-content-end gap-12">
+                    <a lass="cursor-pointer" (click)="reset('appraisal')" *ngIf="!appraisalSlider.loader">Reset.</a>
+                    <a class="cursor-pointer" (click)="appraisalExpand()"><img src="assets/images/caret.svg"
+                            alt="dropdwown" [ngClass]="appraisal_expand?'':'rotate-180' "></a>
+                </div>
+            </div>
+            <!-- Appraisal Slider -->
+            <div class="mb-12" [ngClass]="appraisalSlider.loader ? 'show' : ''" *ngIf="appraisal_expand">
+                <div class="pricefilter-wrap">
+                    <div class="d-flex align-items-center justify-content-between mb-12">
+                        <h3>Appraisal range.</h3>
+                    </div>
+                    <div class="myslider">
+                        <ngx-slider [(value)]="appraisalSlider.minValue" [(highValue)]="appraisalSlider.maxValue"
+                            [options]="appraisalSlider"></ngx-slider>
+                        <div class="d-flex align-items-center justify-content-between pt-2">
+                            <h4>{{appraisalSlider.floor}}$</h4>
+                            <h4>{{appraisalSlider.ceil}}$</h4>
+                        </div>
+                    </div>
+
+                    <div class="pricerangeview">
+                        <input type="number" class="form-control" [value]="appraisalSlider.minValue" min="0"
+                            appPreventNegative (change)="onSliderAppraisalMinValueChange($event)"
+                            (wheel)="onSliderAppraisalMinValueChange($event)">
+                        <input type="number" class="form-control" [value]="appraisalSlider.maxValue" min="0"
+                            appPreventNegative (change)="onSliderAppraisalMaxValueChange($event)"
+                            (wheel)="onSliderAppraisalMaxValueChange($event)">
+                    </div>
+                    <div class="input--error pricerangeview"
+                        *ngIf="appraisalMinValueError && appraisalSlider.minValue > 0 && appraisalSlider.maxValue >0">
+                        Min value
+                        can't
+                        be equal or greater than max</div>
+                    <button class="pricefilter" (click)="setAppraisalFilter()"
+                        [disabled]="appraisalSlider.minValue === appraisalSlider.maxValue && appraisalSlider.loader"
+                        [ngClass]="{'disabled': appraisalSlider.minValue === appraisalSlider.maxValue || appraisalMinValueError || appraisalSlider.loader}">
+                        Apply.</button>
+                </div>
+            </div>
+        </div>
+        <!--end-->
+
+        <!--location-->
+        <div class="filter-wrap mb-3">
+            <div class="d-flex align-items-center justify-content-between flex-wrap"
+                [ngClass]="location_expand?'mb-12':''">
+                <div class="d-flex align-items-baseline gap-6">
+                    <h4>Location.</h4>
+                    <span class="position-relative"><img src="assets/images/infoquestion.svg" alt="question"><span
+                            class="pos_tooltip_coll">List based on the
+                            location of the custodial hub of the items.</span></span>
+
+                </div>
+                <div class="d-flex align-items-center justify-content-end gap-12">
+                    <a class="cursor-pointer" (click)="reset('location')">Reset.</a>
+                    <a class="cursor-pointer" (click)="locationExpand()"><img src="assets/images/caret.svg"
+                            alt="dropdwown" [ngClass]="location_expand?'':'rotate-180'"></a>
+                </div>
+
+            </div>
+            <div class="" *ngIf="location_expand">
+                <div class="mb-12" *ngFor="let location of locations; let i= index;">
+                    <div *ngIf="!seeAllLocation && i<=2">
+                        <label (mouseenter)="onHoveringLabel(i,'location')"
+                            (mouseleave)="showOnlyButtonLocation=false"><input #checkbox [id]="location.name"
+                                type="text" type="checkbox" (change)="onFilter($event, 'location')"
+                                [value]="location.name" [checked]="location.checked">
+                            <span class="pl-2" [ngClass]="{'selected': location.checked}">{{location.name}}</span>
+                            <span class="onlytext" *ngIf="showOnlyButtonLocation && hoveredIndex === i" appDebounceClick
+                                (debounceClick)="selectOnly('location',location.name)">only.</span>
+                        </label>
+                    </div>
+                    <div *ngIf="seeAllLocation">
+                        <label (mouseenter)="onHoveringLabel(i,'location')"
+                            (mouseleave)="showOnlyButtonLocation=false"><input #checkbox [id]="location.name"
+                                type="text" type="checkbox" (change)="onFilter($event, 'location')"
+                                [value]="location.name" [checked]="location.checked">
+                            <span class="pl-2" [ngClass]="{'selected': location.checked}">{{location.name}}</span>
+                            <span class="onlytext  cursor-pointer" *ngIf="showOnlyButtonLocation && hoveredIndex === i"
+                                appDebounceClick (debounceClick)="selectOnly('location',location.name)">only.</span>
+                        </label>
+                    </div>
+                </div>
+                <label *ngIf="locations.length == 0">No location available</label>
+                <a class="seeall cursor-pointer" (click)="changeLocationList()"
+                    *ngIf="locations.length>3">{{seeAllLocation ?
+                    'See less.' : 'See all.'}}</a>
+            </div>
+
+        </div>
+        <!--end-->
+
+        <!--collection-->
+        <div class="filter-wrap mb-3">
+            <div class="d-flex align-items-center justify-content-between flex-wrap"
+                [ngClass]="collection_expand?'mb-12':''">
+                <div class="d-flex align-items-baseline gap-6">
+                    <h4>Collection.</h4>
+                    <span class="position-relative"><img src="assets/images/infoquestion.svg" alt="question"><span
+                            class="pos_tooltip_coll">Filter by
+                            collections available. Collections are
+                            associated with the owner that originally onboarded the item onto Real World.</span></span>
+                </div>
+                <div class="d-flex align-items-center justify-content-end gap-12">
+                    <a class="cursor-pointer" (click)="reset('collection')">Reset.</a>
+                    <a class="cursor-pointer" (click)="collectionAll()"><img src="assets/images/caret.svg"
+                            alt="dropdwown" [ngClass]="collection_expand?'':'rotate-180'"></a>
+                </div>
+            </div>
+            <div *ngIf="collection_expand">
+                <div class="mb-12" *ngFor="let collection of collections; let i=index;">
+                    <div *ngIf="!seeAllCollection && i<=2">
+                        <label (mouseenter)="onHoveringLabel(i,'collection')"
+                            (mouseleave)="showOnlyButtonCollection=false">
+                            <input #checkbox_collection [id]="collection.name" type="checkbox"
+                                (change)="onFilter($event, 'collection')" [value]="collection.name"
+                                [checked]="collection.checked">
+                            <span class="pl-2" [ngClass]="{'selected': collection.checked}">{{collection.name}}</span>
+                            <span class="onlytext cursor-pointer" *ngIf="showOnlyButtonCollection && hoveredIndex === i"
+                                appDebounceClick (debounceClick)="selectOnly('collection',collection.name)">only.</span>
+                        </label>
+                    </div>
+                    <div *ngIf="seeAllCollection">
+                        <label (mouseenter)="onHoveringLabel(i,'collection')"
+                            (mouseleave)="showOnlyButtonCollection=false">
+                            <input #checkbox_collection [id]="collection.name" type="checkbox"
+                                (change)="onFilter($event, 'collection')" [value]="collection.name"
+                                [checked]="collection.checked">
+                            <span class="pl-2" [ngClass]="{'selected': collection.checked}">{{collection.name}}</span>
+                            <span class="onlytext cursor-pointer" *ngIf="showOnlyButtonCollection && hoveredIndex === i"
+                                appDebounceClick (debounceClick)="selectOnly('collection',collection.name)">only.</span>
+                        </label>
+                    </div>
+
+                </div>
+                <label *ngIf="!collectionLoader && collections.length === 0">No collection available.</label>
+                <label *ngIf="collectionLoader">Loading.</label>
+                <a *ngIf="!collectionLoader && collections.length >= 4" class="seeall cursor-pointer"
+                    (click)="changeCollectionList()">{{seeAllCollection ? 'See less.' : 'See all.'}}</a>
+
+            </div>
+
+        </div>
+        <!--end-->
+    </div>
+</div>
+<!--END-->

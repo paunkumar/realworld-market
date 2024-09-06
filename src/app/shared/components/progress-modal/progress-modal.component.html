@@ -1,0 +1,56 @@
+<div class="modal-dialog modal-dialog-centered ">
+    <div class="modal-content">
+        <div class="modal-body">
+            <!--steps wards-->
+            <div class="stepwizard">
+                <div class="stepcounts-initate">
+                    <h4 class="text-center font-22" *ngIf="this.progressData?.currentStep < progressData?.steps?.length">{{progressData?.title}} </h4>
+                    <div class="list-sale">
+                        <div class="row">
+                            <div class="col-12" >
+                                <div class="img-view mb-2 d-flex align-items-center justify-content-center gap-3 flex-wrap" >
+                                <div  *ngFor="let asset of progressData?.image">
+                                        <img src="{{asset?.image?.displayImage}}" onerror="this.src='assets/images/default-nft.svg'" (load)="imageLoading = false" class="img-fluid">
+
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div *ngIf="this.progressData?.currentStep < progressData?.steps?.length">
+                    <div class="stepcounts" *ngFor="let step of progressData?.steps">
+                        <div><h3 [ngClass]="{'incomplete': step.status !== 1}">{{step.title}}</h3></div>
+                        <div>
+                            <div *ngIf="step.status === 0" class="incomplete">---</div>
+                            <div *ngIf="step.status === 1" class="spinners"></div>
+                            <i *ngIf="step.status === 2" class="bi bi-check2 success"></i>
+                            <i *ngIf="step.status === 3" class="bi bi-exclamation-triangle failed"></i>
+                        </div>
+                    </div>
+                </div>
+                <div class="stepcounts-success" *ngIf="this.progressData?.currentStep === progressData?.steps?.length && progressData?.steps[this.progressData?.currentStep - 1]?.status === 2">
+                    <div class="d-flex gap-2 align-items-center justify-content-center">
+                        <img src="assets/images/check.png" alt="success">
+                        <h4>{{progressData?.successTitle}}</h4>
+                    </div>
+                    <div>
+                        <h4 [innerHTML]="progressData?.successTitleHtml"></h4>
+                        <div class="text-start incomplete" [innerHTML]="progressData?.successMessage"></div>
+                    </div>
+                </div>
+                <div class="d-flex mt-2" *ngIf="progressData?.failed || (progressData?.currentStep === progressData?.steps?.length && (progressData?.steps[this.progressData?.currentStep - 1]?.status === 2 || progressData?.steps[this.progressData?.currentStep - 1]?.status === 3)) && !progressData?.showButton; else estimationTimer ">
+                    <div class="mx-auto"><button class="closeviewbtn" (click)="closeModal.emit()">Okay.</button></div>
+                </div>
+                <!-- Estimation Timer :Shown only for Regulated (Custodial) Users  -->
+                <ng-template #estimationTimer>
+                    <ng-container *ngIf="isRegulated && showEstimation">
+                        <h6 class="text-center font-20 estimation-timer">{{minutes}}:{{seconds}}.</h6>
+                        <h6 *ngIf="countdownEnded" class="text-center font-15 fade-in-text">This is taking longer than usual, Please wait.</h6>
+                    </ng-container>
+                </ng-template>
+            </div>
+            <!--end-->
+        </div>
+    </div>
+</div>

@@ -1,0 +1,119 @@
+
+.nft-wrap{
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    width: 95%;
+    background:  var(--white);
+    padding: 14px;
+    border-radius: 12px;
+}
+.nft-wrap h1{
+    font-size:14px;
+    line-height: 20px;
+    letter-spacing: .4px;
+    font-weight: var(--font-medium);
+    color: var(--black-2);
+    padding: 0;
+    margin: 0 0 10px;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;  
+    overflow: hidden;
+}
+.nft-wrap h6{
+    font-size: 8px;
+    font-weight: var(--font-regular);
+    line-height: normal;
+    letter-spacing: -0.2px;
+    color: #8E8E93;
+    padding: 0px 0px 3px;
+    margin: 0;
+}
+.nft-wrap h5{
+    font-size: 10px;
+    font-weight: var(--font-medium);
+    color: #23273B;
+    line-height: normal;
+    letter-spacing: -0.3px;
+    padding: 0;
+    margin: 0;
+}
+.nft-wrap.repayed h2,.nft-wrap.foreclosed h2{
+    font-size:14px;
+    line-height: 20px;
+    letter-spacing: .4px;
+    font-weight: var(--font-medium);
+    padding: 0;
+    margin: 0;
+    color: rgba(255, 149, 0, 1)!important;
+}
+.nft-wrap.foreclosed h2{
+    color: rgba(255, 59, 48, 1) !important;
+}
+.img-view img,
+.img-view iframe {
+    width: 100%;
+    height: 150px;
+    object-fit: contain;
+    border: 8px;
+    margin-bottom: 10px;
+}
+.nft-wrap.repayed{
+    border:1px solid rgba(255, 149, 0, 1);
+}
+.nft-wrap.foreclosed{
+    border:1px solid rgba(255, 59, 48, 1);
+}
+.dropdown{
+    float: right;
+}
+.dropdown-menu{
+    padding:10px;
+}
+.dropdown-menu label{
+    display: block;
+}
+.btn-sort{
+    border: 1px solid rgba(229, 229, 234, 1);
+    background: rgba(229, 229, 234, 1);
+    padding: 13px 25px 13px 25px;
+    font-size: 16px;
+    font-weight: var(--font-medium);
+    letter-spacing: .4px;
+    color: var(--ssecondary-color);
+}
+.dropdown-toggle::after {
+    display: inline-block;
+    margin-left: 0.255em;
+    vertical-align: 0.255em;
+    content: "";
+    border-top: 0.5em solid var(--grey-2);
+    border-right: 0.5em solid transparent;
+    border-bottom: 0;
+    border-left: 0.5em solid transparent;
+    position: absolute;
+    right: 18px;
+    top: 50%;
+    transform: translateY(-50%);
+}
+.dropdown-menu{
+    padding: 0px 0px!important;
+}
+.dropdown-item {
+    padding: 5px 10px;
+    color: var(--black-2);
+}
+.dropdown-item:hover{
+    background-color: var(--primary-color);
+    color: var(--primary-color)
+}
+.table>:not(caption)>*>* {
+    background:transparent !important
+  }
+.pr-4{
+    padding-right: 20px;
+}
+.noloan{
+    padding: 10px 0px;
+}

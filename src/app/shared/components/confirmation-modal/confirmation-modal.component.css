@@ -1,0 +1,25 @@
+.img-view img{
+    background: var(--white);
+    width: 65px;
+    height: 65px !important;
+    object-fit: contain;
+    border: 1px solid #eee;
+    border-radius: 8px !important;
+    padding: 5px;
+}
+.img-view{
+    max-height: 180px ;
+    overflow: auto ;
+    margin-right: -9px ;
+}
+.stepcounts-initate, .stepcounts-success{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    gap:15px;
+}
+
+.modal-header{
+  border-bottom: 0px !important;
+}

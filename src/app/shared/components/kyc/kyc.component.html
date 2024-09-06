@@ -1,0 +1,15 @@
+<div class="main-wrap">
+    <section *ngIf="!user" class="col-md-10 mx-auto text-center">Login to continue.</section>
+    <section *ngIf="!loading && url" style="height: calc(100vh - 180px); background: #fff;">
+        <iframe 
+            id='iframe' 
+            allowfullscreen
+            style="width:100%; height:100%;" 
+            [src]="url | safe"
+            allow="camera"
+        ></iframe>
+    </section>  
+    <section *ngIf="!loading && !url"  class="col-md-10 mx-auto text-center">
+        Unable to process KYC. Contact admin for more details.
+    </section> 
+</div>

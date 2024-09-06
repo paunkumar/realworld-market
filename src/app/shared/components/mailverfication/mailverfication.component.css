@@ -1,0 +1,115 @@
+/** custom modal**/
+.custom-modal{
+    max-width: 540px;
+    width: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+}
+.profile-section{
+    & .profile-outer{
+        width: 118px;
+        height: 118px;
+        border-radius: 100%;
+        margin: 0 auto;
+        position: absolute;
+        top: -60px;
+        left: 50%;
+        transform: translateX(-50%);
+    }
+    & .lockicon{
+        border-radius: 123.471px;
+        border: 13px solid var(--white);
+        background:  #E6F0EB;
+        box-shadow: 0px 1.372px 5.488px 0px rgba(0, 0, 0, 0.06);
+        padding: 28px 30px;
+    }
+}
+.mail-verfication-wrap{
+    padding: 74px 22px 22px;
+    & h3{
+        color: #232323;
+        text-align: center;
+        font-size: 24px;
+        font-weight: var(--font-semibold);
+        letter-spacing: -1.8px;
+        padding: 0;
+        margin: 0 0 16px;
+    }
+    & p{
+        color: #636366;
+        text-align: center;
+        font-size: 14px;
+        font-weight: 500;
+        line-height:  22.4px;
+        letter-spacing: -0.35px;
+        padding: 0;
+        margin: 0 0 32px;
+    }
+    & label{
+        color: #232323;
+        font-size: 14px;
+        font-weight: 400;
+        line-height: 24px;
+        padding: 0;
+        margin-bottom: 10px;
+    }
+    & .form-control{
+        border-radius: 8px;
+        padding: 13px 20px;
+        border: 1px solid  #C5C5C9;
+        background: var(--white);
+        color: #232323;
+        font-size: 14px;
+        font-weight: 400;
+        line-height: 24px;
+    }
+    & input::placeholder{
+        color:  #9CA3AF;
+    }
+    & .form-group{
+        margin-bottom: 24px;
+    }
+    & p a{
+        color: var(--primary-color);
+        text-decoration: underline;
+    }
+    & .onboard_cancel, .onboard_verify{
+        padding: 9px 35px;
+        border-radius: 8px;
+        background: #F5F5F6;
+        font-size: 16px;
+        font-weight: var(--font-medium);
+        line-height: 28px;
+        color: #232323;
+        border: 1px solid transparent;
+        transition: all .5s ease-in-out;
+        cursor: pointer;
+    }
+    & .onboard_cancel:hover,.onboard_cancel:focus{
+        background: #006736;
+        color: var(--white);
+        transition: all .5s ease-in-out;
+    }
+    & .onboard_verify{
+        background: #006736;
+        color: var(--white);
+    }
+    & .onboard_verify:hover, .onboard_verify:focus{
+        background: rgba(0, 103, 54,8);
+        transition: all .5s ease-in-out;
+    }
+    & .editIcon{
+        position: absolute;
+        top: 48px;
+        right: 20px;
+        & img{
+            width: 18px;
+            height: 18px;
+        }
+    }
+}
+.disabled {
+  pointer-events: none;
+  color: gray;
+  cursor: not-allowed;
+}

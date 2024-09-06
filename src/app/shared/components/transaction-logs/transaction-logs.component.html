@@ -1,0 +1,137 @@
+<div class="main-wrap">
+    <section class="section">
+
+        <div class="container-fluid">
+            <div class="transaction-page">
+                <div class="backtoitem pos-relative">
+                    <a (click)="goBack()" class="cursor-pointer">
+                        <div class="back-btn">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
+                                fill="none">
+                                <path d="M5 12.0002L20 12" stroke="#2C2C2E" stroke-width="1.5" stroke-linecap="round"
+                                    stroke-linejoin="round" />
+                                <path
+                                    d="M8.99992 7L4.70703 11.2929C4.37369 11.6262 4.20703 11.7929 4.20703 12C4.20703 12.2071 4.37369 12.3738 4.70703 12.7071L8.99992 17"
+                                    stroke="#2C2C2E" stroke-width="1.5" stroke-linecap="round"
+                                    stroke-linejoin="round" />
+                            </svg>
+                        </div>
+                    </a>
+                    <div class="w-90">
+                        <div class="position-relative">
+                            <h5 class="d-block add-content">Transactions.</h5>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-12 custom-mb">
+                        <div class="transacation-wrap">
+                            <div class="transacation-body">
+                                <div class="table-responsive">
+                                    <table class="table">
+                                        <thead>
+                                            <th>Items.</th>
+                                            <th>Action.</th>
+                                            <th>Amount. </th>
+                                            <th>From. </th>
+                                            <th>To.</th>
+                                            <th>Txn hash.</th>
+                                            <th>Date.</th>
+                                            <th>Time.</th>
+                                        </thead>
+                                        <tbody>
+                                            <tr *ngFor="let data of transactionLogs;trackBy: trackByFn">
+                                                <td>
+                                                    <a target="_blank"
+                                                        [routerLink]="data?.['nft_ids']?.[0]?.lazy_mint ? ['/lazy-mint', data?.['nft_ids']?.[0]?.nft._id] : ['/nft-detail', data?.['nft_ids']?.[0]?.collections?.collection_address, data?.['nft_ids']?.[0]?.token_id]"
+                                                        [queryParams]="{regulated}" class="title">{{data['nft_name'] ?
+                                                        data['nft_name']:'-'}}</a>
+                                                </td>
+                                                <td><a class="purchase">{{data['method']}}.</a></td>
+                                                <td *ngIf="data?.['loan_amount'] > 0">
+                                                    <p class="price">{{data?.['loan_amount'] | thousandSeparator}}
+                                                        {{data?.['currency_symbol']}}</p>
+                                                </td>
+                                                <td class=""
+                                                    *ngIf="data?.['loan_amount'] == 0 || !data?.['loan_amount']">
+                                                    <div>-</div>
+                                                </td>
+
+                                                <td>
+                                                    <div class="d-flex gap-2" *ngIf="data?.['sender']?.['name']">
+                                                        <a href="{{transhUrl}}/address/{{data?.['from']}}"
+                                                            target="_blank">
+                                                            <p class="wallet">
+                                                                {{data?.['sender']?.['name']?.length > 20 ?
+                                                                data?.['from'].slice(0, 5) + '...' +
+                                                                data?.['from'].slice(data?.['from'].length - 5) :
+                                                                data?.['sender']?.['name']}}
+                                                            </p>
+                                                        </a>
+                                                        <img src="assets/images/copy-icon.svg" alt="copy" loading="lazy"
+                                                            class="cursor-pointer" (click)="copy(data?.['from'])">
+                                                    </div>
+                                                    <div *ngIf="!data?.['from'] && !data?.['sender']?.['name']"> -
+                                                    </div>
+                                                </td>
+                                                <td>
+                                                    <div class="d-flex gap-2" *ngIf="data?.['receiver']?.['name']">
+                                                        <a href="{{transhUrl}}/address/{{data?.['to']}}"
+                                                            target="_blank">
+                                                            <p class="wallet">
+                                                                {{data?.['receiver']?.['name']?.length > 20 ?
+                                                                data?.['to'].slice(0, 5) + '...' +
+                                                                data?.['to'].slice(data?.['to'].length - 5) :
+                                                                data?.['receiver']?.['name']}}
+                                                            </p>
+                                                        </a>
+                                                        <img src="assets/images/copy-icon.svg" alt="copy" loading="lazy"
+                                                            class="cursor-pointer" (click)="copy(data?.['to'])">
+                                                    </div>
+                                                    <div *ngIf="!data?.['to'] && !data?.['receiver']?.['name']"> -
+                                                    </div>
+                                                </td>
+
+                                                <td>
+                                                    <div class="d-flex gap-2">
+                                                        <p class="external">
+                                                            {{data?.['transaction_hash'] ?
+                                                            data?.['transaction_hash']:'-'}}
+                                                        </p>
+                                                        <a *ngIf="data?.['transaction_hash']"
+                                                            href="{{transhUrl}}/tx/{{data?.['transaction_hash']}}"
+                                                            target="_blank">
+                                                            <img src="assets/images/dashboard-external.svg" alt="">
+                                                        </a>
+                                                    </div>
+                                                </td>
+                                                <td>
+                                                    <p class="datetime">
+                                                        {{data?.['created_at'] | date:'dd/MM/YYYY'}}
+                                                    </p>
+                                                </td>
+                                                <td>
+                                                    <p class="datetime">
+                                                        {{data?.['created_at'] | date:'hh:mm:ss a'}}
+                                                    </p>
+                                                </td>
+                                            </tr>
+
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+
+                </div>
+
+                <app-pagination [pageType]="pageType" [nftParams]="nftParams"
+                    (dataList)="getNftAnalytics($event)"></app-pagination>
+
+
+            </div>
+        </div>
+    </section>
+</div>

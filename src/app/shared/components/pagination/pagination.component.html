@@ -1,0 +1,70 @@
+<div class="row mt-4">
+  <div class="col-lg-12">
+    <div class="d-flex justify-content-end flex-wrap">
+      <div>
+        <button *ngIf="paginationData?.page != 1" class="previous-btn"
+          (click)="getList(paginationData.page - 1, limit)">
+          <span><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16" fill="none">
+              <path
+                d="M10.5371 3.60462C10.3187 3.30815 9.90141 3.24483 9.60495 3.46317C9.37468 3.63277 9.15579 3.8024 8.96513 3.95118C8.58459 4.24819 8.07486 4.65707 7.56326 5.10131C7.05493 5.54267 6.52939 6.03202 6.12572 6.48888C5.92459 6.71652 5.73959 6.95185 5.60126 7.18132C5.47399 7.39245 5.33366 7.68259 5.33366 7.99999C5.33366 8.31739 5.47399 8.60759 5.60126 8.81872C5.73959 9.04819 5.92459 9.28345 6.12572 9.51112C6.52939 9.96799 7.05493 10.4573 7.56326 10.8987C8.07486 11.3429 8.58459 11.7518 8.96513 12.0489C9.15579 12.1976 9.37468 12.3673 9.60495 12.5369C9.90141 12.7552 10.3187 12.6919 10.5371 12.3954C10.6249 12.2762 10.6671 12.1375 10.667 12.0001L10.667 7.99999V3.99997C10.6671 3.8625 10.6249 3.72379 10.5371 3.60462Z"
+                fill="currentColor" />
+            </svg></span>Prev.
+        </button>
+        <button *ngIf="paginationData?.page == 1" disabled class="previous-btn disble-btn">
+          <span>
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16" fill="none">
+              <path
+                d="M10.5371 3.60462C10.3187 3.30815 9.90141 3.24483 9.60495 3.46317C9.37468 3.63277 9.15579 3.8024 8.96513 3.95118C8.58459 4.24819 8.07486 4.65707 7.56326 5.10131C7.05493 5.54267 6.52939 6.03202 6.12572 6.48888C5.92459 6.71652 5.73959 6.95185 5.60126 7.18132C5.47399 7.39245 5.33366 7.68259 5.33366 7.99999C5.33366 8.31739 5.47399 8.60759 5.60126 8.81872C5.73959 9.04819 5.92459 9.28345 6.12572 9.51112C6.52939 9.96799 7.05493 10.4573 7.56326 10.8987C8.07486 11.3429 8.58459 11.7518 8.96513 12.0489C9.15579 12.1976 9.37468 12.3673 9.60495 12.5369C9.90141 12.7552 10.3187 12.6919 10.5371 12.3954C10.6249 12.2762 10.6671 12.1375 10.667 12.0001L10.667 7.99999V3.99997C10.6671 3.8625 10.6249 3.72379 10.5371 3.60462Z"
+                fill="currentColor" />
+            </svg>
+          </span>Prev.
+        </button>
+      </div>
+      <div>
+        <nav>
+          <ul class="pagination">
+            <li class="page-item cursor-pointer"
+              *ngIf="paginationData.prevPage != null  && (paginationData?.prevPage - 1) != 0 && (paginationData.prevPage - 1) != paginationData.page"
+              (click)="getList(1, limit)">
+              <a class="page-link">1</a>
+            </li>
+            <li class="page-item cursor-pointer">
+              <a class="page-link" *ngIf="paginationData.prevPage > 0"
+                (click)="getList(paginationData.prevPage, limit)">{{paginationData.prevPage}}</a>
+            </li>
+            <li class="page-item cursor-pointer"><a class="page-link active">{{paginationData.page}}</a></li>
+            <li class="page-item cursor-pointer"><a class="page-link" *ngIf="paginationData.nextPage > 0"
+                (click)="getList(paginationData.nextPage, limit)">{{paginationData.nextPage}}</a>
+            </li>
+            <li class="page-item"
+              *ngIf="paginationData.totalPages > paginationData.nextPage && paginationData.nextPage != null && (paginationData.nextPage + 1) != paginationData.totalPages">
+              <a class="page-link">..</a>
+            </li>
+            <li class="page-item cursor-pointer"
+              *ngIf="paginationData.totalPages > paginationData.nextPage && paginationData.nextPage != null"
+              (click)="getList(paginationData.totalPages, limit)">
+              <a class="page-link">{{paginationData.totalPages}}</a>
+            </li>
+          </ul>
+        </nav>
+      </div>
+      <div>
+        <button *ngIf="paginationData?.page != paginationData?.totalPages" class="next-btn"
+          (click)="getList(paginationData.page + 1, limit)">Next.
+          <span> <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16" fill="none">
+              <path
+                d="M5.46292 3.60462C5.68126 3.30815 6.09859 3.24483 6.39505 3.46317C6.62532 3.63277 6.84421 3.8024 7.03487 3.95118C7.41541 4.24819 7.92514 4.65707 8.43674 5.10131C8.94507 5.54267 9.47061 6.03202 9.87428 6.48888C10.0754 6.71652 10.2604 6.95185 10.3987 7.18132C10.526 7.39245 10.6663 7.68259 10.6663 7.99999C10.6663 8.31739 10.526 8.60759 10.3987 8.81872C10.2604 9.04819 10.0754 9.28345 9.87428 9.51112C9.47061 9.96799 8.94507 10.4573 8.43674 10.8987C7.92514 11.3429 7.41541 11.7518 7.03487 12.0489C6.84421 12.1976 6.62532 12.3673 6.39505 12.5369C6.09859 12.7552 5.68126 12.6919 5.46292 12.3954C5.37514 12.2762 5.33289 12.1375 5.33301 12.0001L5.33301 7.99999V3.99997C5.33289 3.8625 5.37514 3.72379 5.46292 3.60462Z"
+                fill="currentColor" />
+            </svg></span>
+        </button>
+        <button *ngIf="paginationData?.page == paginationData?.totalPages" disabled class="next-btn disble-btn">Next.
+          <span><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16" fill="none">
+              <path
+                d="M5.46292 3.60462C5.68126 3.30815 6.09859 3.24483 6.39505 3.46317C6.62532 3.63277 6.84421 3.8024 7.03487 3.95118C7.41541 4.24819 7.92514 4.65707 8.43674 5.10131C8.94507 5.54267 9.47061 6.03202 9.87428 6.48888C10.0754 6.71652 10.2604 6.95185 10.3987 7.18132C10.526 7.39245 10.6663 7.68259 10.6663 7.99999C10.6663 8.31739 10.526 8.60759 10.3987 8.81872C10.2604 9.04819 10.0754 9.28345 9.87428 9.51112C9.47061 9.96799 8.94507 10.4573 8.43674 10.8987C7.92514 11.3429 7.41541 11.7518 7.03487 12.0489C6.84421 12.1976 6.62532 12.3673 6.39505 12.5369C6.09859 12.7552 5.68126 12.6919 5.46292 12.3954C5.37514 12.2762 5.33289 12.1375 5.33301 12.0001L5.33301 7.99999V3.99997C5.33289 3.8625 5.37514 3.72379 5.46292 3.60462Z"
+                fill="currentColor" />
+            </svg></span>
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

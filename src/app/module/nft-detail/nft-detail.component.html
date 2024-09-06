@@ -1,0 +1,1153 @@
+<div class="main-wrap">
+    <app-sidebar class="sidebarview"></app-sidebar>
+    <app-contract-transactions></app-contract-transactions>
+    <section class="section" *ngIf="!showAllTransactions">
+        <div *ngIf="!loader" class="container-fluid">
+
+            <div class="row">
+                <div class="col-xl-9 col-lg-8 col-md-12">
+                    <div class="nft-details">
+                        <div class="backtoitem pos-relative">
+                            <a (click)="goBack()" class="cursor-pointer">
+                                <div class="back-btn">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24"
+                                        fill="none">
+                                        <path d="M5 12.0002L20 12" stroke="#2C2C2E" stroke-width="1.5"
+                                            stroke-linecap="round" stroke-linejoin="round" />
+                                        <path
+                                            d="M8.99992 7L4.70703 11.2929C4.37369 11.6262 4.20703 11.7929 4.20703 12C4.20703 12.2071 4.37369 12.3738 4.70703 12.7071L8.99992 17"
+                                            stroke="#2C2C2E" stroke-width="1.5" stroke-linecap="round"
+                                            stroke-linejoin="round" />
+                                    </svg>
+                                </div>
+                            </a>
+                            <div class="w-90">
+                                <div class="position-relative">
+                                    <h1 class="d-block" (window:resize)="setTooltipSize()" id="tooltip-title">
+                                        {{nft?.name}}
+                                        <span id="tooltip-description">
+                                            <span class="title-tooltip">{{nft?.name}}</span>
+                                        </span>
+                                    </h1>
+                                </div>
+                                <h2 class="d-inline position-relative">{{nft?.collections.name}}.
+                                    <div [ngClass]="nft?.collections?.description?'pos_tooltip collectiontootlip collect-tooltip':''"
+                                        [innerHTML]="nft?.collections?.description"></div>
+                                </h2>
+                            </div>
+                            <div class="pos_loan d-flex gap-2">
+                                <div class="position-relative" *ngIf="nft?.for_loan && !nft.is_deleted">
+                                    <img src="assets/images/for-loan.svg" alt="loan">
+                                    <span class="loan-details-tooltip for-loan-tooltip">Collateral for Loan - This item
+                                        is currently being
+                                        offered as collateral for loan. If you are interested in lending against this
+                                        item, please go to the
+                                        Lending page on the site menu.</span>
+                                </div>
+                                <div class="position-relative" *ngIf="nft?.on_loan && !nft.is_deleted">
+                                    <img src="assets/images/on-loan.svg" alt="loan">
+                                    <span class="loan-details-tooltip">In live loan.</span>
+                                </div>
+                                <div class="position-relative" *ngIf="nft?.in_sale && !nft.is_deleted">
+                                    <img src="assets/images/for-sale.svg" alt="loan">
+                                    <span class="loan-details-tooltip">For sale.</span>
+
+                                </div>
+                                <ng-container
+                                    *ngIf="nft?.owner?.wallet_address === account?.walletAddress && !nft?.in_sale && !nft.is_deleted && !nft?.for_loan && !nft?.on_loan && (nft?.delivery_status === 0 || nft?.delivery_status === 6)">
+                                    <a class="wallet-transfer cursor-pointer  position-relative"
+                                        (click)="transferModal?.show()">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
+                                            viewBox="0 0 24 24" fill="none">
+                                            <path
+                                                d="M4.69817 4.03397L21.0002 12L4.69817 19.966C4.60512 20.0017 4.50354 20.009 4.40633 19.987C4.30911 19.9649 4.22065 19.9144 4.15217 19.842C4.08169 19.7676 4.03317 19.6752 4.01199 19.5749C3.99081 19.4747 3.99779 19.3705 4.03217 19.274V12V4.72597C3.99779 4.62944 3.99081 4.52528 4.01199 4.42503C4.03317 4.32478 4.08169 4.23234 4.15217 4.15797C4.22065 4.08552 4.30911 4.03506 4.40633 4.01298C4.50354 3.9909 4.60512 3.99821 4.69817 4.03397Z"
+                                                stroke="#006736" stroke-width="1.5" stroke-linecap="round"
+                                                stroke-linejoin="round" />
+                                            <path
+                                                d="M4.38782 8.01514L13 11.9133L4.36962 15.9848C4.32035 16.001 4.26658 16.0043 4.21511 15.9943C4.16365 15.9843 4.11681 15.9614 4.08056 15.9286C4.04325 15.8949 4.01756 15.8529 4.00635 15.8075C3.99513 15.762 3.99883 15.7148 4.01703 15.671L4.00635 12.3724L4.03523 8.32895C4.01703 8.28518 4.01333 8.23793 4.02455 8.19247C4.03576 8.14702 4.06145 8.10509 4.09876 8.07137C4.13502 8.03852 4.18185 8.01563 4.23331 8.00562C4.28478 7.99561 4.33856 7.99892 4.38782 8.01514Z"
+                                                fill="#006736" />
+                                        </svg>
+                                        <span class="wallet-transfer-qus  nav_names d-flex align-items-center">
+                                            <span class="pos_tooltip">Transfer item to different wallet.</span></span>
+                                    </a>
+
+                                </ng-container>
+                            </div>
+                        </div>
+                        <div class="row">
+
+                            <div class="col-xl-4 col-lg-4 col-md-5 position-relative">
+                                <div class="ribbon" [ngClass]="{'ribbon-defaulted': nft.on_loan && nft.defaulted}"
+                                    *ngIf="nft.owner?.wallet_address === account?.walletAddress">
+                                    <span *ngIf="!nft.defaulted">Yours.</span>
+                                    <span *ngIf="nft.on_loan && nft.defaulted">Defaulted.</span>
+                                </div>
+                                <div class="product_banner">
+                                    <owl-carousel-o [options]="customOptions" #owlCar id="main-banner-scroll">
+                                        <ng-container *ngFor="let image of nft?.images">
+                                            <ng-template carouselSlide [id]="image?.url">
+                                                <img [src]="image?.url"
+                                                    *ngIf="image?.fileType != 'pdf' && image?.fileType != 'gltf-binary' && image?.fileType != 'html' || !image.fileType"
+                                                    class="img-fluid" onerror="this.src='assets/images/default-nft.svg'"
+                                                    (load)="imageLoading = false" id=""
+                                                    (mouseenter)="showModal(image?.url)" (mouseleave)="hideModal()">
+                                                <div class="gemsdetails">
+                                                    <iframe *ngIf="image?.fileType == 'html'" [src]="image.url | safe"
+                                                        class="img-fluid maginifypopup" frameborder="0"
+                                                        scrolling="no"></iframe>
+                                                </div>
+                                                <model-viewer *ngIf="image?.fileType == 'gltf-binary'"
+                                                    id="my-model-viewer" camera-controls camera-orbit="45deg 55deg 2.5m"
+                                                    [src]="image?.url" alt="A 3D model of an astronaut"
+                                                    data-js-focus-visible="" ar-status="not-presenting">
+                                                </model-viewer>
+                                                <a [href]="image?.url" target="_blank" *ngIf="image?.fileType == 'pdf'">
+                                                    <img src="assets/images/document-preview.png" class="actives"
+                                                        (load)="imageLoading = false">
+                                                </a>
+                                            </ng-template>
+                                        </ng-container>
+                                    </owl-carousel-o>
+                                </div>
+                                <div *ngIf="nft?.images?.length >1" class="product_thumbnail">
+
+                                    <owl-carousel-o [options]="thumbsliderOptions" id="product-thumnail">
+                                        <ng-container *ngFor="let image of nft?.images; let i = index">
+                                            <ng-template carouselSlide [id]="image?.url+i">
+                                                <a (click)="owlCar.to(image?.url); changeimage(image?.url+i)">
+                                                    <div class="overlay"></div>
+                                                    <img [src]="image?.url"
+                                                        *ngIf="image?.fileType != 'pdf' && image?.fileType != 'gltf-binary' && image?.fileType != 'html'"
+                                                        [ngClass]="{'actives':selectedImage === image?.url+i || (i == 0 && !selectedImage)}"
+                                                        onerror="this.src='assets/images/default-nft.svg'"
+                                                        (load)="imageLoading = false">
+                                                    <div class="gempreview">
+                                                        <iframe *ngIf="image?.fileType == 'html'"
+                                                            [src]="image.url | safe" class="img-fluid maginifypopup"
+                                                            frameborder="0" scrolling="no"
+                                                            [ngClass]="{'actives':selectedImage === image?.url+i || (i == 0 && !selectedImage)}"></iframe>
+                                                    </div>
+                                                    <img [src]="image?.preview" *ngIf="image?.fileType == 'gltf-binary'"
+                                                        [ngClass]="{'actives':selectedImage === image?.url+i || (i == 0 && !selectedImage)}"
+                                                        onerror="this.src='assets/images/default-nft.svg'"
+                                                        (load)="imageLoading = false">
+                                                    <a [href]="image?.url" target="_blank"
+                                                        *ngIf="image?.fileType == 'pdf'">
+                                                        <img src="assets/images/document-preview.png" class="actives"
+                                                            (load)="imageLoading = false">
+                                                    </a>
+                                                </a>
+                                            </ng-template>
+                                        </ng-container>
+                                    </owl-carousel-o>
+                                </div>
+                                <div class="showDiv">
+                                    <div class="col-lg-12">
+                                        <img src="assets/images/banner-5.png">
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-xl-8 col-lg-8 col-md-7">
+                                <div class="product-details">
+
+                                    <h4>{{nft?.name}}</h4>
+                                    <!-- <p>{{nft?.collections.name}}</p> -->
+                                    <!-- <h5 *ngIf="nft?.in_sale">Price <span>{{nft?.sell_order.price}} {{nft?.sell_order.currency.symbol}}</span></h5> -->
+
+                                    <div class="our_advantages">
+                                        <div class="our_options">
+                                            <div>
+                                                <!-- <img src="assets/images/authority.jpg" alt="Guarantee of authenticity" width="35" height="35"> -->
+                                                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18"
+                                                    viewBox="0 0 24 24" fill="none">
+                                                    <path
+                                                        d="M17 3.33782C15.5291 2.48697 13.8214 2 12 2C6.47715 2 2 6.47715 2 12C2 17.5228 6.47715 22 12 22C17.5228 22 22 17.5228 22 12C22 11.3151 21.9311 10.6462 21.8 10"
+                                                        stroke="#AEAEB2" stroke-width="1.5" stroke-linecap="round" />
+                                                    <path
+                                                        d="M8 12.5C8 12.5 9.5 12.5 11.5 16C11.5 16 17.0588 6.83333 22 5"
+                                                        stroke="#AEAEB2" stroke-width="1.5" stroke-linecap="round"
+                                                        stroke-linejoin="round" />
+                                                </svg>
+                                            </div>
+                                            <div>
+                                                <p>Guarantee of authenticity.</p>
+                                            </div>
+                                        </div>
+                                        <div class="our_options">
+                                            <div>
+                                                <!-- <img src="assets/images/shipping.png" alt="Worldwide insured shipping" width="35" height="35"> -->
+                                                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18"
+                                                    viewBox="0 0 24 24" fill="none">
+                                                    <path
+                                                        d="M17 20C18.1046 20 19 19.1046 19 18C19 16.8954 18.1046 16 17 16C15.8954 16 15 16.8954 15 18C15 19.1046 15.8954 20 17 20Z"
+                                                        stroke="#AEAEB2" stroke-width="1.5" />
+                                                    <path
+                                                        d="M7 20C8.10457 20 9 19.1046 9 18C9 16.8954 8.10457 16 7 16C5.89543 16 5 16.8954 5 18C5 19.1046 5.89543 20 7 20Z"
+                                                        stroke="#AEAEB2" stroke-width="1.5" />
+                                                    <path
+                                                        d="M5 17.9724C3.90328 17.9178 3.2191 17.7546 2.73223 17.2678C2.24536 16.7809 2.08222 16.0967 2.02755 15M9 18H15M19 17.9724C20.0967 17.9178 20.7809 17.7546 21.2678 17.2678C22 16.5355 22 15.357 22 13V11H17.3C16.5555 11 16.1832 11 15.882 10.9021C15.2731 10.7043 14.7957 10.2269 14.5979 9.61803C14.5 9.31677 14.5 8.94451 14.5 8.2C14.5 7.08323 14.5 6.52485 14.3532 6.07295C14.0564 5.15964 13.3404 4.44358 12.4271 4.14683C11.9752 4 11.4168 4 10.3 4H2"
+                                                        stroke="#AEAEB2" stroke-width="1.5" stroke-linecap="round"
+                                                        stroke-linejoin="round" />
+                                                    <path d="M2 8H8" stroke="#AEAEB2" stroke-width="1.5"
+                                                        stroke-linecap="round" stroke-linejoin="round" />
+                                                    <path d="M2 11H6" stroke="#AEAEB2" stroke-width="1.5"
+                                                        stroke-linecap="round" stroke-linejoin="round" />
+                                                    <path
+                                                        d="M14.5 6H16.3212C17.7766 6 18.5042 6 19.0964 6.35371C19.6886 6.70742 20.0336 7.34811 20.7236 8.6295L22 11"
+                                                        stroke="#AEAEB2" stroke-width="1.5" stroke-linecap="round"
+                                                        stroke-linejoin="round" />
+                                                </svg>
+                                            </div>
+                                            <div>
+                                                <p *ngIf="nft?.collections?.isLazyMint">{{getShippingInfo(nft?.['attributes'])}}.</p>
+                                                <p *ngIf="!nft?.collections?.isLazyMint">Worldwide insured shipping.</p>
+                                            </div>
+                                        </div>
+                                        <div class="our_options">
+                                            <div>
+                                                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18"
+                                                    viewBox="0 0 24 24" fill="none">
+                                                    <path
+                                                        d="M19 9H6.65856C5.65277 9 5.14987 9 5.02472 8.69134C4.89957 8.38268 5.25517 8.01942 5.96637 7.29289L8.21091 5"
+                                                        stroke="#AEAEB2" stroke-width="1.5" stroke-linecap="round"
+                                                        stroke-linejoin="round" />
+                                                    <path
+                                                        d="M5 15H17.3414C18.3472 15 18.8501 15 18.9753 15.3087C19.1004 15.6173 18.7448 15.9806 18.0336 16.7071L15.7891 19"
+                                                        stroke="#AEAEB2" stroke-width="1.5" stroke-linecap="round"
+                                                        stroke-linejoin="round" />
+                                                </svg>
+                                                <!-- <img src="assets/images/refresh.svg" alt="Trade the NFT" width="30" height="30"> -->
+                                            </div>
+                                            <div>
+                                                <p>Redeem for the real item 24/7.</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row row-cols-1 row-cols-lg-3 row-cols-sm-2">
+                                    <div class="col mb-3" *ngFor="let attribute of nft?.attributes">
+                                        <div class="product-details-wrap">
+                                            <p>{{attribute.key}}.</p>
+                                            <h3 *ngIf="attribute.key !='link'">
+                                                <span
+                                                    *ngIf="attribute.key.toLowerCase() !== 'appraisal value'">{{attribute.value
+                                                    ? attribute.value :
+                                                    '-'}} <span
+                                                        *ngIf="attribute.key.toLowerCase() === 'markup fee'">%</span></span>
+                                                <span
+                                                    *ngIf="attribute.key.toLowerCase() === 'appraisal value'">{{Math.ceil(attribute.value)
+                                                    | thousandSeparator}}
+                                                    {{!nft.lazy_mint ? nft?.currency?.symbol :
+                                                    this.nft?.sell_order?.currency?.symbol}}</span>
+                                            </h3>
+                                            <h3 *ngIf="attribute.key =='link'"><a target="_blank"
+                                                    href="{{attribute.value}}">Click here.</a>
+                                            </h3>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row product-description">
+                            <div class="col-lg-12" *ngIf="nft?.description != '' && nft?.description != null">
+                                <h3>Description.</h3>
+                                <p [innerHtml]="nft?.description"></p>
+                            </div>
+                        </div>
+                        <!--5.2.0 Design chnaged-->
+                        <div class="contract-details">
+                            <div class="row mb-32" *ngIf="!nft.lazy_mint">
+                                <div class="col-lg-12">
+                                    <div class="tabledata d-flex justify-content-between align-items-center">
+                                        <h3>Bids.</h3>
+
+                                        <div (click)="bidOffer()" class="cursor-pointer">
+                                            <img src="assets/images/chevron-up.svg" alt="up"
+                                                [ngClass]="{'':!bettingoffer,'rotate-icon':bettingoffer}">
+                                        </div>
+                                    </div>
+                                    <div class="table-responsive" *ngIf="!bettingoffer">
+                                        <table class="table tables ">
+                                            <thead class="custom" *ngIf="bids && bids.length > 0">
+                                                <th>Amount.</th>
+                                                <th>Quantity.</th>
+                                                <th>Difference to appraisal.</th>
+                                                <th>From.</th>
+                                                <th>Time.</th>
+                                                <th>Status.</th>
+                                                <th *ngIf="nft?.owner?.wallet_address === account?.walletAddress">
+                                                    Action.</th>
+                                            </thead>
+                                            <tbody class="custom" *ngIf="bids && bids.length > 0">
+                                                <tr *ngFor="let bid of bids">
+
+                                                    <td>
+                                                        <p class="offer">{{bid?.amount | thousandSeparator}}
+                                                            {{bid?.currency?.symbol}}</p>
+                                                    </td>
+                                                    <td>
+                                                        <p class="offer">{{bid?.quantity}}</p>
+                                                    </td>
+                                                    <td>
+                                                        <p class="offer">{{bid?.floor_difference}}</p>
+                                                    </td>
+                                                    <td>
+                                                        <p class="offer" *ngIf="regulated">{{bid?.from?.email}}</p>
+                                                        <p class="offer" *ngIf="!regulated">
+                                                            {{bid?.from?.wallet_address?.slice(0,10)}}..{{bid?.from?.wallet_address?.slice(bid?.from?.wallet_address.length-11)}}
+                                                            <span class="cursor-pointer"><img
+                                                                    src="assets/images/copy-wallet.svg" alt="copy"
+                                                                    (click)="copiedWalletAddress(bid?.from?.wallet_address)"></span>
+                                                        </p>
+                                                    </td>
+                                                    <td>
+                                                        <p class="offer">{{bid.createdAt | date:'dd/MM/YYYY'}}
+                                                            <span class="d-nlock">
+                                                                {{bid?.createdAt | date:'hh:mm:ss a'}}</span>
+                                                        </p>
+                                                    </td>
+                                                    <td>
+                                                        <a class="active" *ngIf="bid?.status === 0">Active.</a>
+                                                        <a class="edited" *ngIf="bid?.status === 1">Edited.</a>
+                                                        <a class="canceled" *ngIf="bid?.status === 2">Canceled.</a>
+
+                                                    </td>
+                                                    <td *ngIf="nft?.owner?.wallet_address === account?.walletAddress"
+                                                        class="position-relative">
+                                                        <button class="onboard" [ngClass]="{'disabled': nft.on_loan}"
+                                                            *ngIf="bid?.status < 2 && nft?.owner?.wallet_address === account?.walletAddress"
+                                                            (click)="acceptBid(bid)" [disabled]="nft.on_loan">
+                                                            Accept.
+                                                        </button>
+                                                        <div class="loan-details-tooltip" *ngIf="nft.on_loan">
+                                                            Unable to accept bid request for the live loan item.
+                                                        </div>
+                                                    </td>
+                                                </tr>
+                                            </tbody>
+                                            <tbody *ngIf="bids?.length === 0">
+                                                <tr>
+                                                    <td colspan="7" class="transacation-footer">
+                                                        <div class="transacation-not-found">
+                                                            <img src="assets/images/data-not-found.png"
+                                                                class="img-fluid" alt="data not found" width="160"
+                                                                height="90">
+                                                            <h6>No bids found.</h6>
+                                                        </div>
+                                                    </td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+
+                                        <app-pagination *ngIf="bids.length > 0" [pageType]="pageType" [nftId]="nft?._id"
+                                            (dataList)="getBids($event)" class="pagenation-wrap"></app-pagination>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row mb-32">
+                                <div class="col-lg-12">
+                                    <div class="tabledata d-flex justify-content-between align-items-center">
+                                        <h3>Contract details.</h3>
+                                        <div (click)="contractDetail()" class="cursor-pointer">
+                                            <img src="assets/images/chevron-up.svg" alt="up"
+                                                [ngClass]="{'':!contractview,'rotate-icon ':contractview}">
+                                        </div>
+                                    </div>
+                                    <div class="table-responsive" *ngIf="!contractview">
+                                        <table class="table tables ">
+                                            <thead class="custom">
+                                                <th>Token ID.</th>
+                                                <th>Chain.</th>
+                                                <th>Token Standard.</th>
+                                                <th>Collection Address.</th>
+                                            </thead>
+                                            <tbody class="custom">
+                                                <tr>
+                                                    <td style="height: 70px;">
+                                                        <p class="offer fw-6">
+                                                            {{!nft.lazy_mint ? nft.token_id : 'Broker sale'}}
+                                                            <span *ngIf="nft.lazy_mint"
+                                                                [ngClass]="nft.lazy_mint  ? 'bi bi-question-circle tooltip-wrap':''">
+                                                                <span class="tabletooltip text-secondary  ms-2">This
+                                                                    item is made available for sale by
+                                                                    a specialized broker. Once initially purchased, it
+                                                                    will be brought into the
+                                                                    marketplace for trade by our users.</span>
+                                                            </span>
+                                                        </p>
+                                                    </td>
+                                                    <td>
+                                                        <p class="offer fw-6" *ngIf="nft.chain_id == '80002'">Polygon
+                                                            Amoy</p>
+                                                        <p class="offer fw-6" *ngIf="nft.chain_id == '137'">Polygon</p>
+                                                    </td>
+                                                    <td>
+                                                        <p class="offer fw-6">ERC721</p>
+                                                    </td>
+                                                    <td>
+                                                        <div class="tokenid">
+                                                            <p class="offer fw-6">
+                                                                {{this.nft?.collections?.collection_address?.slice(0,10)}}..{{this.nft?.collections?.collection_address?.slice(this.nft?.collections?.collection_address.length-11)}}
+                                                                <span class="cursor-pointer"><img
+                                                                        src="assets/images/copy-wallet.svg" alt="copy"
+                                                                        (click)="copiedWalletAddress(this.nft?.collections?.collection_address)"></span>
+                                                            </p>
+                                                        </div>
+                                                    </td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row mb-32">
+                                <div class="col-lg-12">
+                                    <div class="tabledata d-flex justify-content-between align-items-center">
+                                        <h3>Activity.</h3>
+                                        <div class="d-flex align-items-center gap-2 cursor-pointer">
+                                            <span class="position-relative mt-1">
+                                                <span class="d-block" [ngClass]="logsLoader ? 'rotating':''">
+                                                    <span (click)="getNftAnalytics()" class="bi bi-arrow-repeat"></span>
+                                                </span>
+                                                <span class="pos_tooltip_wallet ms-2">Click here to get the latest
+                                                    transactions.</span>
+                                            </span>
+
+                                            <img (click)="showCoppasedtable()" src="assets/images/chevron-up.svg"
+                                                alt="up"
+                                                [ngClass]="{'':!tranasacationlog,'rotate-icon':tranasacationlog}">
+                                        </div>
+                                    </div>
+                                    <div class="table-responsive" *ngIf="!tranasacationlog">
+                                        <table class="table tables ">
+                                            <thead class="custom" *ngIf="transactionLogs.length > 0">
+                                                <th>Items.</th>
+                                                <th>Action.</th>
+                                                <th>Amount.</th>
+                                                <th>From.</th>
+                                                <th>To.</th>
+                                                <th>Txn hash.</th>
+                                                <th>Time.</th>
+                                            </thead>
+                                            <tbody class="custom" *ngIf="transactionLogs.length > 0">
+                                                <tr *ngFor="let transaction of transactionLogs | slice:0:5">
+                                                    <td><a>{{nft?.name ? nft?.name :'-' }}</a></td>
+                                                    <td><button class="purchase">{{transaction.method}}.</button></td>
+                                                    <td *ngIf="transaction?.loan_amount > 0">
+                                                        <p class="price"
+                                                            *ngIf="category != 'gold' || (category === 'gold' && !transaction.nft_ids[0]?.lazy_mint)">
+                                                            {{Math.ceil(transaction.loan_amount) | thousandSeparator }}
+                                                            {{transaction.currency_symbol}}</p>
+                                                        <p class="price"
+                                                            *ngIf="category === 'gold' && transaction.nft_ids[0]?.lazy_mint">
+                                                            {{Math.ceil(sellOrderForm.value.price) | thousandSeparator
+                                                            }} {{transaction.currency_symbol}}</p>
+                                                    </td>
+                                                    <td class=""
+                                                        *ngIf="transaction?.loan_amount == 0 || !transaction?.loan_amount">
+                                                        <div>-</div>
+                                                    </td>
+                                                    <td>
+                                                        <p class="walletaddress" *ngIf="transaction?.sender?.name">
+                                                            {{transaction?.sender?.name?.length >20 ?
+                                                            transaction?.from.slice(0,
+                                                            5)+'...'+transaction?.from.slice(transaction?.from.length
+                                                            - 5):transaction?.sender?.name}}<span><img
+                                                                    src="assets/images/copy-wallet.svg" alt="copy"
+                                                                    (click)="copyLogsAddress(transaction.from)"
+                                                                    class="cursor-pointer"></span></p>
+                                                        <p *ngIf="!transaction?.from && !transaction?.sender?.name"> -
+                                                        </p>
+                                                    </td>
+                                                    <td>
+                                                        <p class="walletaddress" *ngIf="transaction?.receiver?.name">
+                                                            {{transaction?.receiver?.name?.length >20 ?
+                                                            transaction?.to.slice(0,
+                                                            5)+'...'+transaction?.to.slice(transaction?.to.length
+                                                            - 5):transaction?.receiver?.name}}<span><img
+                                                                    src="assets/images/copy-wallet.svg" alt="copy"
+                                                                    (click)="copyLogsAddress(transaction.to)"
+                                                                    class="cursor-pointer"></span>
+                                                        </p>
+                                                        <p *ngIf="!transaction?.to && !transaction?.receiver?.name"> -
+                                                        </p>
+                                                    </td>
+                                                    <td>
+                                                        <div class="d-flex gap-1 align-items-center ">
+                                                            <a class="trash">{{transaction.transaction_hash ?
+                                                                transaction.transaction_hash :'-'}} </a>
+                                                            <span class="pl-2" *ngIf="transaction.transaction_hash">
+                                                                <a target="_blank"
+                                                                    href="{{txBaseUrl}}/tx/{{transaction?.transaction_hash}}">
+                                                                    <img src="assets/images/dashboard-external.svg"
+                                                                        alt="">
+                                                                </a>
+
+                                                            </span>
+                                                        </div>
+                                                    </td>
+                                                    <td>
+                                                        <p class="time">{{transaction.created_at | date:'dd/MM/YYYY'}}
+                                                            <span class="d-block">{{transaction.created_at |
+                                                                date:'hh:mm:ss a'}}</span>
+
+                                                        </p>
+                                                    </td>
+                                                </tr>
+                                            </tbody>
+                                            <tbody *ngIf="transactionLogs?.length === 0">
+                                                <tr>
+                                                    <td colspan="7" class="transacation-footer">
+                                                        <div class="transacation-not-found">
+                                                            <img src="assets/images/data-not-found.png"
+                                                                class="img-fluid" alt="data not found" width="160"
+                                                                height="90">
+                                                            <h6>No activity found.</h6>
+                                                        </div>
+                                                    </td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                        <div class="transacation-footer" *ngIf="transactionLogs.length > 5">
+                                            <a (click)="viewAllTransactions()" class="cursor-pointer d-inline">View
+                                                all.</a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!--start loan offer-->
+                            <div class="row mb-32" *ngIf="!nft?.on_loan && !nft?.for_loan && !nft?.in_sale">
+                                <div class="col-lg-12">
+                                    <div class="tabledata d-flex justify-content-between align-items-center">
+                                        <h3>Make Loan Offer.</h3>
+                                        <div (click)="makeLoanOffer()" class="cursor-pointer">
+                                            <img src="assets/images/chevron-up.svg" alt="up"
+                                                [ngClass]="{'':!createloanoffer,'rotate-icon':createloanoffer}">
+                                        </div>
+                                    </div>
+                                    <div class="table-responsive" *ngIf="createloanoffer">
+                                        <table class="table tables ">
+                                            <thead class="custom">
+                                                <th>Principal.</th>
+                                                <th>Days.</th>
+                                                <th>APR.</th>
+                                                <th>Repay.</th>
+                                                <th>From</th>
+                                                <th>Time.</th>
+                                                <th>Status.</th>
+                                                <th *ngIf="nft?.owner?.wallet_address === account?.walletAddress">
+                                                    Action.</th>
+                                            </thead>
+                                            <tbody class="custom" *ngIf="loanOffers.length > 0">
+                                                <tr *ngFor="let offer of loanOffers">
+                                                    <td>
+                                                        <p class="offer">{{offer.amount}} {{offer?.currency?.symbol}}
+                                                        </p>
+                                                    </td>
+                                                    <td>
+                                                        <p class="offer">{{offer.duration_in_days}} Days</p>
+                                                    </td>
+                                                    <td>
+                                                        <p class="offer">{{offer.interest_rate}} %</p>
+                                                    </td>
+                                                    <td>
+                                                        <p class="offer">{{offer?.total_amount}}
+                                                            {{offer?.currency?.symbol}}</p>
+                                                    </td>
+                                                    <td>
+                                                        <div class="d-flex gap-2">
+                                                            <p class="linker">{{offer?.lender?.name}}</p>
+                                                            <a class="externalLink">
+                                                                <img src="assets/images/copy-wallet.svg" alt="link"
+                                                                    width="20" height="20"
+                                                                    (click)="copyLogsAddress(offer?.lender?.wallet_address)">
+                                                            </a>
+                                                        </div>
+                                                    </td>
+                                                    <td>
+                                                        <p class="time">{{offer?.created_at | date:"dd/MM/YYYY"}} <span
+                                                                class="time d-block">{{offer?.created_at |
+                                                                date:"hh:mm:ss a"}}</span></p>
+                                                    </td>
+                                                    <td>
+                                                        <a class="active" *ngIf="offer?.status === 0">Active.</a>
+                                                        <a class="edited" *ngIf="offer?.status === 1">Edited.</a>
+                                                        <a class="canceled" *ngIf="offer?.status === 2">Canceled.</a>
+
+                                                    </td>
+                                                    <td>
+                                                        <div class="d-flex gap-2" *ngIf="nft?.owner?.wallet_address === account?.walletAddress && offer?.status < 2">
+                                                            <a class="onboard"
+                                                                (click)="acceptloanOffer(offer)">Accept.</a>
+                                                        </div>
+                                                        <div class="d-flex gap-2" *ngIf="nft?.owner?.wallet_address && offer?.status===2">
+                                                            <a class="onboard disabled">Accept.</a>
+                                                        </div>
+                                                    </td>
+                                                </tr>
+                                            </tbody>
+                                            <tbody *ngIf="loanOffers.length === 0">
+                                                <tr>
+                                                    <td colspan="8" class="transacation-footer">
+                                                        <div class="transacation-not-found">
+                                                            <img src="assets/images/data-not-found.png"
+                                                                class="img-fluid" alt="data not found" width="160"
+                                                                height="90">
+                                                            <h6>No loan offer found.</h6>
+                                                        </div>
+                                                    </td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                            <!--end-->
+
+                        </div>
+                        <!--end-->
+                        <div class="row">
+                            <div class="col-lg-12">
+                                <div class="accordion" id="accordionFlushExample">
+                                    <div class="accordion-item" *ngFor="let data of faqData;let i = index;">
+                                        <h2 class="accordion-header">
+                                            <button class="accordion-button " type="button" data-bs-toggle="collapse"
+                                                [attr.data-bs-target]="'#flush-collapse'+i" aria-expanded="false"
+                                                [attr.aria-controls]="'flush-collapse'+i">
+                                                {{data.question}}
+                                            </button>
+                                        </h2>
+                                        <div id="flush-collapse{{i}}" class="accordion-collapse collapse"
+                                            [ngClass]="i == 0 ? 'show' : ''" data-bs-parent="#accordionFlushExample">
+                                            <div class="accordion-body">
+                                                <div class="prdouct-faq">
+                                                    <p>{{data.answer}}</p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-xl-3 col-lg-4 col-md-12">
+                    <div class="product-conect mb-4"
+                        *ngIf="!nft?.for_loan && !nft?.on_loan && (nft?.delivery_status === 0 || nft?.delivery_status === 6)">
+                        <div class="mb-4 d-flex justify-content-center" *ngIf="!account">
+
+                        </div>
+                        <div>
+                            <div class="pb-2 d-flex align-items-center gap-2"
+                                *ngIf="account && nft?.lazy_mint && category != 'gold'">
+                                <div> Available quantity.</div>
+                                <div class="quantity">
+                                    {{nftQuantity?.value + ' ' + nftUnitType}}
+                                </div>
+                            </div>
+                            <div class="pb-2 d-flex align-items-center gap-2"
+                                *ngIf="account && nft?.lazy_mint && category === 'gold'">
+                                <div> Market Price.</div>
+                                <div class="quantity">{{Math.ceil(marketPrice) | thousandSeparator}} USD</div>
+                            </div>
+                            <div class="d-flex align-items-center justify-content-center gap-4">
+                                <div *ngIf="!account">
+                                    <div *ngIf="!regulated">
+                                        <img src="assets/images/conncect-wallet.png" alt="connect wallet"
+                                            class="img-fluid mb-4">
+                                        <h6 class="text-center">Connect wallet to view sale details.</h6>
+                                        <a class="onboard" (click)="connectWallet()">Connect Wallet.</a>
+                                    </div>
+                                    <div *ngIf="regulated" class="text-center">
+                                        <img src="assets/images/conncect-wallet.png" alt="connect wallet"
+                                            class="img-fluid mb-4">
+                                        <h6 class="text-center">Login to view sale details.</h6>
+                                        <a class="onboard mt-4" [routerLink]="['/sign-in']" (click)="setRoute()">Log
+                                            in.</a>
+                                    </div>
+                                </div>
+
+                                <div *ngIf="account && !user">
+                                    <div class="text-center">
+                                        <h6>Register to view loan options.</h6>
+                                        <a class="onboard mt-4" [routerLink]="['/sign-up']"
+                                            (click)="setRoute()">Register to continue.</a>
+                                    </div>
+                                </div>
+
+                                <div *ngIf="account && user && !nft?.for_loan && !nft?.on_loan" class="text-center">
+                                    <a
+                                        *ngIf="(nft?.owner?.wallet_address !== account?.walletAddress && !nft?.in_sale) || nft.is_deleted; else saleDetails">
+                                        <div *ngIf="!nft.lazy_mint && !nft.is_deleted">Not listed for sale.</div>
+                                        <div *ngIf="nft.is_deleted" class="fw-bold">This item is no longer available for
+                                            purchase from our partner.</div>
+                                        <div *ngIf="nft.lazy_mint" class="text-secondary">Please go to <a
+                                                [routerLink]="['/']">Marketplace</a> to check for new items.</div>
+                                    </a>
+                                    <ng-template #saleDetails>
+                                        <form [formGroup]="sellOrderForm" (ngSubmit)="createSellOrder()" class="mt-2">
+                                            <div class="sale-option-section">
+                                                <div class="row">
+                                                    <div class="col-md-12">
+                                                        <div class="input-group mb-3">
+                                                            <span class="buy-section">
+                                                                <input type="text" name="price" formControlName="price"
+                                                                    class="form-control" [readonly]="nft?.in_sale"
+                                                                    placeholder="Amount"
+                                                                    onkeypress="return(event.charCode > 47 && event.charCode < 58)"
+                                                                    (paste)="(false)">
+                                                                <span class="input-group-text currency-dropdown"
+                                                                    id="basic-addon2"
+                                                                    *ngIf="(nft?.owner?.wallet_address === account?.walletAddress && !nft?.in_sale) || (nft?.in_sale && nft?.lazy_mint)">
+                                                                    <select class="form-slect" id="form-select-custom"
+                                                                        (change)="setCurrency($event,_nftActions.SELL)"
+                                                                        formControlName="currencyId">
+                                                                        <option *ngFor="let option of currencies"
+                                                                            [value]="option._id">{{option.symbol}}
+                                                                        </option>
+                                                                    </select>
+                                                                </span>
+                                                                <span class="input-group-text" id="basic-addon2"
+                                                                    *ngIf="nft?.in_sale && !nft?.lazy_mint">
+                                                                    <div>{{sellOrderForm.value.currency?.symbol}}</div>
+                                                                </span>
+                                                            </span>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="row"
+                                                    *ngIf="nft?.owner?.wallet_address === account?.walletAddress && !nft?.in_sale && !nft?.for_loan && !nft?.on_loan">
+                                                    <div class="col-lg-12">
+                                                        <div class="text-right">
+                                                            <a *ngIf="saleProcessing" class="onboard">Processing...</a>
+                                                            <button type="submit" class="onboard" appDebounceClick
+                                                                (debounceClick)="createSellOrder()"
+                                                                *ngIf="!saleProcessing">List for sale.</button>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="row"
+                                                    *ngIf="nft?.owner?.wallet_address === account?.walletAddress && nft?.in_sale">
+                                                    <div class="col-lg-12">
+                                                        <div class="text-right">
+                                                            <a *ngIf="cancelProcessing"
+                                                                class="onboard">Processing...</a>
+                                                            <a class="onboard"
+                                                                *ngIf="nft?.owner?.wallet_address === account?.walletAddress && nft?.in_sale && !cancelProcessing && !nft?.lazy_mint"
+                                                                appDebounceClick (debounceClick)="cancelOrder()">Cancel
+                                                                sale.</a>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="row"
+                                                    *ngIf="nft?.owner?.wallet_address !== account?.walletAddress && nft?.in_sale">
+                                                    <div class="col-lg-12">
+                                                        <div class="text-right">
+                                                            <a *ngIf="buyProcessing" class="onboard">Processing...</a>
+                                                            <!-- Button: Buy -->
+                                                            <ng-container *ngIf="nft?.owner?.wallet_address !== account?.walletAddress && nft?.in_sale && !buyProcessing">
+                                                                <!-- NOTE: Clicking the button below directly proceeds to the buy process without checking stock -->
+                                                                <a class="onboard" *ngIf="!checkStockBeforeBuy"
+                                                                    appDebounceClick (debounceClick)="buyNftOrder()">Buy
+                                                                    1 {{nftUnitType}}.
+                                                                </a>
+                                                                <!-- NOTE: Clicking the button below checks if stock is available before proceeding to the buy process -->
+                                                                <a class="onboard" *ngIf="checkStockBeforeBuy"
+                                                                    appDebounceClick (debounceClick)="submitCheckQtyAndBuy()">Buy
+                                                                    1 {{nftUnitType}}.
+                                                                </a>
+                                                            </ng-container>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </form>
+                                    </ng-template>
+                                </div>
+
+                            </div>
+
+                        </div>
+                    </div>
+                    <!--bid-->
+                    <div class="contract-view-detail mb-4"
+                        *ngIf="account?.walletAddress && !nft.lazy_mint && !bidSubmitted && nft?.owner?.wallet_address != account?.walletAddress && !nft.is_deleted && (nft?.delivery_status === 0 || nft?.delivery_status === 6)">
+                        <div class="d-flex align-items-center justify-content-between">
+                            <h3>Make offer.</h3>
+                            <div (click)="makeBid()">
+                                <img src="assets/images/chevron-up.svg" alt="up"
+                                    [ngClass]="{'':!selectbid, 'rotate-icon':selectbid}">
+                            </div>
+                        </div>
+                        <form [formGroup]="bidForm" (ngSubmit)="submitBid()" class="bid-form slide-down"
+                            *ngIf="selectbid">
+                            <div class="row py-20">
+                                <div class="col-lg-4 col-sm-5">
+                                    <label for="">Quantity.</label>
+                                    <input type="text" class="form-control" value="1" readonly>
+                                </div>
+                                <div class="col-lg-8 col-sm-7">
+                                    <label for="">Floor price.</label>
+                                    <input type="text" class="form-control"
+                                        [value]="nft?.currency_symbol ? Math.ceil(nft?.floor_price) + ' ' + nft?.currency_symbol : Math.ceil(nft?.floor_price)"
+                                        readonly>
+                                </div>
+                            </div>
+                            <div class="bidding-view">
+                                <div class="mb-3">
+                                    <label for="">Bidding price.</label>
+                                    <div class="position-relative">
+                                        <input type="text" class="form-control" name="amount" formControlName="amount"
+                                            onkeypress="return(event.charCode > 47 && event.charCode < 58)"
+                                            (paste)="(false)">
+                                        <div class="selectaccess">
+                                            <select class="form-select custom-select"
+                                                (change)="setCurrency($event,_nftActions.BORROW)" formControlName="currencyId">
+                                                <option *ngFor="let option of currencies" [value]="option._id">
+                                                    {{option.symbol}}</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+                                <a *ngIf="bidProcessing || cancelBidProcessing" class="onboard">Processing...</a>
+                                <button type="submit" class="onboard" appDebounceClick (debounceClick)="submitBid()"
+                                    *ngIf="!bidProcessing && !userBid?._id">Create bid.</button>
+                                <div class="d-flex justify-content-between flex-wrap gap-2">
+                                    <button type="button" class="onboard cancel_loan" appDebounceClick
+                                        (debounceClick)="cancelBid()"
+                                        *ngIf="!cancelBidProcessing && !bidProcessing && userBid?._id">Cancel
+                                        bid.</button>
+                                    <button type="submit" class="onboard" appDebounceClick (debounceClick)="submitBid()"
+                                        *ngIf="!bidProcessing && !cancelBidProcessing && userBid?._id"
+                                        [disabled]="bidForm.value.amount == userBid.amount && bidForm.value.currencyId === this.userBid?.currency._id"
+                                        [ngClass]="{'disabled': bidForm.value.amount == userBid.amount && bidForm.value.currencyId === this.userBid?.currency._id}">Update
+                                        bid.</button>
+                                </div>
+                            </div>
+
+                        </form>
+                    </div>
+                    <div class="bid-success mb-4"
+                        *ngIf="!nft.lazy_mint && bidSubmitted && (nft?.delivery_status === 0 || nft?.delivery_status === 6)">
+                        <img src="assets/images/success-2.svg" alt="" width="90" height="90">
+                        <h4>Bid submitted!</h4>
+                        <p>Access and review bids submitted within the Offer Section of the asset.</p>
+                    </div>
+                    <!--bid end-->
+                    <!--start reddem-->
+                    <div class="contract-view-detail mb-4"
+                        *ngIf="deliveryData && nft?.owner?.wallet_address === account?.walletAddress  && nft?.delivery_status > 0 && nft?.delivery_status <6">
+                        <div class="d-flex align-items-center justify-content-between">
+                            <h3>Delivery Status.</h3>
+                            <div (click)="redeemStatus()" class="cursor-pointer">
+                                <img src="assets/images/chevron-up.svg" alt="up"
+                                    [ngClass]="{'':redeemshow, 'rotate-icon':!redeemshow}">
+                            </div>
+                        </div>
+                        <div class="ordertracking-wrap slide-down" *ngIf="redeemshow">
+                            <div class="order-track">
+                                <div class="order-track-step" *ngFor="let data of deliveryData">
+                                    <div class="order-track-status">
+                                        <span class="order-track-status-dot"
+                                            [ngClass]="{'is-complete': data?.['is_completed']}"></span>
+                                        <span class="order-track-status-line"></span>
+                                    </div>
+                                    <div class="order-track-text">
+                                        <p
+                                            [ngClass]="data?.['is_completed'] ? 'order-track-text-stat':'order-track-text-incomplete'">
+                                            {{data?.['status']?.name}}.</p>
+                                        <span *ngIf="data?.['is_completed']" class="order-track-text-sub">Placed on
+                                            {{data?.['updatedAt'] | date:'dd/MM/YYYY hh:mm:ss a':'Asia/Kolkata'
+                                            }}</span>
+                                    </div>
+                                </div>
+
+
+                            </div>
+                            <a *ngIf="(nft?.delivery_status > 0 && nft?.delivery_status <=4) && !isOrderDelivered "
+                                (click)="cancelDelivery()" class="cancel_btn">Cancel Order.</a>
+                        </div>
+                    </div>
+                    <!--end-->
+                    <!-- show messageto user -->
+                    <div class="product-conect mb-4"
+                        *ngIf="account && user && nft?.owner?.wallet_address!== account?.walletAddress && !nft.lazy_mint && nft?.delivery_id && nft?.delivery_status !== 6">
+                        <div class="d-flex align-items-center justify-content-center gap-4">
+                            <div class="text-center">
+                                <a>
+                                    <div>
+                                        <div *ngIf="nft?.delivery_status > 0 && nft?.delivery_status < 5">This Item is
+                                            on Delivery.</div>
+                                        <div *ngIf="nft?.delivery_status === 5">This Item is Delivered.</div>
+                                        <div *ngIf="nft?.delivery_status === 7">This Item is Delivered and Burned.</div>
+                                    </div>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- show message to user end -->
+                    <div class="contract-view-detail mb-4">
+                        <div class="d-flex align-items-center justify-content-between">
+                            <h3>Details.</h3>
+                            <div (click)="viewDetails()" class="cursor-pointer">
+                                <img src="assets/images/chevron-up.svg" alt="up"
+                                    [ngClass]="{'':!detailsshow, 'rotate-icon':detailsshow}">
+                            </div>
+                        </div>
+                        <div class="data-details slide-down" *ngIf="!detailsshow">
+                            <div class="form position-relative" *ngIf="!nft.lazy_mint">
+                                <label for="">Total views.</label>
+                                <input type="text" class="form-control formdetails" [value]="nft?.views?.no_of_views"
+                                    readonly>
+                                <div class="viewicon">
+                                    <img src="assets/images/viewicon.svg" alt="">
+                                </div>
+                            </div>
+                            <div class="form position-relative">
+                                <label for="">Item owned by.</label>
+                                <div class="owner-details">
+                                    <h3 *ngIf="nft?.owner?.name != nft.owner?.wallet_address ">{{nft?.owner?.name}}</h3>
+                                    <div class="d-flex align-items-center gap-2">
+                                        <p>
+                                            {{nft.owner?.wallet_address?.slice(0,9)}}...{{nft.owner?.wallet_address?.slice(nft.owner?.wallet_address?.length-10)}}
+                                        </p>
+                                        <img src="assets/images/copy-input.svg"
+                                            (click)="copyAddress(nft.owner?.wallet_address)" width="20" height="20"
+                                            class="cursor-pointer">
+                                    </div>
+                                </div>
+                                <!-- <input type="text" class="form-control" value="" readonly>
+                <input type="text" class="form-control" value="" readonly>
+                <div class="coyicon">
+
+                </div>-->
+                            </div>
+                            <div class="form" *ngIf="!nft.lazy_mint">
+                                <label for="">Price history.</label>
+                                <div class="chart-section">
+                                    <div id="chart">
+                                        <apx-chart [series]="chartOptions.series!" [chart]="chartOptions.chart!"
+                                            [xaxis]="chartOptions.xaxis!" [yaxis]="chartOptions.yaxis!"
+                                            [dataLabels]="chartOptions.dataLabels!" [grid]="chartOptions.grid!"
+                                            [stroke]="chartOptions.stroke!" [title]="chartOptions.title!"></apx-chart>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!--make loan offer-->
+                    <div class="contract-view-detail mb-3"
+                        *ngIf="account?.walletAddress && !nft.lazy_mint && !bidSubmitted && nft?.owner?.wallet_address != account?.walletAddress && !nft.is_deleted && (nft?.delivery_status === 0 || nft?.delivery_status === 6) && !nft.on_loan && !nft?.for_loan && !nft.in_sale">
+                        <div class="d-flex align-items-center justify-content-between">
+                            <h3>Make loan offer.</h3>
+                            <div (click)="makeLoanoffer()">
+                                <img src="assets/images/chevron-up.svg" alt="up"
+                                    [ngClass]="{'':!loancreate, 'rotate-icon':loancreate}">
+                            </div>
+                        </div>
+                        <div class="" *ngIf="!loancreate">
+                            <form class="loanoffer" [formGroup]="loanOfferForm">
+                                <div class="form mb-4 position-relative">
+                                    <label for="">Principal</label>
+                                    <input type="text" class="form-control" formControlName="requested_loan_amount"
+                                        (keyup)="calculateInterest()" (keypress)="decimalFilter($event)"
+                                        autocomplete="off">
+                                    <span id="basic-addon2" class="currency-dropdown viewdropdown">
+                                        <select id="form-select-custom" class="form-slect"
+                                            (change)="setCurrency($event,_nftActions.LOAN)" formControlName="currencyId">
+                                            <option *ngFor="let currency of currencies" [value]="currency._id">
+                                                {{currency.symbol}}</option>
+                                        </select>
+                                    </span>
+                                    <div class="input--error"
+                                        *ngIf="loanOfferSubmitted && loanOfferFormControls['requested_loan_amount'].errors?.['required']">
+                                        Principal is required.
+                                    </div>
+                                </div>
+                                <div class="form mb-4">
+                                    <label for="">Days.</label>
+                                    <select formControlName="loan_duration_days" (change)="calculateInterest()"
+                                        class="form-control">
+                                        <option *ngFor="let day of loanOfferDays" [value]="day.days"
+                                            [innerHtml]="day.days">
+                                        </option>
+                                    </select>
+                                    <div class="input--error"
+                                        *ngIf="loanOfferSubmitted && loanOfferFormControls['loan_duration_days'].errors?.['required']">
+                                        Loan duration is required.
+                                    </div>
+                                </div>
+                                <div class="form mb-4">
+                                    <label for="">APR. <span>(Use whole numbers only.)</span></label>
+                                    <input type="text" class="form-control" placeholder=""
+                                        formControlName="loan_percentage" (keyup)="calculateInterest()"
+                                        onkeypress="return(event.charCode > 47 && event.charCode < 58)"
+                                        (paste)="(false)" autocomplete="off">
+                                    <div class="input--error"
+                                        *ngIf="loanOfferSubmitted && loanOfferFormControls['loan_percentage'].errors?.['required']">
+                                        Loan percentage is required.
+                                    </div>
+                                </div>
+                                <div class="form mb-4 position-relative">
+                                    <label for="">Interest amount.</label>
+                                    <input type="text" class="form-control" placeholder=""
+                                        formControlName="interest_amount" readonly>
+                                    <div class="posselectapy">{{loanOfferForm.value?.currency?.symbol}}</div>
+                                </div>
+                                <div class="form mb-4 position-relative">
+                                    <label for="">Total amount.</label>
+                                    <input type="text" class="form-control" placeholder=""
+                                        formControlName="total_amount" readonly>
+                                    <div class="posselectapy">{{loanOfferForm.value?.currency?.symbol}}</div>
+                                </div>
+                                <button type="submit" class="onboard" appDebounceClick
+                                    (debounceClick)="submitLoanOffer()"
+                                    *ngIf="!loanOfferProcessing && !userOffer?._id">Make loan
+                                    offer.</button>
+                                <a *ngIf="loanOfferProcessing" class="onboard">Processing...</a>
+                                <div class="d-flex justify-content-between flex-wrap gap-2">
+                                    <button type="button" class="onboard cancel_loan" appDebounceClick
+                                        (debounceClick)="cancelOffer()"
+                                        *ngIf="!cancelLoanOfferProcessing && !loanOfferProcessing && userOffer?._id">
+                                        Cancel Offer.
+                                    </button>
+                                    <button type="submit" class="onboard" appDebounceClick
+                                        (debounceClick)="submitLoanOffer()"
+                                        *ngIf="!loanOfferProcessing && !cancelLoanOfferProcessing && userOffer?._id"
+                                        [disabled]="loanOfferForm.value.requested_loan_amount == userOffer.amount && loanOfferForm.value.currencyId === userOffer?.currency._id && loanOfferForm.value.loan_percentage == userOffer?.interest_rate && loanOfferForm.value.loan_duration_days == userOffer?.duration_in_days"
+                                        [ngClass]="{'disabled': loanOfferForm.value.requested_loan_amount == userOffer.amount && loanOfferForm.value.currencyId === userOffer?.currency._id && loanOfferForm.value.loan_percentage == userOffer?.interest_rate && loanOfferForm.value.loan_duration_days == userOffer?.duration_in_days}">
+                                        Update Offer.
+                                    </button>
+                                </div>
+
+                            </form>
+                        </div>
+                    </div>
+                    <!--end-->
+                </div>
+            </div>
+        </div>
+        <ng-container *ngIf="loader">
+            <div class="container-fluid">
+                <div class="row">
+                    <div class="col-md-10 mx-auto text-center">
+                        <div class="not-found">
+                            <p>Please wait while we load item details.</p>&nbsp;
+                            <span class="Loaders"></span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </ng-container>
+    </section>
+    <app-transaction-logs *ngIf="showAllTransactions" (goBackEmitter)="showDetails()"></app-transaction-logs>
+
+    <!-- Progress Modal -->
+    <div class="modal fade" [config]="{backdrop: 'static', keyboard: false}" bsModal #progressModal="bs-modal"
+        tabindex="-1" role="dialog">
+        <app-progress-modal [progressData]="progressData" [modalRef]="progressModal" [showEstimation]="true"
+            (closeModal)="progressModal?.hide(); bidSubmitted = false;">
+        </app-progress-modal>
+    </div>
+
+    <!-- Confirmation Modal -->
+    <div class="modal fade" [config]="{backdrop: 'static', keyboard: false}" bsModal #confirmationModal="bs-modal"
+        tabindex="-1" role="dialog">
+        <app-confirmation-modal [confirmationData]="confirmationData" (closeModal)="confirmationModal.hide()"
+            (confirmPurchase)="confirmPurchase()"></app-confirmation-modal>
+    </div>
+
+    <!--wallet Transfer-->
+    <div class="modal fade" [config]="{backdrop: 'static', keyboard: false}" bsModal #transferModal="bs-modal"
+        tabindex="-1" role="dialog">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col-lg-12">
+                            <div class="transfer-asset">
+                                <h3>Transfer asset.</h3>
+                                <div class="mb-view text-center">
+                                    <img [src]="nft?.preview_image ? nft?.preview_image : nft?.primary_media"
+                                        *ngIf="nft?.images?.[0]?.fileType != 'html'" class="img-fluid"
+                                        onerror="this.src='assets/images/default-nft.svg'"
+                                        (load)="imageLoading = false">
+                                    <img [src]="nft?.preview_image ? nft?.preview_image : nft?.secondary_media?.[0]"
+                                        *ngIf="nft?.images?.[0]?.fileType == 'html'" class="img-fluid"
+                                        onerror="this.src='assets/images/default-nft.svg'"
+                                        (load)="imageLoading = false">
+                                </div>
+                                <div class="">
+                                    <h4>{{nft?.name}}.</h4>
+                                    <p>{{nft?.collections?.name}}.</p>
+                                </div>
+                                <form [formGroup]="transferNftForm" (ngSubmit)="transferNft()">
+                                    <div class="my-view t">
+                                        <div class="form-group">
+                                            <label for="" clas>Enter wallet address.</label>
+                                            <input type="text" formControlName="walletAddress" class="form-control"
+                                                placeholder="0xb44FbFBccFE6c64AC4DbFA44ABfCFAeC26c64AC4D">
+                                            <div class="input--error"
+                                                *ngIf="transferNftFormSubmitted && transferNftFormControls['walletAddress'].errors?.['required']">
+                                                Wallet address is required.*
+                                            </div>
+                                            <div class="input--error"
+                                                *ngIf="transferNftFormSubmitted && !transferNftFormControls['walletAddress'].errors?.['required'] && transferNftForm.errors?.['notValidAddress']">
+                                                Enter a valid wallet address.*
+                                            </div>
+                                            <div class="input--error"
+                                                *ngIf="transferNftFormSubmitted && !transferNftFormControls['walletAddress'].errors?.['required'] && transferNftForm.errors?.['sameAddress']">
+                                                Cant transfer to same wallet.*
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row d-flex justify-content-between">
+                                        <div class="col-lg-4 col-sm-6 col-6">
+                                            <a class="cancel" (click)="cancelTransfer()">Cancel.</a>
+                                        </div>
+                                        <div class="col-lg-4 col-sm-6 col-6">
+                                            <button class="transfer" type="submit">Transfer.</button>
+                                        </div>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!--end-->
+    <!--Show nft image show-->
+    <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true"
+        [ngClass]="{'show': isModalVisible}" [ngStyle]="{'display': isModalVisible ? 'block' : 'none'}">
+        <div class="modal-dialog modal-dialog-centered modal-lg">
+            <div class="modal-content">
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col-lg-12">
+                            <div class="text-center">
+                                <img src="{{this.currentImage}}" alt="" class="img-fluid"
+                                    style="margin:0 auto; cursor: default;">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+    <!--end-->
+
+    <!-- mail verification modal start -->
+    <div class="modal fade" [config]="{backdrop: 'static', keyboard: false}" bsModal #verificationModal="bs-modal"
+        tabindex="-1" role="dialog">
+        <app-mailverfication (closeModal)="verificationModal.hide()"
+            (openModal)="verificationModal.show()"></app-mailverfication>
+    </div>
+    <!-- mail verification modal end -->
+</div>

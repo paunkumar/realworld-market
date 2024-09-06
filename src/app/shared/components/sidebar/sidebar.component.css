@@ -1,0 +1,107 @@
+
+  .sidemenu {
+    padding: 15px 0px 30px;
+    height: 100%;
+    border-right: 1px solid #D1D1D1;
+  }
+  .sidemenu ul{
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+  .navitems{
+    margin-bottom: 10px;
+  }
+  .nav-link{
+    display: flex ;
+    align-items: center;
+    justify-content: flex-start;
+    margin: 0 10px;
+    padding: 8px 15px;
+    width: auto;
+    transition: 0s ease-in-out;
+    border-radius: 12px;
+  }
+  .nav_name{
+    font-size: 14px;
+    line-height: 18px;
+    letter-spacing: .4px;
+    font-weight: var(--font-medium);
+    padding-left:10px;
+    margin: 0;
+    display: none;
+    white-space: nowrap;
+    width: 100%;
+  }
+  /* .nav_name i{
+    font-size: 14px;
+  } */
+  .nav_names::before{
+    position: relative;
+    top: 0px;
+  }
+
+  .actives {
+    background: var(--primary-color);
+    color:  var(--white);
+    padding: 8px 10px;
+  }
+  .sidemenu .right_side_menu{
+    display: none;
+    margin: 0 10px;
+  }
+  .sidemenu:hover .right_side_menu{
+    display: block;
+  }
+  .nav_names{
+    display: none;
+  }
+  .nav-link .defualt{
+    display: block;
+  }
+  .nav-link .nav_name .nav_names{
+    display: flex;
+    justify-content: space-between;
+  } 
+  .tooltipsview{
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: calc(100% - 18px);
+    gap: 4px;
+  }
+  .sidemenu{
+    position: relative;
+  }
+  .commonscroll{
+    position: sticky;
+    top: 110px;
+    background: var(--white);
+  }
+
+  
+ @media(max-width:575px){
+  .nav-link{
+    margin: 0 10px;
+    padding: 8px 15px;
+  }
+  .commonscroll{
+    top: 145px;
+  }
+}
+
+ .viewDiv{
+  margin: 0;
+  border-radius: 100%;
+  width: 40px;
+  height: 40px;
+  color: #ffffff;
+  background: var(--primary-color);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid var(--primary-color);
+ }
+ .sidemenu:hover .viewonstatus{
+  display: none !important;
+ }

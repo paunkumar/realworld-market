@@ -1,0 +1,678 @@
+<div class="main-wrap">
+    <app-sidebar class="sidebarview"></app-sidebar>
+    <section class="section" infiniteScroll [infiniteScrollDistance]="1" [infiniteScrollThrottle]="100"
+        [infiniteScrollDisabled]="disableInfiniteScroll" (scrolled)="getNfts()">
+        <app-contract-transactions></app-contract-transactions>
+        <div class="commonewspaces">
+            <app-filters [ngClass]="showFilter ? 'd-block':'d-none'" [locations]="locations" [categories]="categories"
+                [collections]="collections" [saleOptions]="filterSale" [collateralOptions]="filterCollateral"
+                [priceSlider]="priceSlider" [appraisalSlider]="appraisalSlider" [isInSale]="isInSale"
+                (loader)="loader=$event" (filterEvent)="filterEvent($event)"
+                (closeFilter)="showFilter = false"></app-filters>
+            <div [ngClass]="showFilter?'fullviewnft':'w-100'">
+                <div class="container-fluid">
+                    <!-- start - filter sort button ui -->
+                    <div class="row mb-3" *ngIf="!loader">
+                        <div class="col-lg-12">
+                            <div class="d-flex align-items-center justify-content-between flex-wrap gap-4">
+                                <div class="d-flex gap-3 align-items-center flex-wrap">
+                                    <div [ngClass]="showFilter || !isSortingShow ?'d-none':''">
+                                        <a class="btn btn-light" (click)="showFilter = true" style="width: 93px;">
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"
+                                                viewBox="0 0 24 24" fill="none">
+                                                <path
+                                                    d="M9.21054 12.4538C6.99858 10.8 5.42225 8.98093 4.56154 7.95828C4.29511 7.64171 4.2078 7.41004 4.15531 7.00195C3.97556 5.60462 3.88569 4.90595 4.29542 4.45493C4.70515 4.00391 5.42972 4.00391 6.87887 4.00391H17.129C18.5781 4.00391 19.3027 4.00391 19.7123 4.45493C20.1221 4.90595 20.0323 5.60462 19.8525 7.00196C19.8 7.41005 19.7127 7.64172 19.4462 7.95828C18.5843 8.98223 17.0049 10.8045 14.7884 12.4603C14.5879 12.6102 14.4557 12.8543 14.4312 13.1251C14.2116 15.5523 14.0091 16.8818 13.8831 17.5543C13.6797 18.6401 12.1401 19.2933 11.3159 19.8762C10.8253 20.2231 10.2299 19.8101 10.1664 19.2731C10.0452 18.2493 9.81689 16.1696 9.5677 13.1251C9.54532 12.8518 9.41267 12.6049 9.21054 12.4538Z"
+                                                    stroke="currentColor" stroke-width="1.33333" opacity=".7"
+                                                    stroke-linecap="round" stroke-linejoin="round" />
+                                            </svg>
+                                            Filters.
+                                        </a>
+                                    </div>
+                                    <div (click)="showSort = true" [ngClass]="!isSortingShow?'d-none':'dropdown'">
+                                        <a class="btn btn-light dropdown-toggle" role="button" id="forSale"
+                                            data-bs-toggle="dropdown" aria-expanded="false" data-bs-auto-close="outside"
+                                            aria-controls="forsale">
+                                            Sort.
+                                            <i class="bi bi-caret-up-fill pl-2" *ngIf="showSort"></i>
+                                            <i class="bi bi-caret-down-fill pl-2" *ngIf="!showSort"></i>
+                                        </a>
+                                        <ul class="dropdown-menu dropdown-menu-start" aria-labelledby="forSale"
+                                            aria-labelledby="forsale" id="collateraliew">
+                                            <li [ngClass]="{'active': sort.type === 'name' && sort.value === 1}"
+                                                (click)="applySort('name', 1)">
+                                                <a>Item name. (A → Z)</a>
+                                            </li>
+                                            <li [ngClass]="{'active': sort.type === 'name' && sort.value === -1}"
+                                                (click)="applySort('name', -1)">
+                                                <a>Item name. (Z → A)</a>
+                                            </li>
+                                            <li class="divider"></li>
+                                            <li [ngClass]="{'active': sort.type === 'price' && sort.value === 1}"
+                                                *ngIf="isInSale" (click)="applySort('price', 1)">
+                                                <a>By Sale Price. (0 → 9)</a>
+                                            </li>
+                                            <li [ngClass]="{'active': sort.type === 'price' && sort.value === -1}"
+                                                *ngIf="isInSale" (click)="applySort('price', -1)"><a>By
+                                                    Sale Price. (9 → 0)</a>
+                                            </li>
+                                            <li class="divider" *ngIf="isInSale"></li>
+                                            <li [ngClass]="{'active': sort.type === 'appraisal' && sort.value === 1}"
+                                                (click)="applySort('appraisal', 1)"><a>By Appraisal value. (0 → 9)</a>
+                                            </li>
+                                            <li [ngClass]="{'active': sort.type === 'appraisal' && sort.value === -1}"
+                                                (click)="applySort('appraisal', -1)"><a>By Appraisal value. (9 → 0)</a>
+                                            </li>
+                                            <li *ngIf="sort.value" class="divider"></li>
+                                            <li [ngClass]="{'active': sort.type === 'purchase' && sort.value === -1}"
+                                                (click)="applySort('purchase', -1)"><a>Purchase</a></li>
+                                            <li [ngClass]="{'active': sort.type === 'bid' && sort.value === -1}"
+                                                (click)="applySort('bid', -1)"><a>Bid</a></li>
+                                            <li [ngClass]="{'active': sort.type === 'onLoan' && sort.value === -1}"
+                                                (click)="applySort('onLoan', -1)"><a>On Loan</a></li>
+                                            <li [ngClass]="{'active': sort.type === 'forLoan' && sort.value === -1}"
+                                                (click)="applySort('forLoan', -1)"><a>For Loan</a></li>
+                                            <!-- <li [ngClass]="{'active': sort.type === 'transfer' && sort.value === -1}" (click)="applySort('transfer', -1)"><a>Transfer</a></li> -->
+                                            <li *ngIf="sort.value"><a class="cursor-pointer color-primary"
+                                                    (click)="clearSort()">Clear
+                                                    Sort.</a>
+                                            </li>
+
+                                        </ul>
+                                    </div>
+                                    <div [ngClass]="!isSortingShow?'d-none':'v-lines'"> </div>
+                                    <a class="btn-onboard-all"
+                                        [class.active]="filterCategory.length === categories.length"
+                                        (click)="applyFilter({action: 'reset' }, 'category')">
+                                        <span class="active-bg"></span>
+                                        <span class="alltext">All</span>
+                                    </a>
+                                    <a class="btn-onboard-wine"
+                                        [class.active]="filterCategory.length === 1 && filterCategory[0].toLowerCase() === 'wine'"
+                                        (click)="applyFilter({value: 'Wine', action: 'only'}, 'category')">
+                                        <span class="active-bg"></span>
+                                        <span class="winetext">Fine Wine.</span>
+                                    </a>
+                                    <a class="btn-onboard-gold"
+                                        [class.active]="filterCategory.length === 1 && filterCategory[0].toLowerCase() === 'gold'"
+                                        (click)="applyFilter({value: 'Gold', action: 'only'}, 'category')">
+                                        <span class="active-bg"></span>
+                                        <span class="golditem">Gold Items.</span>
+                                    </a>
+                                    <a class="btn-onboard-gem"
+                                        [class.active]="filterCategory.length === 1 && filterCategory[0].toLowerCase() === 'gems'"
+                                        (click)="applyFilter({value: 'Gems', action: 'only'}, 'category')">
+                                        <span class="active-bg"></span>
+                                        <span class="gems">Precious Gems.</span>
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- end - filter sort button ui -->
+
+                    <!-- start - applied filters in chip -->
+                    <div class="row mb-4" *ngIf="!loader">
+
+                        <div class="" *ngIf="filters.length > 0" [ngClass]="!isSortingShow?'d-none':'fiterview'">
+                            <div class="col-md-12 mb-2">
+                                <div class="resultview">
+                                    <div class="d-flex gap-2">
+                                        <h5>{{nftsCount}} Results.</h5>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-lg-12">
+                                <div class="d-flex align-items-center gap-2 flex-wrap">
+                                    <ng-container *ngFor="let filter of filters">
+                                        <div class="tags"
+                                            *ngIf="filter?.type == 'category' && totalFilterCount?.category != filterCategory.length">
+                                            <div>{{filter?.name ? filter.name : filter?.value}} </div>
+                                            <div *ngIf="filter?.value" class="close-tags" (click)="clearFilter(filter)">
+                                                <i class="bi bi-x"></i>
+                                            </div>
+                                        </div>
+                                        <div class="tags"
+                                            *ngIf="filter?.type == 'location' && totalFilterCount?.location != filterLocation?.length">
+                                            <div>{{filter?.name ? filter.name : filter?.value}} </div>
+                                            <div *ngIf="filter?.value" class="close-tags" (click)="clearFilter(filter)">
+                                                <i class="bi bi-x"></i>
+                                            </div>
+                                        </div>
+                                        <div class="tags"
+                                            *ngIf="filter?.type == 'collection' && totalFilterCount?.collection != filterCollection?.length">
+                                            <div>{{filter?.name ? filter.name : filter?.value}} </div>
+                                            <div *ngIf="filter?.value" class="close-tags" (click)="clearFilter(filter)">
+                                                <i class="bi bi-x"></i>
+                                            </div>
+                                        </div>
+                                        <div class="tags"
+                                            *ngIf="filter?.type != 'collection' && filter?.type != 'location' && filter?.type != 'category' && filter?.type != 'search'">
+                                            <div>{{filter?.name ? filter.name : filter?.value}} </div>
+                                            <div *ngIf="filter?.value" class="close-tags" (click)="clearFilter(filter)">
+                                                <i class="bi bi-x"></i>
+                                            </div>
+                                        </div>
+                                    </ng-container>
+                                    <div class="d-none d-md-block">
+                                        <a class="clearall" (click)="clearFilters()"
+                                            *ngIf="totalFilterCount?.category != filterCategory.length || totalFilterCount?.location != filterLocation?.length || totalFilterCount?.collection != filterCollection?.length || filters.length > ((totalFilterCount?.category || 0) + (totalFilterCount?.location || 0) + (totalFilterCount?.collection || 0))">
+                                            Clear all.</a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- end - applied filters in chip -->
+
+                    <!-- start - loader ui -->
+                    <div *ngIf="loader">
+                        <div class="col-md-6 mx-auto text-center">
+                            <div class="not-found">
+                                <h6>Please wait while we load our inventory.</h6>
+                                <span class="Loaders"></span>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- end - loader ui -->
+
+                    <!-- start - grid view -->
+                    <div class="gridview" *ngIf="isGridView && !loader">
+                        <div *ngFor="let item of items; let i = index;">
+                            <!--start - category wise -->
+                            <div class="row">
+                                <div class="col-lg-12">
+                                    <div class="newfilter">
+                                        <h3>{{item.category}} <span> ({{item.total_items}} Results.)</span></h3>
+                                        <div class="d-flex gap-3 align-items-center justify-content-end">
+                                            <button class="btn back-btns-collection" (click)="back()"
+                                                *ngIf="filterCategory.length !== categories.length">
+                                                <span>
+                                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
+                                                        viewBox="0 0 24 24" fill="none">
+                                                        <path d="M5 12.0002L20 12" stroke="currentColor"
+                                                            stroke-width="1.5" stroke-linecap="round"
+                                                            stroke-linejoin="round" />
+                                                        <path
+                                                            d="M9.00383 7L4.71094 11.2929C4.3776 11.6262 4.21094 11.7929 4.21094 12C4.21094 12.2071 4.3776 12.3738 4.71094 12.7071L9.00383 17"
+                                                            stroke="currentColor" stroke-width="1.5"
+                                                            stroke-linecap="round" stroke-linejoin="round" />
+                                                    </svg>
+                                                </span> Back.
+                                            </button>
+                                            <span class="v-lines"
+                                                *ngIf="filterCategory.length !== categories.length && partition.length === 0 && items.length > 1"></span>
+                                            <button
+                                                [ngClass]="item.total_items < 5 ? 'nomoreview' : 'nomore active_color'"
+                                                (click)="seeMore(item.category)"
+                                                *ngIf="partition.length === 0 && items.length > 1">
+                                                See more.
+                                                <span>
+                                                    <svg xmlns="http://www.w3.org/2000/svg" width="10" height="6"
+                                                        viewBox="0 0 10 6" fill="none">
+                                                        <path d="M1 1C1 1 3.946 4.99999 5 5C6.0541 5.00001 9 1 9 1"
+                                                            stroke="currentColor" stroke-width="1.5"
+                                                            stroke-linecap="round" stroke-linejoin="round" />
+                                                    </svg>
+                                                </span>
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <!--end - category wise -->
+
+                            <!-- start - nft preview -->
+                            <div class="row row-cols-1 "
+                                [ngClass]="showFilter?'row-cols-lg-3 row-cols-xl-4 row-cols-md-2 row-cols-sm-2 row-cols-md-2':'row-cols-lg-4 row-cols-xl-5 row-cols-sm-2 row-cols-md-3'">
+                                <div class="col mb-4" *ngFor="let nft of item.items; let i = index;">
+                                    <a [routerLink]="nft.lazy_mint ? ['/lazy-mint', nft._id] : ['/nft-detail', nft?.collections?.collection_address, nft?.token_id]"
+                                        [queryParams]="{regulated}" routerLinkActive="active">
+                                        <div class="nft-wrap">
+                                            <div class="ribbon"
+                                                [ngClass]="{'ribbon-defaulted': nft.on_loan && nft.defaulted}"
+                                                *ngIf="nft.owner == account.walletAddress">
+                                                <span *ngIf="!nft.defaulted">Yours.</span>
+                                                <span *ngIf="nft.on_loan && nft.defaulted">Defaulted.</span>
+                                            </div>
+                                            <div class="custom-detils-show">
+                                                <img src="assets/images/Infoicon.svg" alt="info" width="24" height="24">
+                                                <div class="show-popup-content">
+                                                    <div class="show-detail">
+                                                        <div *ngFor="let data of nft.attributes">
+                                                            <h2>{{data.key}}.</h2>
+                                                            <h3>
+                                                                <span
+                                                                    *ngIf="data.key.toLowerCase() !== 'appraisal value'">{{data.value}}
+                                                                    <span
+                                                                        *ngIf="data.key.toLowerCase() === 'markup fee'">%</span></span>
+                                                                <span
+                                                                    *ngIf="data.key.toLowerCase() === 'appraisal value' && nft?.category !== 'gold'">
+                                                                    {{
+                                                                    (nft.lazy_mint
+                                                                    ? (Math.ceil(nft.sale_details?.exchange_price) > 0
+                                                                    ? Math.ceil(nft.sale_details?.price)
+                                                                    : Math.ceil(nft.appraisal_value)
+                                                                    )
+                                                                    : nft.appraisal_value
+                                                                    ? Math.ceil(nft.appraisal_value)
+                                                                    : '-') | thousandSeparator
+                                                                    }} {{nft.lazy_mint ? nft?.sale_details?.currency :
+                                                                    nft.currency?.symbol}}</span>
+                                                                <span
+                                                                    *ngIf="data.key.toLowerCase() === 'appraisal value' && nft?.category === 'gold'">
+                                                                    {{(nft.lazy_mint ? Math.ceil(nft.marketPrice) :
+                                                                    Math.ceil(nft.appraisal_value)) |
+                                                                    thousandSeparator}}
+                                                                    {{nft.lazy_mint ? nft?.sale_details?.currency :
+                                                                    nft.currency?.symbol}}
+                                                                </span>
+                                                            </h3>
+                                                        </div>
+
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="img-view mb-3 position-relative">
+                                                <img [src]="nft?.preview_image ? nft?.preview_image : nft?.primary_media"
+                                                    *ngIf="nft?.fileType != 'html'"
+                                                    onerror="this.src='assets/images/default-nft.svg'"
+                                                    (load)="imageLoading = false" class="img-fluid">
+                                                <div class="gemsView">
+                                                    <img *ngIf="nft?.fileType === 'html'"
+                                                        [src]="nft?.preview_image ? nft?.preview_image : nft?.secondary_media[0]"
+                                                        onerror="this.src='assets/images/default-nft.svg'"
+                                                        (load)="imageLoading = false" alt="nft" class="img-fluid">
+                                                </div>
+                                                <div class="bids-count" *ngIf="nft.active_bid_counts > 0">
+                                                    <ng-container
+                                                        *ngIf="nft.active_bid_counts >= 1">{{nft.active_bid_counts}}
+                                                        {{nft.active_bid_counts > 1
+                                                        ? 'Bids.' : 'Bid.'}}</ng-container>
+                                                </div>
+                                            </div>
+                                            <div class="d-flex align-items-start  gap-3">
+                                                <div class="nft-details pos-rel">
+                                                    <div #content class="truncate" id="tooltiphead{{i}}">
+                                                        <h1 (window:resize)="setTooltipSize(i)" id="tooltiptitle{{i}}">
+                                                            {{nft?.name}}
+                                                        </h1>
+                                                    </div>
+                                                    <div class="tooltip" id="tooltipdescription{{i}}">{{nft?.name}}
+                                                    </div>
+                                                </div>
+                                                <div class="nft-img d-flex">
+                                                    <span class="position-relative">
+                                                        <img src="assets/images/for-loan.svg" alt="loan"
+                                                            *ngIf="nft.for_loan">
+                                                        <span class="loan-details-tooltip for-loan-tooltip"
+                                                            *ngIf="nft.owner != account.walletAddress">Collateral for
+                                                            Loan - This item is currently
+                                                            being
+                                                            offered as collateral for loan. If you are interested in
+                                                            lending against this item, please
+                                                            go to
+                                                            the Lending page on the site menu.</span>
+                                                        <span class="loan-details-tooltip for-loan-tooltip"
+                                                            *ngIf="nft.owner == account.walletAddress">Collateral for
+                                                            Loan - You've offered this item as
+                                                            collateral for loan. You are now waiting for other parties
+                                                            to accept or recounter.</span>
+                                                    </span>
+                                                    <span class="position-relative">
+                                                        <img src="assets/images/on-loan.svg" alt="loan"
+                                                            *ngIf="nft.on_loan">
+                                                        <span class="loan-details-tooltip">In live loan.</span>
+                                                    </span>
+                                                    <span class="position-relative">
+                                                        <img src="assets/images/for-sale.svg" alt="loan"
+                                                            *ngIf="nft.on_sale">
+                                                        <span class="loan-details-tooltip">For sale.</span>
+                                                    </span>
+                                                </div>
+                                            </div>
+                                            <h2>{{nft.collections?.name}}</h2>
+                                            <!--No loan-->
+                                            <div *ngIf="nft.on_sale">
+                                                <div class="noloan d-flex justify-content-between">
+                                                    <div>
+                                                        <ng-container
+                                                            *ngIf="(nft?.category !== 'gold'); else appraisalBlock">
+                                                            <h6>Price.</h6>
+                                                            <h5>{{(nft.lazy_mint ?
+                                                                (Math.ceil(nft.sale_details?.exchange_price) > 0 ?
+                                                                Math.ceil(nft.sale_details?.price) :
+                                                                Math.ceil(nft.appraisal_value)) :
+                                                                Math.ceil(nft.sale_details?.exchange_price))|
+                                                                thousandSeparator}}
+                                                                {{nft.sale_details?.currency}}</h5>
+                                                        </ng-container>
+                                                    </div>
+                                                    <div>
+                                                        <ng-container
+                                                            *ngIf="(nft?.category === 'gold' && nft.lazy_mint); else quantityBlock">
+                                                            <h5 class="text-view">Price.</h5>
+                                                            <h5 class="text-view-center">
+                                                                {{Math.ceil(nft.sale_details.price) |
+                                                                thousandSeparator}}
+                                                                {{nft.lazy_mint ? nft?.sale_details?.currency :
+                                                                nft.currency?.symbol}}</h5>
+                                                        </ng-container>
+                                                        <ng-template #quantityBlock>
+                                                            <h5 class="text-view">Quantity.</h5>
+                                                            <h5 class="text-view-center">{{nft?.quantity ? nft?.quantity
+                                                                : 1}}</h5>
+                                                        </ng-template>
+                                                    </div>
+                                                </div>
+                                                <div *ngIf="(nft?.category !== 'gold')">
+                                                    <ng-container *ngTemplateOutlet="appraisalBlock"></ng-container>
+                                                </div>
+                                                <ng-template #appraisalBlock>
+                                                    <h6>Appraisal value.</h6>
+                                                    <h5 *ngIf="nft?.category !== 'gold'">{{(nft.lazy_mint ?
+                                                        (Math.ceil(nft.sale_details?.exchange_price) > 0 ?
+                                                        Math.ceil(nft.sale_details?.price) :
+                                                        Math.ceil(nft.appraisal_value)) : nft.appraisal_value ?
+                                                        Math.ceil(nft.appraisal_value) : '-')| thousandSeparator}}
+                                                        {{nft.lazy_mint ?
+                                                        nft?.sale_details?.currency :
+                                                        nft.currency?.symbol}}</h5>
+                                                    <h5 *ngIf="nft?.category === 'gold'">
+                                                        {{(nft.lazy_mint ? Math.ceil(nft.marketPrice) :
+                                                        Math.ceil(nft.appraisal_value)) |
+                                                        thousandSeparator}}
+                                                        {{nft.lazy_mint ? nft?.sale_details?.currency :
+                                                        nft.currency?.symbol}}
+                                                    </h5>
+                                                </ng-template>
+                                            </div>
+                                            <!--end-->
+                                            <!--loan detail section-->
+                                            <div *ngIf="nft.for_loan || nft.on_loan ">
+                                                <div class="noloan d-flex justify-content-between">
+                                                    <div>
+                                                        <h6>Loan request amount.</h6>
+                                                        <h5>{{nft.loan_details?.loan_amount | thousandSeparator}}
+                                                            {{nft.loan_details?.currency}}</h5>
+                                                    </div>
+                                                    <div>
+                                                        <h6 class="text-right">Annual interest.</h6>
+                                                        <h5 class="text-right">
+                                                            {{nft.loan_details?.interest_percentage}}%</h5>
+                                                    </div>
+                                                </div>
+                                                <div class="d-flex justify-content-between ">
+                                                    <div>
+                                                        <h6>Duration.</h6>
+                                                        <h5>{{nft.loan_details?.duration}} Days.</h5>
+                                                    </div>
+                                                    <div>
+                                                        <h6>Appraisal value.</h6>
+                                                        <h5 class="text-right">{{(nft.lazy_mint ?
+                                                            (Math.ceil(nft.sale_details?.exchange_price) > 0 ?
+                                                            Math.ceil(nft.sale_details?.price) :
+                                                            Math.ceil(nft.appraisal_value)) : nft.appraisal_value ?
+                                                            Math.ceil(nft.appraisal_value) : '-')| thousandSeparator}}
+                                                            {{nft.lazy_mint ?
+                                                            nft?.sale_details?.currency :
+                                                            nft.currency?.symbol}}</h5>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <!--end-->
+                                            <!--Not listed for sale-->
+                                            <div *ngIf="!nft.for_loan && !nft.on_loan && !nft.on_sale">
+                                                <div class="noloan">
+                                                    <h6>Appraisal value.</h6>
+                                                    <h5>{{(nft.lazy_mint ? (Math.ceil(nft.sale_details?.exchange_price)
+                                                        > 0 ?
+                                                        Math.ceil(nft.sale_details?.price) :
+                                                        Math.ceil(nft.appraisal_value)) : nft.appraisal_value ?
+                                                        Math.ceil(nft.appraisal_value) : '-')| thousandSeparator}}
+                                                        {{nft.lazy_mint ?
+                                                        nft?.sale_details?.currency :
+                                                        nft.currency?.symbol}}</h5>
+                                                </div>
+                                                <a class="btn-notsale">Not listed for sale.</a>
+                                            </div>
+                                            <!--end-->
+                                        </div>
+                                    </a>
+                                </div>
+                            </div>
+                            <!-- end - nft preview -->
+                        </div>
+                    </div>
+                    <!-- end - grid view -->
+
+                    <!--start - table view -->
+                    <div class="tableview" *ngIf="!isGridView && !loader">
+                        <div class="row">
+                            <div class="col-lg-12" *ngFor="let item of items; let i = index;">
+                                <!--start - category wise -->
+                                <div class="row">
+                                    <div class="col-lg-12">
+                                        <div class="newfilter">
+                                            <h3>{{item.category}} <span> ({{item.total_items}} Results.)</span></h3>
+                                            <div class="d-flex gap-2 justify-content-end">
+                                                <button class="btn back-btns-collection" (click)="back()"
+                                                    *ngIf="filterCategory.length !== categories.length">
+                                                    <span>
+                                                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
+                                                            viewBox="0 0 24 24" fill="none">
+                                                            <path d="M5 12.0002L20 12" stroke="currentColor"
+                                                                stroke-width="1.5" stroke-linecap="round"
+                                                                stroke-linejoin="round" />
+                                                            <path
+                                                                d="M9.00383 7L4.71094 11.2929C4.3776 11.6262 4.21094 11.7929 4.21094 12C4.21094 12.2071 4.3776 12.3738 4.71094 12.7071L9.00383 17"
+                                                                stroke="currentColor" stroke-width="1.5"
+                                                                stroke-linecap="round" stroke-linejoin="round" />
+                                                        </svg>
+                                                    </span> Back.
+                                                </button>
+                                                <span class="v-lines"
+                                                    *ngIf="filterCategory.length !== categories.length && partition.length === 0"></span>
+                                                <button class="btn active_color" (click)="seeMore(item.category)"
+                                                    *ngIf="partition.length === 0 && items.length > 1">See more.
+                                                    <span>
+                                                        <svg xmlns="http://www.w3.org/2000/svg" width="10" height="6"
+                                                            viewBox="0 0 10 6" fill="none">
+                                                            <path d="M1 1C1 1 3.946 4.99999 5 5C6.0541 5.00001 9 1 9 1"
+                                                                stroke="currentColor" stroke-width="1.5"
+                                                                stroke-linecap="round" stroke-linejoin="round" />
+                                                        </svg>
+                                                    </span>
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <!--end - category wise -->
+
+                                <!--start - table nft preview -->
+                                <div class="table-responsive">
+                                    <table class="table">
+                                        <thead>
+                                            <th width="9%">Item.</th>
+                                            <th>Item name.
+                                                <span class="bg-transparent cursor-pointer">
+                                                    <i class="bi " (click)="applySort('name', 1)"
+                                                        [ngClass]="sort.type === 'name' && sort.value === 1 ? 'bi-caret-up-fill' : 'bi-caret-up'"></i>
+                                                    <i class="bi pl-1" (click)="applySort('name', -1)"
+                                                        [ngClass]="sort.type === 'name' && sort.value === -1 ? 'bi-caret-down-fill ' : 'bi-caret-down'"></i>
+                                                </span>
+                                            </th>
+                                            <th class="text-left">Collection.</th>
+                                            <th class="text-right pr-4">Appraisal value.
+                                                <span class="bg-transparent cursor-pointer">
+                                                    <i class="bi " (click)="applySort('appraisal', 1)"
+                                                        [ngClass]="sort.type === 'appraisal' && sort.value === 1 ? 'bi-caret-up-fill' : 'bi-caret-up'"></i>
+                                                    <i class="bi pl-1" (click)="applySort('appraisal', -1)"
+                                                        [ngClass]="sort.type === 'appraisal' && sort.value === -1 ? 'bi-caret-down-fill' : 'bi-caret-down'"></i>
+                                                </span>
+                                            </th>
+                                            <th>Status.</th>
+                                            <th class="text-right pr-4">Amount.
+                                                <span class="bg-transparent cursor-pointer">
+                                                    <i class="bi " (click)="applySort('price', 1)"
+                                                        [ngClass]="sort.type === 'price' && sort.value === 1 ? 'bi-caret-up-fill' : 'bi-caret-up'"></i>
+                                                    <i class="bi pl-1" (click)="applySort('price', -1)"
+                                                        [ngClass]="sort.type === 'price' && sort.value === -1 ? 'bi-caret-down-fill' : 'bi-caret-down'"></i>
+                                                </span>
+                                            </th>
+                                        </thead>
+                                        <tbody *ngIf="!loader">
+                                            <tr [routerLink]="nft.lazy_mint ? ['/lazy-mint', nft._id] : ['/nft-detail', nft?.collections?.collection_address, nft?.token_id]"
+                                                [queryParams]="{regulated}" routerLinkActive="active" class="cursor"
+                                                *ngFor="let nft of item.items">
+                                                <td class="position-relative">
+                                                    <div class="ribbon"
+                                                        [ngClass]="{'ribbon-defaulted': nft.on_loan && nft.defaulted}"
+                                                        *ngIf="nft.owner == account.walletAddress">
+                                                        <span *ngIf="!nft.defaulted">Yours.</span>
+                                                        <span *ngIf="nft.on_loan && nft.defaulted">Defaulted.</span>
+                                                    </div>
+                                                    <div class="tableviewnft">
+                                                        <img *ngIf="nft?.fileType != 'html'"
+                                                            [src]="nft?.preview_image ? nft?.preview_image : nft?.primary_media"
+                                                            onerror="this.src='assets/images/default-nft.svg'"
+                                                            (load)="imageLoading = false" alt="nft"
+                                                            class="img-fluid tableviewnfts">
+                                                        <img *ngIf="nft?.fileType === 'html'"
+                                                            [src]="nft?.preview_image ? nft?.preview_image : nft?.secondary_media[0]"
+                                                            onerror="this.src='assets/images/default-nft.svg'"
+                                                            (load)="imageLoading = false" alt="nft"
+                                                            class="img-fluid tableviewnfts">
+                                                        <div class="custom-detils-show">
+                                                            <img src="assets/images/Infoicon.svg" alt="info" width="24"
+                                                                height="24">
+                                                            <div class="show-popup-content">
+                                                                <div class="show-detail">
+                                                                    <div *ngFor="let data of nft.attributes">
+                                                                        <h2>{{data.key}}.</h2>
+                                                                        <h3>
+                                                                            <span
+                                                                                *ngIf="data.key.toLowerCase() !== 'appraisal value'">{{data.value}}
+                                                                                <span
+                                                                                    *ngIf="data.key.toLowerCase() === 'markup fee'">%</span>
+                                                                            </span>
+                                                                            <span *ngIf="data.key.toLowerCase() === 'appraisal value'">
+                                                                                        {{ getAppraisalValue(nft) | thousandSeparator }} {{ nft.lazy_mint ? nft?.sale_details?.currency : nft.currency?.symbol }}
+                                                                            </span>
+                                                                        </h3>
+                                                                    </div>
+
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </td>
+                                                <td width="40%">
+                                                    <p class="text-left text-break fw-b">{{nft.name}}</p>
+                                                </td>
+                                                <td>
+                                                    <p class="text-left text-break fw-b">{{nft.collections?.name}}</p>
+                                                </td>
+                                                <td>
+                                                    <div class="text-left text-break">
+                                                        <div class="text-right text-break pr-4">
+                                                            <p>{{ getAppraisalValue(nft) | thousandSeparator }} {{ nft.lazy_mint ? nft?.sale_details?.currency : nft.currency?.symbol }}</p>
+                                                        </div>
+                                                    </div>
+                                                </td>
+                                                <td>
+                                                    <div class="text-left">
+                                                        <span class="position-relative">
+                                                            <img src="assets/images/for-loan.svg" alt="loan"
+                                                                class="img-fluid" *ngIf="nft.for_loan">
+                                                            <span class="loan-details-tooltip for-loan-tooltip"
+                                                                *ngIf="nft.owner != account.walletAddress">Collateral
+                                                                for Loan - This item is currently
+                                                                being offered as collateral for loan. If you are
+                                                                interested in lending against this
+                                                                item, please go to the Lending page on the site
+                                                                menu.</span>
+                                                            <span class="loan-details-tooltip for-loan-tooltip"
+                                                                *ngIf="nft.owner == account.walletAddress">Collateral
+                                                                for Loan - You've offered this
+                                                                item as collateral for a loan. You are now waiting for
+                                                                other parties to accept or
+                                                                recounter.</span>
+                                                        </span>
+                                                        <span class="position-relative">
+                                                            <img src="assets/images/on-loan.svg" alt="loan"
+                                                                class="img-fluid" *ngIf="nft.on_loan">
+                                                            <span class="loan-details-tooltip">In live loan.</span>
+                                                        </span>
+                                                        <span class="position-relative">
+                                                            <img src="assets/images/for-sale.svg" alt="loan"
+                                                                class="img-fluid" *ngIf="nft.on_sale">
+                                                            <span class="loan-details-tooltip">For sale.</span>
+                                                        </span>
+                                                    </div>
+
+                                                    <p *ngIf="!nft.for_loan && !nft.on_loan && !nft.on_sale">Not listed
+                                                        for sale</p>
+                                                </td>
+                                                <td>
+                                                    <div class="text-right text-break pr-4" *ngIf="nft.on_sale">
+                                                        <div *ngIf="nft.lazy_mint">
+                                                            <ng-container
+                                                                *ngIf="Math.ceil(nft.sale_details?.exchange_price) > 0; else appraisalBlock">
+                                                                <p class="text-break text-right fw-5">
+                                                                    {{ Math.ceil(nft.sale_details?.price) |
+                                                                    thousandSeparator }} {{
+                                                                    nft?.sale_details?.currency }}
+                                                                </p>
+                                                            </ng-container>
+                                                            <ng-template #appraisalBlock>
+                                                                <p class="text-break text-right fw-5">
+                                                                    {{ Math.ceil(nft.appraisal_value) |
+                                                                    thousandSeparator }} {{ nft.sale_details?.currency
+                                                                    }}
+                                                                </p>
+                                                            </ng-template>
+                                                        </div>
+                                                        <div *ngIf="!nft.lazy_mint">
+                                                            <p class="text-break text-right fw-5">
+                                                                {{ Math.ceil(nft.sale_details?.exchange_price) |
+                                                                thousandSeparator }} {{
+                                                                nft.sale_details?.currency }}
+                                                            </p>
+
+                                                        </div>
+                                                    </div>
+                                                    <p class="text-left" *ngIf="!nft.on_sale"> Not listed for sale </p>
+                                                </td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                                <!--end - table nft preview -->
+                            </div>
+                        </div>
+                    </div>
+                    <!--end - table view-->
+
+                    <!-- start - Not items ui -->
+                    <div *ngIf="items.length == 0 && !loader">
+                        <div class="col-md-6 mx-auto text-center">
+                            <div class="not-found">
+                                <h6 *ngIf="filters.length === 0">No items in our inventory.</h6>
+                                <h6 *ngIf="filters.length > 0">No items in our inventory match your search.</h6>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- end - Not items ui -->
+
+                    <!-- start - scroll loader ui -->
+                    <div class="loadingview" *ngIf="scrollLoader">
+                        <h6>Loading.</h6>
+                        <span class="Loaders"></span>
+                    </div>
+                    <!-- end - scroll loader ui -->
+                </div>
+            </div>
+        </div>
+    </section>
+</div>

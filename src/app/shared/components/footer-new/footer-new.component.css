@@ -1,0 +1,118 @@
+.base_footer{
+    background: linear-gradient(0deg, #F9F9F9, #F9F9F9), linear-gradient(0deg, #D1D1D6, #D1D1D6);
+    position: fixed;
+    bottom: 0;
+    padding: 12px 0px;
+    border-top: 1px solid #D1D1D6;
+    width: 100%;
+    z-index: 11;
+}
+p, p>a, a{
+    font-size: 14px;
+    line-height: 20px;
+    font-weight: var(--font-medium);
+    color: var(--black-10);
+    letter-spacing: .4px;
+    padding: 0;
+    margin: 0;
+}
+a:hover{
+    color: var(--primary-color);
+}
+.footer-text{
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    gap: 2rem;
+}
+.lines{
+    position: relative;
+    &::before{
+        content: '';
+        position: absolute;
+        top: 50%;
+        transform: translateY(-50%);
+        left:0px;
+        width: 2px;
+        height: 32px;
+        border: 1px solid #D1D1D6;
+    }
+}
+.social-links{
+    list-style: none;
+    display: flex;
+    padding: 0;
+    margin: 0;
+    gap:1.5rem;
+
+    & li a{
+        color: var(--black-6);
+        transition: .3s  ease-in-out;
+    }
+    & :hover{
+        transition: .3s  ease-in-out;
+        transform: scale3d(1.1);
+    }
+    & li a>.bi-discord:hover{
+        color: #416cf0;
+    }
+    & li a>.bi-twitter:hover{
+        color: #00acee;
+    }
+    & li a>.bi-linkedin:hover{
+        color: #0072b1;
+    }
+}
+.backtotop{
+    position: fixed;
+    right: 30px;
+    bottom: 100px;
+    border: 1px solid var(--primary-color);
+    background: var(--white);
+    color: var(--primary-color);
+    border-radius: 100%;
+    width: 30px;
+    height: 30px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: .3s ease-in-out;
+    cursor: pointer;
+}
+.backtotop:hover{
+    background: var(--primary-color);
+    color: var(--white);
+    transition: .3s ease-in-out;
+}
+
+@media(max-width:1440px){
+    p, p>a{
+        font-size:14px;
+        line-height: 22px;
+    }
+}
+
+@media(max-width:991px){
+    p{
+        font-size:12px;
+        line-height: 16px;
+    }
+    .footer-text{
+        display: block;
+    }
+    .base_footer{
+        padding: 10px 0px;
+    }
+}
+@media(max-width:767px){
+    p {
+        font-size: 14px;
+        line-height: 20px;
+    }
+}
+@media(max-width:575px){
+    .footer-text{
+        text-align: left;
+        margin-top: 15px;
+    }
+}

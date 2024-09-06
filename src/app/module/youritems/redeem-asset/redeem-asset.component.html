@@ -1,0 +1,285 @@
+<div class="main-wrap">
+  <app-sidebar class="sidebarview"></app-sidebar>
+  <section class="section">
+    <app-contract-transactions></app-contract-transactions>
+    <div infiniteScroll [infiniteScrollDistance]="1" [infiniteScrollThrottle]="100"
+      [infiniteScrollDisabled]="disableInfiniteScroll" (scrolled)="getOwnerNfts()">
+      <div class="commonspaces" >
+        <div class="container-fluid">
+          <!--start grid view-->
+          <div class="gridview" *ngIf="account && isGridView" >
+              <!--menus-->
+              <div class="row pb-3 ">
+                <div class="col-lg-12 col-sm-12 col-12 mb-3 sm-mb-0">
+                  <ul class="borrow-submenus">
+                    <li class="nav-item" routerLinkActive="menuactivities" [routerLinkActiveOptions]="{exact: true}"  [routerLink]="['/my-wallet']">Held items.
+                    </li>
+                    <li class="nav-item" routerLinkActive="menuactivities" [routerLink]="['/redeem-asset']"
+                      (click)="onClickingRedeem()">Redemptions.</li>
+                  </ul>
+                </div>
+              </div>
+              <!--end-->
+            <div class="row pr-0">
+              <div class="col-lg-12 pr-0">
+                <div class="common" *ngIf="!loader">
+                  <div id="cards" class="mywalletwarp ">
+                    <ng-container *ngFor="let nft of nfts;let i=index;">
+                      <div class="nft-wrap-view cursor-pointer" [ngClass]="{'cancel-order':  nft.status.status === 6,'order-success':nft.status.status ===5}"
+                      [routerLink]="!isCancellingDelivery ? nft.nft_id?.lazy_mint ? ['/lazy-mint', nft.nft_id._id] : ['/nft-detail', nft?.nft_id?.collections?.collection_address, nft?.nft_id.token_id]:null"
+                      [queryParams]="{regulated}"
+                        *ngIf="nft?.nft_id">
+                        <div class="img-view mb-3">
+                          <img [src]="nft?.nft_id.preview_image ? nft?.nft_id.preview_image : nft?.nft_id.primary_media" *ngIf="nft?.nft_id.fileType != 'html'"
+                            onerror="this.src='assets/images/default-nft.svg'" (load)="imageLoading = false" class="img-fluid">
+                          <div class="gemsView" *ngIf="nft?.nft_id.fileType === 'html'" >
+                            <img [src]="nft?.nft_id.preview_image ? nft?.nft_id.preview_image : nft?.nft_id.secondary_media[0]"  class="img-fluid" onerror="this.src='assets/images/default-nft.svg'" (load)="imageLoading = false" alt="nft">
+                          </div>
+                        </div>
+                        <div class="nft-details pos-rel">
+                          <div #content class="truncate" id="tooltip-head{{i}}">
+                              <h1 (window:resize)="setTooltipSize(i)" id="tooltip-title{{i}}">{{nft?.nft_id.name}}
+                              </h1>
+                           </div>
+                          <div class="youritems" id="tooltip-description{{i}}">{{nft?.nft_id.name}}</div>
+                          <div class="buying-value" *ngIf="!nft.nft_id.for_loan && !nft.nft_id.on_loan && !nft.nft_id.on_sale">
+                            <div class="buying-value-one">
+                              <ng-container *ngFor="let attribute of nft?.nft_id.attributes let i=index">
+                                <div *ngIf="attribute.key.toLowerCase() === 'appraisal value'">
+                                  <h3>Appraisal value.</h3>
+                                  <h4>{{attribute.value ? Math.ceil(attribute.value) : '-' | thousandSeparator}} {{nft.nft_id.currency?.symbol}}</h4>
+                                </div>
+                              </ng-container>
+                            </div>
+                          </div>
+                          <div class="redeemview" *ngIf="nft.status.status > 0 && nft.status.status <=5 ">
+                            <button class="orderprocessing" *ngIf="nft.status.status===1">{{nft.status.name}}.</button>
+                            <button class="arrangedelivery" *ngIf="nft.status.status===2">{{nft.status.name}}.</button>
+                            <button class="deliverysent" *ngIf="nft.status.status===3">{{nft.status.name}}.</button>
+                            <button class="deliveryarrived" *ngIf="nft.status.status===4">{{nft.status.name}}.</button>
+                            <button class="onboard" *ngIf="nft.status.status ===5">{{nft.status.name}}.</button>
+                            <button *ngIf="nft.status.status !=5" class="sell_btn" (click)="isCancellingDelivery = true; cancelDelivery(nft)"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"
+                                viewBox="0 0 16 16" fill="none">
+                                <g clip-path="url(#clip0_4770_31553)">
+                                  <path
+                                    d="M7.33301 14.6667C6.78754 14.6667 6.26647 14.4466 5.22429 14.0064C2.6301 12.9105 1.33301 12.3626 1.33301 11.4409C1.33301 11.1828 1.33301 6.70969 1.33301 4.66669M7.33301 14.6667V7.56989M7.33301 14.6667C7.74414 14.6667 8.07967 14.5416 8.66634 14.2915M13.333 4.66669V8.00002"
+                                    stroke="currentColor" stroke-width="0.8" stroke-linecap="round"
+                                    stroke-linejoin="round" />
+                                  <path
+                                    d="M10.667 10L12.667 12M12.667 12L14.667 14M12.667 12L10.667 14M12.667 12L14.667 10"
+                                    stroke="currentColor" stroke-width="0.8" stroke-linecap="round" />
+                                  <path
+                                    d="M4.88362 6.4609L2.93615 5.51855C1.86739 5.00138 1.33301 4.7428 1.33301 4.33331C1.33301 3.92383 1.86739 3.66525 2.93615 3.14808L4.88362 2.20573C6.08556 1.62412 6.68654 1.33331 7.33301 1.33331C7.97947 1.33331 8.58047 1.62411 9.78241 2.20573L11.7299 3.14808C12.7986 3.66525 13.333 3.92383 13.333 4.33331C13.333 4.7428 12.7986 5.00138 11.7299 5.51855L9.78241 6.4609C8.58047 7.04251 7.97947 7.33331 7.33301 7.33331C6.68654 7.33331 6.08556 7.04251 4.88362 6.4609Z"
+                                    stroke="currentColor" stroke-width="0.8" stroke-linecap="round"
+                                    stroke-linejoin="round" />
+                                  <path d="M3.33301 8L4.66634 8.66667" stroke="currentColor" stroke-width="0.8"
+                                    stroke-linecap="round" stroke-linejoin="round" />
+                                  <path d="M10.6667 2.66669L4 6.00002" stroke="currentColor" stroke-width="0.8"
+                                    stroke-linecap="round" stroke-linejoin="round" />
+                                </g>
+                                <defs>
+                                  <clipPath id="clip0_4770_31553">
+                                    <rect width="16" height="16" fill="currentColor" />
+                                  </clipPath>
+                                </defs>
+                              </svg>
+                              <span class="showtooltip">
+                                <span class="tooltipinnertext">Cancel order.</span></span>
+                            </button>
+                          </div>
+                          <div class="redeemview" *ngIf="nft.status.status ===6">
+                            <button class="cancel_btn">{{nft.status.name}}.
+                            </button>
+                          </div>
+                           <!-- <div class="redeemview"  *ngIf="nft.status.status ===5">
+                            <button class="onboard" [ngClass]="nft.status.status ===5 ? 'onboard':''">
+                              {{nft.status.name}}.
+                            </button>
+                          </div> -->
+                          <div *ngIf="nft.status.status ===7">
+                            <button class="burned" >
+                              {{nft.status.name}}.
+                            </button>
+                          </div>
+                        </div>
+                      </div>
+                    </ng-container>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!--end grid view-->
+          <!--table view-->
+          <div class="tableview" *ngIf="account && !isGridView" >
+              <!--menus-->
+              <div class="row pb-3 ">
+                <div class="col-lg-12 col-sm-12 col-12 mb-3 sm-mb-0">
+                  <ul class="borrow-submenus">
+                    <li class="nav-item" routerLinkActive="menuactivities" [routerLinkActiveOptions]="{exact: true}"  [routerLink]="['/my-wallet']">Held items.
+                    </li>
+                    <li class="nav-item" routerLinkActive="menuactivities" [routerLink]="['/redeem-asset']"
+                      (click)="onClickingRedeem()">Redemptions.</li>
+                  </ul>
+                </div>
+              </div>
+              <!--end-->
+            <div class="row pr-0">
+              <div class="col-lg-12 pr-0">
+                <div class="table-responsive">
+                    <table class="table">
+                        <thead>
+                          <th>Item.</th>
+                          <th>Item name.</th>
+                          <th class="text-right pr-4">Appraisal value.</th>
+                          <th>Status.</th>
+                          <th>Action.</th>
+                        </thead>
+                        <tbody>
+                          <tr [ngClass]="{'cancel-order':  nft.status.status === 6,'order-success':nft.status.status ===5}"
+                          [routerLink]="!isCancellingDelivery ? nft.nft_id.lazy_mint ? ['/lazy-mint', nft.nft_id._id] : ['/nft-detail', nft?.nft_id.collections?.collection_address, nft?.nft_id.token_id]:null"
+                          [queryParams]="{regulated}"
+                          *ngFor="let nft of nfts;let i=index;">
+                            <td>
+                              <div class="tableviewnft">
+                                <img *ngIf="nft?.nft_id.fileType != 'html'" [src]="nft?.nft_id.preview_image ? nft?.nft_id.preview_image : nft?.nft_id.primary_media"
+                                onerror="this.src='assets/images/default-nft.svg'" (load)="imageLoading = false"
+                                class="img-fluid"
+                                >
+                                <img *ngIf="nft?.nft_id.fileType === 'html'" [src]="nft?.nft_id.preview_image ? nft?.nft_id.preview_image : nft?.nft_id.secondary_media[0]"  class="img-fluid" onerror="this.src='assets/images/default-nft.svg'" (load)="imageLoading = false" alt="nft">
+                              </div>
+                            </td>
+                            <td>
+                                <p>{{nft?.nft_id.name}}</p>
+                            </td>
+                            <td *ngIf="!nft.nft_id.for_loan && !nft.nft_id.on_loan && !nft.nft_id.on_sale" class="pr-4">
+                              <ng-container *ngFor="let attribute of nft?.nft_id.attributes let i=index">
+                                <div *ngIf="attribute.key.toLowerCase() === 'appraisal value'">
+                                  <p class="text-right fw-5">{{(attribute.value ? Math.ceil(attribute.value) : '-')| thousandSeparator}} {{nft.nft_id.currency?.symbol}}</p>
+                                </div>
+                              </ng-container>
+                            </td>
+                            <td>
+                              <div class="d-flex gap-2"  *ngIf="nft.status.status > 0 && nft.status.status <=4">
+                                <button class="orderprocessing" *ngIf="nft.status.status===1">{{nft.status.name}}.</button>
+                                <button class="arrangedelivery" *ngIf="nft.status.status===2">{{nft.status.name}}.</button>
+                                <button class="deliverysent" *ngIf="nft.status.status===3">{{nft.status.name}}.</button>
+                                <button class="deliveryarrived" *ngIf="nft.status.status===4">{{nft.status.name}}.</button>
+                                <button class="sell_btn" (click)="isCancellingDelivery = true; cancelDelivery(nft)">
+                                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"
+                                    viewBox="0 0 16 16" fill="none">
+                                    <g clip-path="url(#clip0_4770_31553)">
+                                      <path
+                                        d="M7.33301 14.6667C6.78754 14.6667 6.26647 14.4466 5.22429 14.0064C2.6301 12.9105 1.33301 12.3626 1.33301 11.4409C1.33301 11.1828 1.33301 6.70969 1.33301 4.66669M7.33301 14.6667V7.56989M7.33301 14.6667C7.74414 14.6667 8.07967 14.5416 8.66634 14.2915M13.333 4.66669V8.00002"
+                                        stroke="currentColor" stroke-width="0.8" stroke-linecap="round"
+                                        stroke-linejoin="round" />
+                                      <path
+                                        d="M10.667 10L12.667 12M12.667 12L14.667 14M12.667 12L10.667 14M12.667 12L14.667 10"
+                                        stroke="currentColor" stroke-width="0.8" stroke-linecap="round" />
+                                      <path
+                                        d="M4.88362 6.4609L2.93615 5.51855C1.86739 5.00138 1.33301 4.7428 1.33301 4.33331C1.33301 3.92383 1.86739 3.66525 2.93615 3.14808L4.88362 2.20573C6.08556 1.62412 6.68654 1.33331 7.33301 1.33331C7.97947 1.33331 8.58047 1.62411 9.78241 2.20573L11.7299 3.14808C12.7986 3.66525 13.333 3.92383 13.333 4.33331C13.333 4.7428 12.7986 5.00138 11.7299 5.51855L9.78241 6.4609C8.58047 7.04251 7.97947 7.33331 7.33301 7.33331C6.68654 7.33331 6.08556 7.04251 4.88362 6.4609Z"
+                                        stroke="currentColor" stroke-width="0.8" stroke-linecap="round"
+                                        stroke-linejoin="round" />
+                                      <path d="M3.33301 8L4.66634 8.66667" stroke="currentColor" stroke-width="0.8"
+                                        stroke-linecap="round" stroke-linejoin="round" />
+                                      <path d="M10.6667 2.66669L4 6.00002" stroke="currentColor" stroke-width="0.8"
+                                        stroke-linecap="round" stroke-linejoin="round" />
+                                    </g>
+                                    <defs>
+                                      <clipPath id="clip0_4770_31553">
+                                        <rect width="16" height="16" fill="currentColor" />
+                                      </clipPath>
+                                    </defs>
+                                  </svg>
+                                  <span class="showtooltip">
+                                    <span class="tooltipinnertext">Cancel Order.</span></span>
+                                </button>
+                              </div>
+                            </td>
+                            <td>
+                              <div *ngIf="nft.status.status ===6">
+                                <button class="cancel_btn">
+                                  {{nft.status.name}}.
+                                </button>
+                              </div>
+                               <div *ngIf="nft.status.status ===5">
+
+                                <button class="onboard" [ngClass]="nft.status.status ===5 ? 'onboard':''">
+                                  {{nft.status.name}}.
+                                </button>
+                              </div>
+                              <div *ngIf="nft.status.status ===7">
+                                <button class="onboard"  >
+                                  {{nft.status.name}}.
+                                </button>
+                              </div>
+                            </td>
+                          </tr>
+                        </tbody>
+                    </table>
+                </div>
+              </div>
+            </div>
+          </div>
+          <!--end-->
+          <ng-container *ngIf="!account">
+             <!--menus-->
+             <div class="row pb-3 ">
+              <div class="col-lg-12 col-sm-12 col-12 mb-3 sm-mb-0">
+                <ul class="borrow-submenus">
+                  <li class="nav-item" routerLinkActive="menuactivities" [routerLinkActiveOptions]="{exact: true}"  [routerLink]="['/my-wallet']">Held items.
+                  </li>
+                  <li class="nav-item" routerLinkActive="menuactivities" [routerLink]="['/redeem-asset']"
+                   (click)="onClickingRedeem()">Redemptions.</li>
+                </ul>
+              </div>
+            </div>
+            <!--end-->
+            <div class="col-md-6 col-sm-10 mx-auto text-center">
+              <div class="not-found">
+                <div *ngIf="regulated">
+                  <img src="assets/images/conncect-wallet.png" alt="connect wallet" class="img-fluid mb-4">
+                  <h6>Login to view your items.</h6>
+                  <div class="text-center mt-4 mb-2">
+                    <a class="onboards px-3 py-2" [routerLink]="['/sign-in']" (click)="setRoute()">Log in.</a>
+                  </div>
+                </div>
+                <div *ngIf="!regulated">
+                  <img src="assets/images/conncect-wallet.png" alt="connect wallet" class="img-fluid mb-4">
+                  <h6>Connect wallet to view your items.</h6>
+                  <div class="text-center mt-4 mb-2">
+                    <a class="onboards px-3 py-2" (click)="connectWallet()">Connect Wallet.</a>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </ng-container>
+
+          <ng-container *ngIf="nfts.length == 0 && account != undefined && !loader">
+            <div class="col-md-10 mx-auto text-center">
+              <div class="not-found">
+                <p>No items in your wallet.</p>
+              </div>
+            </div>
+          </ng-container>
+          <ng-container *ngIf="account && loader">
+            <div class="col-md-10 mx-auto text-center">
+              <div class="not-found">
+                <p>Please wait while we load your items.</p>&nbsp;
+                <span class="Loaders"></span>
+              </div>
+            </div>
+          </ng-container>
+
+        </div>
+      </div>
+    </div>
+  </section>
+    <!-- Confirmation Modal -->
+    <div class="modal fade" [config]="{backdrop: 'static', keyboard: false}" bsModal #confirmationModal="bs-modal"
+    tabindex="-1" role="dialog">
+    <app-confirmation-modal [confirmationData]="confirmationData" (closeModal)="confirmationModal.hide()"
+      (confirmPurchase)="confirmCancelDelivery()"></app-confirmation-modal>
+  </div>
+</div>

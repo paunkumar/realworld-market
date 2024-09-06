@@ -1,0 +1,31 @@
+.borrow-card{
+    background: #fff;
+    border: 1px solid #E5E5EA;
+    padding: 20px 18px;
+    border-radius: 12px;
+    height: 100%;
+}
+.borrow-card h1{
+    font-size:24px;
+    line-height: 30px;
+    letter-spacing: .4px;
+    color: var(--secondary-color);
+    font-weight: var(--font-semibold);
+    padding: 0 0 15px;
+    margin: 0;
+}
+.borrow-card p{
+    font-size:16px;
+    line-height: 26px;
+    letter-spacing: .4px;
+    color: #606060;
+    font-weight: var(--font-regular);
+    padding: 0 0 15px;
+    margin: 0;
+}
+@media(max-width:767px){
+    .borrow-card h1{
+        font-size: 20px;
+        line-height: 30px;
+    }
+}

@@ -1,0 +1,99 @@
+
+<div class="main">
+    <section class="signup">
+        <div class="container-fluid pl-0">
+            <div class="row ">
+                <div class="col-lg-6 col-md-6 d-md-block d-none">
+                    <div class="left-view-slider">
+                        <div class="view_carousel">
+                            <owl-carousel-o [options]="customOptions">
+                                <ng-template carouselSlide>
+                                    <img src="assets/images/signup.png" alt="img" class="img-fluid">
+                                    <div class="slidetext">
+                                        <h2>Multi-asset marketplace. </h2>
+                                        <p>Trade multiple alternative assets in the luxury commodity and collectibles category.</p>
+                                    </div>
+                                </ng-template>  
+                                <ng-template carouselSlide>
+                                    <img src="assets/images/signup-asset.png" alt="img" class="img-fluid">
+                                    <div class="slidetext">
+                                        <h2>Advanced dashboard.</h2>
+                                        <p>Keep track of your positions and activity with our multipurpose Dashboard.</p>
+                                    </div>
+                                </ng-template>
+                                <ng-template carouselSlide>
+                                    <img src="assets/images/signup-lend.png" alt="img" class="img-fluid">
+                                    <div class="slidetext">
+                                        <h2>Lend and borrow against your assets</h2>
+                                        <p>Leverage your position or gain yield lending to other users.</p>
+                                    </div>
+                                </ng-template>  
+                            </owl-carousel-o>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-6 col-md-6">
+                    <div class="right-view-form">
+                        <div class="col-lg-12" >
+                            <div class="authheader">
+                                <div class="d-flex justify-content-center">
+                                    <div><a [routerLink]="['/']"><img src="assets/images/logo.png" width="250px" class="img-fluid"></a></div>
+                                </div>
+                            </div>
+                        </div>
+                        <form class="col-lg-12 mb-3" [formGroup]="loginForm" >
+                            <div class="mb-2"><span><a class="text-decoration-underline" [routerLink]="['/sign-up']">Register</a> if you do not have an account. </span></div>
+                            <h4 class="mb-2">Log in.</h4>
+                            <div class="form-group mb-3">
+                                <label for="email">Email address.</label>
+                                <input type="email" class="form-control" id="email" placeholder="Ex: johnabraham@mail.com." formControlName="email">
+                                <div class="input--error" *ngIf="(loginFormControls['email'].touched || loginFormSubmitted) && loginFormControls['email'].errors?.['required']">
+                                    Email is required.*
+                                </div>
+                                <div class="input--error" *ngIf="(loginFormControls['email'].touched || loginFormSubmitted) && loginFormControls['email'].errors?.['forbidUppercase']">
+                                    Capital letters not allowed.*
+                                </div>
+                                <div class="input--error" *ngIf="(loginFormControls['email'].touched || loginFormSubmitted) && loginFormControls['email'].errors?.['email']">
+                                    Enter valid email address.*
+                                </div>
+                            </div>
+                            <div class="form-group mb-3 ">
+                                <label for="password">Password.</label>
+                                <div class="position-relative">
+                                    <input [type]="fieldTextType ? 'text' : 'password'" class="form-control" id="password" placeholder="Enter password." formControlName="password">
+                                    <div class="icon_pos" (click)="toggleFieldTextType()">
+                                        <i
+                                        class="bi"
+                                        [ngClass]="{
+                                          'bi-eye-slash': fieldTextType,
+                                          'bi-eye': !fieldTextType
+                                        }"
+                                        
+                                      ></i>
+                                    </div>
+                                    <div class="input--error" *ngIf="(loginFormControls['password'].touched || loginFormSubmitted) && loginFormControls['password'].errors?.['required']">
+                                        Password is required.*
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="mb-3 float-right"><a class="pl-2" [routerLink]="['/forgot-password']">Forgot password?</a></div>
+                            <div class="gap-4 my-2">
+                                <button class="wallet-connect" type="submit" appDebounceClick (debounceClick)="onLogin()" [disabled]="loginFormProcessing" [ngClass]="{'disabled': loginFormProcessing}">Log in.</button>
+                            </div>
+
+                            <div class="my-5 position-relative">
+                                <hr>
+                                <p class="orposition">Or Log in with.</p>
+                            </div>
+                            <div class="d-flex align-items-center justify-content-center gap-4 flex-wrap mb-2">
+                                <app-google-signin (loginWithGoogle)="googleSignin($event)" [loginProcessing]="googleLoginProcessing"></app-google-signin>
+                                <a class="signapple cursor-pointer" (click)="appleSignin()"><i class="bi bi-apple"></i>Apple.</a>
+                            </div>
+                            
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+</div>

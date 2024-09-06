@@ -1,0 +1,773 @@
+<div class="main-wrap">
+    <app-sidebar class="sidebarview"></app-sidebar>
+    <app-contract-transactions></app-contract-transactions>
+    <section class="section">
+        <div *ngIf="!loader" class="container-fluid">
+            <div class="row mb-4">
+                <div class="col-xl-9 col-lg-8 col-md-12 mb-4">
+                    <div class="borrow-card  mb-4">
+                        <div class="d-flex align-items-start gap-3 justify-content-between mb-3">
+                            <div class="d-flex align-items-center gap-3">
+                                <a class="backbtn cursor-pointer" (click)="location.back()"><img
+                                        src="assets/images/left-arrow.svg" alt="backarrow" width="18" height="18"></a>
+                                <h1>{{selectedNft?.name}}</h1>
+                            </div>
+                            <div>
+                                <span class="position-relative">
+                                    <img *ngIf="loanRequest?.status === 1" src="assets/images/on-loan.svg"
+                                        alt="loan-status">
+                                    <span class="loan-details-tooltip">In live loan.</span>
+                                </span>
+                                <span class="position-relative">
+                                    <img *ngIf="loanRequest?.status === 0" src="assets/images/for-loan.svg"
+                                        alt="loan-status">
+                                    <span class="loan-details-tooltip for-loan-tooltip">Collateral for Loan - This item
+                                        is currently being
+                                        offered as collateral for lending.</span>
+                                </span>
+                            </div>
+                        </div>
+                        <div class="bd-b"></div>
+                        <div class="pt-4">
+                            <div class="row">
+                                <div class="col-xl-4 col-lg-4 col-md-5 mb-3">
+                                    <div class="product_banner">
+                                        <owl-carousel-o [options]="customOptions" #owlCar>
+                                            <ng-container *ngFor="let image of selectedNft?.images">
+                                                <ng-template carouselSlide [id]="image?.url">
+                                                    <img [src]="image?.url" (mouseenter)="showModal(image?.url)"
+                                                        (mouseleave)="hideModal()"
+                                                        *ngIf="image?.fileType != 'pdf' && image?.fileType != 'gltf-binary' && image?.fileType != 'html'"
+                                                        class="img-fluid"
+                                                        onerror="this.src='assets/images/default-nft.svg'"
+                                                        (load)="imageLoading = false">
+                                                    <div><iframe [src]="image.url | safe"
+                                                            *ngIf="image?.fileType == 'html'" frameborder="0"
+                                                            scrolling="no"></iframe></div>
+                                                    <model-viewer *ngIf="image?.fileType == 'gltf-binary'"
+                                                        id="my-model-viewer" camera-controls
+                                                        camera-orbit="45deg 55deg 2.5m" [src]="image?.url"
+                                                        alt="A 3D model of an astronaut" data-js-focus-visible=""
+                                                        ar-status="not-presenting">
+                                                    </model-viewer>
+                                                    <a [href]="image?.url" target="_blank"
+                                                        *ngIf="image?.fileType == 'pdf'">
+                                                        <img src="assets/images/document-preview.png" class="actives"
+                                                            (load)="imageLoading = false">
+                                                    </a>
+                                                </ng-template>
+                                            </ng-container>
+                                        </owl-carousel-o>
+                                    </div>
+                                    <div class="product_thumbnail">
+                                        <owl-carousel-o [options]="thumbsliderOptions">
+                                            <ng-container *ngFor="let image of selectedNft?.images; let i = index">
+                                                <ng-template carouselSlide [id]="image?.url+i">
+                                                    <div (click)="owlCar.to(image?.url); changeimage(image?.url+i)"
+                                                        class="clickable-wrapper">
+                                                        <div class="overlay"></div>
+                                                        <img [src]="image?.url"
+                                                            *ngIf="image?.fileType != 'pdf' && image?.fileType != 'gltf-binary' && image?.fileType != 'html'"
+                                                            [ngClass]="{'actives': selectedImage === image?.url+i || (i == 0 && !selectedImage)}"
+                                                            onerror="this.src='assets/images/default-nft.svg'"
+                                                            (load)="imageLoading = false">
+
+                                                        <iframe [src]="image.url | safe"
+                                                            *ngIf="image?.fileType == 'html'"
+                                                            [ngClass]="{'actives': selectedImage === image?.url+i || (i == 0 && !selectedImage)}"
+                                                            frameborder="0" scrolling="no"></iframe>
+
+                                                        <img [src]="image.preview"
+                                                            *ngIf="image?.fileType == 'gltf-binary'"
+                                                            [ngClass]="{'actives': selectedImage === image?.url+i || (i == 0 && !selectedImage)}"
+                                                            onerror="this.src='assets/images/default-nft.svg'"
+                                                            (load)="imageLoading = false">
+
+                                                        <a [href]="image?.url" target="_blank"
+                                                            *ngIf="image?.fileType == 'pdf'">
+                                                            <img src="assets/images/document-preview.png"
+                                                                class="actives" (load)="imageLoading = false">
+                                                        </a>
+                                                    </div>
+
+                                                </ng-template>
+                                            </ng-container>
+                                        </owl-carousel-o>
+                                    </div>
+                                </div>
+                                <div class="col-xl-8 col-lg-8 col-md-7">
+                                    <div class="row" *ngIf="loanRequest?.collateral_assets.length > 1">
+                                        <div class="col-lg-11 mx-auto">
+                                            <div class="borrownft">
+                                                <owl-carousel-o [options]="borrowNftOptions">
+                                                    <ng-container *ngFor="let assets of loanRequest?.collateral_assets">
+                                                        <ng-template carouselSlide [id]="assets.primary_media">
+                                                            <div (click)="changeAsset(assets)"
+                                                                class="clickable-wrapper">
+                                                                <img *ngIf="assets.fileType != 'html'"
+                                                                    [src]="assets.primary_media"
+                                                                    onerror="this.src='assets/images/default-nft.svg'"
+                                                                    [ngClass]="selectedNft?._id === assets._id ? 'active' : 'default'">
+
+                                                                <img *ngIf="assets.fileType === 'html'"
+                                                                    [src]="assets?.preview_image ? assets?.preview_image : assets?.secondary_media[0]"
+                                                                    onerror="this.src='assets/images/default-nft.svg'"
+                                                                    [ngClass]="selectedNft?._id === assets._id ? 'active' : 'default'">
+                                                            </div>
+
+                                                        </ng-template>
+                                                    </ng-container>
+                                                </owl-carousel-o>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row pt-4">
+                                        <div class="col-lg-4 col-sm-6 mb-3"
+                                            *ngFor="let attribute of selectedNft?.attributes">
+                                            <div class="borrownftcategory">
+                                                <h2>{{attribute.key}}.</h2>
+                                                <h3 *ngIf="attribute.key.toLowerCase() === 'appraisal value' ">
+                                                    {{(attribute.value ?
+                                                    attribute.value : '-')| thousandSeparator}}
+                                                    {{selectedNft?.currency?.symbol || 'USD'}}</h3>
+                                                <h3 *ngIf="attribute.key.toLowerCase() !== 'appraisal value' ">
+                                                    {{attribute.value ?
+                                                    attribute.value : '-'}} <span
+                                                        *ngIf="attribute.key.toLowerCase() === 'markup fee'">%</span>
+                                                </h3>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+                    <!--offer table-->
+                    <div class="row mt-4">
+                        <div class="col-lg-12 col-md-12 tableview openoffertable">
+                            <div class="borrow-card ">
+                                <div class="mb-3">
+                                    <h3>Open offers.</h3>
+                                </div>
+                                <div class="table-responsive ">
+                                    <table class="table ">
+                                        <thead>
+                                            <th>Wallet.</th>
+                                            <th class="text-right">Loan amount.</th>
+                                            <th>Duration.</th>
+                                            <th class="text-right">APR.</th>
+                                            <th class="text-right">Interest.</th>
+                                            <th *ngIf="showActions()">Action.</th>
+                                        </thead>
+                                        <tbody>
+                                            <ng-container *ngIf="loanRequest?.open_offer?.length > 0">
+                                                <tr *ngFor="let bid of loanRequest?.open_offer">
+                                                    <td>
+                                                        <p *ngIf="bid.from.wallet_address === account.walletAddress">You
+                                                        </p>
+                                                        <p *ngIf="bid.from.wallet_address != account.walletAddress">
+                                                            {{bid.from.wallet_address.slice(0,5)}}...{{bid.from.wallet_address.slice(bid.from.wallet_address.length-4)}}
+                                                            <span (click)="copy(bid.from.wallet_address)"
+                                                                class="cursor-pointer"><img
+                                                                    src="assets/images/copy.svg"></span>
+                                                        </p>
+                                                    </td>
+                                                    <td>
+                                                        <p class="text-right fw-5">{{bid.proposed_bid_amount |
+                                                            thousandSeparator}}
+                                                            {{loanRequest.currency_data.symbol}}</p>
+                                                    </td>
+                                                    <td>
+                                                        <p>{{bid.proposed_loan_duration}} days</p>
+                                                    </td>
+                                                    <td>
+                                                        <p class="text-right fw-5">{{bid.proposed_loan_percentage}}%</p>
+                                                    </td>
+                                                    <td>
+                                                        <p class="text-right fw-5">{{bid.proposed_interest_amount |
+                                                            thousandSeparator}}
+                                                            {{loanRequest.currency_data.symbol}}</p>
+                                                    </td>
+                                                    <td *ngIf="showActions()">
+                                                        <div class="d-flex gap-3"
+                                                            *ngIf="loanRequest?.status === 0 && bid.actions">
+                                                            <button class="accept_offer" appDebounceClick
+                                                                (debounceClick)="acceptOffer(bid)"
+                                                                [disabled]="loanRequest.offerClosed"
+                                                                [ngClass]="{'disabled': loanRequest.offerClosed}">Accept.</button>
+                                                            <button class="counter_offer" appDebounceClick
+                                                                (debounceClick)="toggleShowCounterOffer(bid)"
+                                                                [disabled]="loanRequest.offerClosed"
+                                                                [ngClass]="{'disabled': loanRequest.offerClosed}">Counter.</button>
+                                                        </div>
+                                                        <div class="d-flex gap-3" *ngIf="loanRequest?.status > 0">-
+                                                        </div>
+                                                    </td>
+                                                </tr>
+                                            </ng-container>
+                                            <ng-container *ngIf="loanRequest?.open_offer?.length==0">
+                                                <tr>
+                                                    <td colspan="7">
+                                                        <div class="notfound">
+                                                            <h4>No loan request found.</h4>
+                                                        </div>
+                                                    </td>
+                                                </tr>
+                                            </ng-container>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!--end-->
+                </div>
+                <div class="col-xl-3 col-lg-4 col-md-12">
+                    <!-- Loan request terms -->
+                    <div class="borrow-card"
+                        *ngIf="user && !showCounterOffer && ((loanRequest?.status === 0 && loanRequest.borrower_id._id === user?._id) || (loanRequest?.status === 4)) ">
+                        <div class="loanrequest">
+                            <div class="d-flex align-items-center justify-content-between mb-3">
+                                <div>
+                                    <h4>Loan request terms.</h4>
+                                    <h5>ID: {{loanRequest?._id}}. <span (click)="copy(loanRequest?._id)"
+                                            class="cursor-pointer"><img src="assets/images/copy.svg"></span></h5>
+                                </div>
+                            </div>
+                            <hr />
+                            <div class="mb-3 owner-wallet">
+                                <h4>Borrower's wallet address.</h4>
+                                <h5>{{loanRequest?.borrower_id?.wallet_address?.slice(0,
+                                    13)}}..{{loanRequest?.borrower_id?.wallet_address?.slice(loanRequest?.borrower_id?.wallet_address.length
+                                    - 13)}}. <span (click)="copy(loanRequest?.borrower_id?.wallet_address)"
+                                        class="cursor-pointer"><img src="assets/images/copy.svg"></span></h5>
+                            </div>
+                            <hr *ngIf="regulated" />
+                            <div class="mb-3 owner-wallet" *ngIf="regulated">
+                                <h4>Borrower's user name.</h4>
+                                <h5>{{loanRequest?.borrower_id?.name}}</h5>
+                            </div>
+                            <form class="setloanterms" [formGroup]="loanRequestForm">
+                                <ng-container *ngTemplateOutlet="loanForm"></ng-container>
+                                <div class="row" *ngIf="loanRequest?.status === 0">
+                                    <div class="col-6"><button class="onboard onboard_edit" type="submit"
+                                            appDebounceClick (debounceClick)="editLoanRequest()"
+                                             [ngClass]="{'disabled': !loanRequestForm.dirty}" [disabled]="!loanRequestForm.dirty"
+                                            *ngIf="loanRequest.bids.length === 0">Edit.</button></div>
+                                    <div class="col-6"><button class="cancel_loan" type="button" appDebounceClick
+                                            (debounceClick)="cancelLoan()">Cancel.</button></div>
+                                </div>
+                                <div class="row" *ngIf="loanRequest?.status === 4">
+                                    <div class="col-12"><button class="cancel_loan">Loan cancelled.</button></div>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+
+                    <!-- Loan request make/counter offer -->
+                    <div class="borrow-card"
+                        *ngIf="user && !showCounterOffer && loanRequest?.status === 0 && loanRequest.borrower_id._id !== user?._id">
+                        <ul class="nav nav-pills mb-3" id="pills-tab" role="tablist">
+                            <li class="nav-item" role="presentation">
+                                <button class="nav-link active" id="makeoffer-tab" data-bs-toggle="pill"
+                                    data-bs-target="#makeoffer" type="button" role="tab" aria-controls="makeoffer"
+                                    aria-selected="true" (click)="onNavChange('makeoffer')">Loan terms.</button>
+                            </li>
+                            <li class="nav-item" role="presentation">
+                                <button class="nav-link" id="counteroffer-tab" data-bs-toggle="pill"
+                                    data-bs-target="#counteroffer" type="button" role="tab" aria-controls="counteroffer"
+                                    aria-selected="false" (click)="onNavChange('counteroffer')">Counter offer.</button>
+                            </li>
+                        </ul>
+                        <div class="tab-content" id="pills-tabContent">
+                            <div class="tab-pane fade show active" id="makeoffer" role="tabpanel"
+                                aria-labelledby="makeoffer-tab">
+                                <div class="loanrequest">
+                                    <div class="d-flex align-items-center justify-content-between mb-3">
+                                        <div>
+                                            <h5>ID: {{loanRequest._id}}. <span (click)="copy(loanRequest?._id)"
+                                                    class="cursor-pointer"><img src="assets/images/copy.svg"></span>
+                                            </h5>
+                                        </div>
+                                    </div>
+                                    <div class="mb-3 owner-wallet">
+                                        <h4>Borrower's wallet address.</h4>
+                                        <h5>{{loanRequest?.borrower_id?.wallet_address?.slice(0,
+                                            13)}}..{{loanRequest?.borrower_id?.wallet_address?.slice(loanRequest?.borrower_id?.wallet_address?.length
+                                            - 13)}}. <span (click)="copy(loanRequest?.borrower_id?.wallet_address)"
+                                                class="cursor-pointer"><img src="assets/images/copy.svg"></span></h5>
+                                    </div>
+                                    <hr *ngIf="regulated" />
+                                    <div class="mb-3 owner-wallet" *ngIf="regulated">
+                                        <h4>Borrower's user name.</h4>
+                                        <h5>{{loanRequest?.borrower_id?.name}}</h5>
+                                    </div>
+                                    <form class="setloanterms" [formGroup]="loanRequestForm">
+                                        <ng-container *ngTemplateOutlet="loanForm"></ng-container>
+                                        <div class="row">
+                                            <div class="col-12"><button class="onboard" type="submit" appDebounceClick
+                                                    (debounceClick)="acceptLoanRequest()">Accept loan terms.</button>
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                            <div class="tab-pane fade" id="counteroffer" role="tabpanel"
+                                aria-labelledby="counteroffer-tab">
+                                <div class="loanrequest">
+                                    <div class="d-flex align-items-center justify-content-between mb-3">
+                                        <div>
+                                            <h5>ID: {{loanRequest._id}}. <span (click)="copy(loanRequest?._id)"
+                                                    class="cursor-pointer"><img src="assets/images/copy.svg"></span>
+                                            </h5>
+                                        </div>
+                                    </div>
+                                    <div class="mb-3 owner-wallet">
+                                        <h4>Borrower's wallet address.</h4>
+                                        <h5>{{loanRequest?.borrower_id?.wallet_address?.slice(0,
+                                            13)}}..{{loanRequest?.borrower_id?.wallet_address?.slice(loanRequest?.borrower_id?.wallet_address?.length
+                                            - 13)}}. <span (click)="copy(loanRequest?.borrower_id?.wallet_address)"
+                                                class="cursor-pointer"><img src="assets/images/copy.svg"></span></h5>
+                                    </div>
+                                    <hr *ngIf="regulated" />
+                                    <div class="mb-3 owner-wallet" *ngIf="regulated">
+                                        <h4>Borrower's user name.</h4>
+                                        <h5>{{loanRequest?.borrower_id?.name}}</h5>
+                                    </div>
+                                    <form class="setloanterms" [formGroup]="loanRequestForm">
+                                        <ng-container *ngTemplateOutlet="loanForm"></ng-container>
+                                        <button class="onboard" type="submit" *ngIf="!counterOffered" appDebounceClick
+                                            (debounceClick)="counterOffer()">Counter offer submit.</button>
+                                        <button class="onboard" *ngIf="counterOffered" disabled
+                                            [ngClass]="{'disabled': counterOffered}">Already countered.</button>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Loan request repay -->
+                    <div class="borrow-card"
+                        *ngIf="user && ((loanRequest?.status === 1 && isLiveLoan()) || (loanRequest?.status === 2)) && !showCounterOffer && (loanRequest.borrower_id._id === user?._id || loanRequest.lender_id._id === user?._id)">
+                        <div class="loanrequest">
+                            <div class="d-flex align-items-center justify-content-between mb-3">
+                                <div>
+                                    <h4 *ngIf="loanRequest.borrower_id._id === user?._id">{{loanRequest?.status === 2 ?
+                                        'Loan repaid.' :
+                                        'Loan repay.'}}</h4>
+                                    <h4 *ngIf="loanRequest.lender_id._id === user?._id">Loan terms.</h4>
+                                    <h5>ID: {{loanRequest._id}}. <span (click)="copy(loanRequest?._id)"
+                                            class="cursor-pointer"><img src="assets/images/copy.svg"></span></h5>
+                                </div>
+                            </div>
+                            <div class="mb-3 owner-wallet">
+                                <h4>Borrower's wallet address.</h4>
+                                <h5>{{loanRequest?.borrower_id?.wallet_address?.slice(0,
+                                    13)}}..{{loanRequest?.borrower_id?.wallet_address?.slice(loanRequest?.borrower_id?.wallet_address.length
+                                    - 13)}}. <span (click)="copy(loanRequest?.borrower_id?.wallet_address)"
+                                        class="cursor-pointer"><img src="assets/images/copy.svg"></span></h5>
+                            </div>
+                            <hr *ngIf="regulated" />
+                            <div class="mb-3 owner-wallet" *ngIf="regulated">
+                                <h4>Borrower's user name.</h4>
+                                <h5>{{loanRequest?.borrower_id?.name}}</h5>
+                            </div>
+                            <div class="setloanterms">
+                                <div class="form-group position-relative mb-2">
+                                    <label for="label">Appraised value.</label>
+                                    <input type="text" class="form-control" [value]="repayLoan?.appraisalValue"
+                                        readonly>
+                                </div>
+                                <div class="form-group position-relative mb-2">
+                                    <label for="label">Loan amount requested.</label>
+                                    <input type="text" class="form-control"
+                                        [value]="repayLoan?.requested_loan_amount + '&nbsp;' + loanRequest?.currency_data.symbol"
+                                        readonly>
+                                </div>
+                                <div class="form-group mb-2">
+                                    <label for="label">APR.</label>
+                                    <input type="text" class="form-control"
+                                        [value]="repayLoan?.loan_percentage + '&nbsp;' + '%'" readonly>
+                                </div>
+                                <div class="form-group mb-2">
+                                    <label for="label">Loan duration in days.</label>
+                                    <input type="text" class="form-control" [value]="repayLoan?.loan_duration_days"
+                                        readonly>
+                                </div>
+                                <div class="form-group mb-2" *ngIf="loanRequest?.status === 1">
+                                    <label for="label">Interest accrued.</label>
+                                    <input type="text" class="form-control"
+                                        [value]="(repayLoan?.interest_amount_accrued).toFixed(3) + '&nbsp;' + loanRequest?.currency_data.symbol"
+                                        readonly>
+                                </div>
+                                <div class="form-group mb-2">
+                                    <label for="label" *ngIf="user._id === loanRequest.borrower_id._id">Interest amount
+                                        at
+                                        maturity.</label>
+                                    <label for="label" *ngIf="user._id !== loanRequest.borrower_id._id">Total interests
+                                        cost at
+                                        maturity.</label>
+                                    <input type="text" class="form-control"
+                                        [value]="(repayLoan?.interest_amount).toFixed(3) + '&nbsp;' + loanRequest?.currency_data.symbol"
+                                        readonly>
+                                </div>
+                                <div class="form-group mb-3">
+                                    <label for="labe                    <div>check - {{isLiveLoan()}}</div>l"
+                                        *ngIf="user._id === loanRequest.borrower_id._id">Total amount at
+                                        maturity.</label>
+                                    <label for="label" *ngIf="user._id !== loanRequest.borrower_id._id">Total payoff
+                                        amount at
+                                        maturity.</label>
+                                    <input type="text" class="form-control"
+                                        [value]="(repayLoan?.total_amount).toFixed(3) + '&nbsp;' + loanRequest?.currency_data.symbol"
+                                        readonly>
+                                </div>
+                                <button class="repay_loan" appDebounceClick (debounceClick)="repayLoanRequest()"
+                                    *ngIf="loanRequest?.status === 1 && loanRequest.borrower_id._id === user?._id">Repay
+                                    loan now
+                                    ({{(repayLoan?.requested_loan_amount +
+                                    repayLoan?.interest_amount_accrued).toFixed(2)|
+                                    thousandSeparator}} {{loanRequest?.currency_data.symbol}}).</button>
+                                <button class="repay_loan disabled"
+                                    *ngIf="loanRequest?.status === 1 && loanRequest.lender_id._id === user?._id"
+                                    disabled>Live
+                                    loan.</button>
+                                <button class="repay_loan disabled" *ngIf="loanRequest?.status === 2" disabled>Loan
+                                    repaid.</button>
+                                <div *ngIf="loanRequest?.status === 1">
+                                    <div>
+                                        <h4 class="loandue">Due date. : <span class="pl-1">{{loanRequest?.end_date |
+                                                date:"dd/MM/YYYY
+                                                hh:mm:ss a"}} {{timeRemaining}}</span></h4>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Loan request expired -->
+                    <div class="borrow-card"
+                        *ngIf="user && !isLiveLoan() && !showCounterOffer && ((loanRequest?.status === 1 || loanRequest?.status === 3  ) && loanRequest.borrower_id._id === user?._id) ">
+                        <div class="loanrequest">
+                            <div class="d-flex align-items-center justify-content-between mb-3">
+                                <div>
+                                    <h4>Loan.</h4>
+                                    <h5>ID: {{loanRequest._id}} <span (click)="copy(loanRequest?._id)"
+                                            class="cursor-pointer"><img src="assets/images/copy.svg"></span></h5>
+                                </div>
+                            </div>
+                            <div class="mb-3 owner-wallet" *ngIf="loanRequest?.status != 3">
+                                <h5 *ngIf="loanRequest?.lender_id?.wallet_address === loanRequest?.lender_id?.name">Item
+                                    is currently
+                                    subject to foreclosure by another user
+                                    ({{loanRequest?.lender_id?.wallet_address?.slice(0,
+                                    6)}}..{{loanRequest?.lender_id?.wallet_address?.slice(loanRequest?.lender_id?.wallet_address?.length
+                                    -
+                                    6)}}. <span (click)="copy(loanRequest?.lender_id?.wallet_address)"
+                                        class="cursor-pointer"><img src="assets/images/copy.svg"></span>)</h5>
+                                <h5 *ngIf="loanRequest?.lender_id?.wallet_address != loanRequest?.lender_id?.name">Item
+                                    is currently
+                                    subject to foreclosure by another user
+                                    ({{loanRequest?.lender_id?.name}})</h5>
+                            </div>
+                            <div class="setloanterms">
+                                <div class="form-group position-relative mb-2">
+                                    <label for="label">Appraised value.</label>
+                                    <input type="text" class="form-control" [value]="repayLoan?.appraisalValue"
+                                        readonly>
+                                </div>
+                                <div class="form-group position-relative mb-2">
+                                    <label for="label">Loan amount requested.</label>
+                                    <input type="text" class="form-control"
+                                        [value]="repayLoan?.requested_loan_amount + '&nbsp;' + loanRequest?.currency_data.symbol"
+                                        readonly>
+                                </div>
+                                <div class="form-group mb-2">
+                                    <label for="label">APR.</label>
+                                    <input type="text" class="form-control"
+                                        [value]="repayLoan?.loan_percentage + '&nbsp;' + '%'" readonly>
+                                </div>
+                                <div class="form-group mb-2">
+                                    <label for="label">Loan duration in days.</label>
+                                    <input type="text" class="form-control" [value]="repayLoan?.loan_duration_days"
+                                        readonly>
+                                </div>
+                                <!-- <div class="form-group mb-2">
+                                    <label for="label">Interest accrued.</label>
+                                    <input type="text" class="form-control" value="128 USDC" readonly>
+                                </div> -->
+                                <div class="form-group mb-2">
+                                    <label for="label" *ngIf="user._id === loanRequest.borrower_id._id">Interest amount
+                                        at
+                                        maturity.</label>
+                                    <label for="label" *ngIf="user._id !== loanRequest.borrower_id._id">Total interests
+                                        cost at
+                                        maturity.</label>
+                                    <input type="text" class="form-control"
+                                        [value]="(repayLoan?.interest_amount).toFixed(3) + '&nbsp;' + loanRequest?.currency_data.symbol"
+                                        readonly>
+                                </div>
+                                <div class="form-group mb-3">
+                                    <label for="label" *ngIf="user._id === loanRequest.borrower_id._id">Total amount at
+                                        maturity.</label>
+                                    <label for="label" *ngIf="user._id !== loanRequest.borrower_id._id">Total payoff
+                                        amount at
+                                        maturity.</label>
+                                    <input type="text" class="form-control"
+                                        [value]="(repayLoan?.total_amount).toFixed(3) + '&nbsp;' + loanRequest?.currency_data.symbol"
+                                        readonly>
+                                </div>
+                                <button class="repay_loan disabled" disabled>
+                                    {{loanRequest?.status === 3 ? 'Loan foreclosed. ':'Loan defaulted.'}}</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Loan request foreclose -->
+                    <div class="borrow-card"
+                        *ngIf="user && !isLiveLoan() && !showCounterOffer && ((loanRequest?.status === 1 || loanRequest?.status === 3 ) && loanRequest.lender_id._id === user?._id)">
+                        <div class="loanrequest">
+                            <div class="d-flex align-items-center justify-content-between mb-3">
+                                <div>
+                                    <h4 *ngIf="loanRequest?.status === 1">Loan foreclose.</h4>
+                                    <h4 *ngIf="loanRequest?.status === 3">Loan foreclosed.</h4>
+                                    <h5>ID: {{loanRequest._id}}. <span (click)="copy(loanRequest?._id)"
+                                            class="cursor-pointer"><img src="assets/images/copy.svg"></span></h5>
+                                </div>
+                            </div>
+                            <!-- Dont show this div if loan is foreclosed -->
+                            <div *ngIf="loanRequest?.status != 3" class="mb-3 owner-wallet">
+                                <h5>Item is currently subject to foreclosure by you.</h5>
+                            </div>
+                            <div class="setloanterms">
+                                <div class="form-group position-relative mb-2">
+                                    <label for="label">Appraised value.</label>
+                                    <input type="text" class="form-control" [value]="repayLoan?.appraisalValue"
+                                        readonly>
+                                </div>
+                                <div class="form-group position-relative mb-2">
+                                    <label for="label">Loan amount requested.</label>
+                                    <input type="text" class="form-control"
+                                        [value]="repayLoan?.requested_loan_amount + '&nbsp;' + loanRequest?.currency_data.symbol"
+                                        readonly>
+                                </div>
+                                <div class="form-group mb-2">
+                                    <label for="label">APR.</label>
+                                    <input type="text" class="form-control"
+                                        [value]="repayLoan?.loan_percentage + '&nbsp;' + '%'" readonly>
+                                </div>
+                                <div class="form-group mb-2">
+                                    <label for="label">Loan duration in days.</label>
+                                    <input type="text" class="form-control" [value]="repayLoan?.loan_duration_days"
+                                        readonly>
+                                </div>
+                                <div class="form-group mb-2">
+                                    <label for="label" *ngIf="user._id === loanRequest.borrower_id._id">Interest amount
+                                        at
+                                        maturity.</label>
+                                    <label for="label" *ngIf="user._id !== loanRequest.borrower_id._id">Total interests
+                                        cost at
+                                        maturity.</label>
+                                    <input type="text" class="form-control"
+                                        [value]="(repayLoan?.interest_amount).toFixed(3) + '&nbsp;' + loanRequest?.currency_data.symbol"
+                                        readonly>
+                                </div>
+                                <div class="form-group mb-3">
+                                    <label for="label" *ngIf="user._id === loanRequest.borrower_id._id">Total amount at
+                                        maturity.</label>
+                                    <label for="label" *ngIf="user._id !== loanRequest.borrower_id._id">Total payoff
+                                        amount at
+                                        maturity.</label>
+                                    <input type="text" class="form-control"
+                                        [value]="(repayLoan?.total_amount).toFixed(3) + '&nbsp;' + loanRequest?.currency_data.symbol"
+                                        readonly>
+                                </div>
+                                <button class="repay_loan" appDebounceClick (debounceClick)="forceCloseLoan()"
+                                    *ngIf="loanRequest?.status !== 3">Foreclose loan.</button>
+                                <button class="repay_loan disabled" disabled *ngIf="loanRequest?.status === 3">Loan
+                                    foreclosed.</button>
+                                <div *ngIf="loanRequest?.status !== 3" class="loandue">
+                                    <h4 class="loandue">Expired date.:<span class="pl-1"> {{loanRequest?.end_date |
+                                            date:"dd/MM/YYYY hh:mm:ss a"}}</span></h4>
+
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Loan counter offer -->
+                    <div class="borrow-card" *ngIf="user && showCounterOffer">
+                        <div class="loanrequest" id="conterOfferForm">
+                            <div class="d-flex align-items-center justify-content-between mb-3">
+                                <div>
+                                    <h4>Counter offer.</h4>
+                                    <h5>ID: {{loanRequest._id}}. <span (click)="copy(loanRequest?._id)"
+                                            class="cursor-pointer"><img src="assets/images/copy.svg"></span></h5>
+                                </div>
+                                <div class="cursor-pointer"><a class="close_btn" (click)="hideCounterOffer()"><i
+                                            class="bi bi-chevron-up"></i></a></div>
+                            </div>
+                            <form class="setloanterms" [formGroup]="loanRequestForm">
+                                <ng-container *ngTemplateOutlet="loanForm"></ng-container>
+                                <button class="onboard" type="submit" appDebounceClick [ngClass]="{'disabled': !loanRequestForm.dirty}" [disabled]="!loanRequestForm.dirty"
+                                    (debounceClick)="recounter()" >Make counter
+                                    offer.</button>
+                            </form>
+                        </div>
+                    </div>
+
+                    <div class="borrow-card" *ngIf="!account">
+                        <div class="loanrequest d-flex align-items-center justify-content-center mb-3 h-100">
+                            <div *ngIf="regulated">
+                                <img src="assets/images/conncect-wallet.png" alt="connect wallet"
+                                    class="img-fluid mb-4">
+                                <h6>Login to view loan options.</h6>
+                                <div class="text-center mt-4 mb-2">
+                                    <a class="onboards px-3 py-2 " [routerLink]="['/sign-in']" (click)="setRoute()">Log
+                                        in.</a>
+                                </div>
+                            </div>
+                            <div *ngIf="!regulated">
+                                <img src="assets/images/conncect-wallet.png" alt="connect wallet"
+                                    class="img-fluid mb-4">
+                                <h6>Connect wallet to view loan options.</h6>
+                                <div class="text-center mt-4 mb-2">
+                                    <a class="onboards px-3 py-2" (click)="connectWallet()">Connect Wallet.</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="borrow-card" *ngIf="account && !user">
+                        <div class="loanrequest d-flex align-items-center justify-content-center mb-3 h-100">
+                            <div>
+                                <h6>Register to view loan options.</h6>
+                                <div class="text-center mt-4 mb-2">
+                                    <a class="onboards px-3 py-2  " [routerLink]="['/sign-up']"
+                                        (click)="setRoute()">Register.</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+
+        </div>
+
+        <ng-container *ngIf="loader">
+            <div class="col-md-10 mx-auto text-center">
+                <div class="not-found">
+                    <p>Please wait while we load loan details.</p>&nbsp;
+                    <span class="Loaders"></span>
+                </div>
+            </div>
+        </ng-container>
+
+        <!-- Form template -->
+        <ng-template #loanForm>
+            <fieldset [disabled]="loanRequestFormDisabled" [formGroup]="loanRequestForm">
+                <div class="form-group mb-2" *ngIf="loanRequestForm.value?.appraisalValue != ''">
+                    <label for="label">Appraised value.</label>
+                    <input class="form-control" formControlName="appraisalValue" readonly>
+                </div>
+                <div class="form-group position-relative mb-2">
+                    <!-- Loan Amount Requested : Displayed when the user is a borrower or a prospective lender viewing the loan terms. -->
+                    <!-- Loan Amount Offered : Displayed when the user is a prospective lender or a lender viewing the counter offer form. -->
+                    
+                    <label for="label">{{loanRequest?.borrower_id?._id !== user?._id ? ( !isOnLoanTerms ? 'Loan amount offered' : 'Loan amount requested' ) : 'Loan amount requested'}}.</label>
+                    <input type="text" class="form-control" placeholder="prinicipal amount" id="prinicipal"
+                        formControlName="requested_loan_amount" (keyup)="calculateInterest()"
+                        (keypress)="decimalFilter($event)" autocomplete="off">
+                    <div class="posselectcurrency"
+                        *ngIf="loanRequest?.status === 0 && loanRequest.bids.length === 0 && loanRequest.borrower_id._id === user?._id">
+                        <select class="form-select cursor-pointer" (change)="setCurrency($event)"
+                            formControlName="currency_id">
+                            <option *ngFor="let currency of activeCurrencies" [value]="currency?._id">
+                                {{currency?.symbol}}</option>
+                        </select>
+                    </div>
+                    <div class="requestloancurrency"
+                        *ngIf="loanRequest?.status > 0 || (loanRequest?.status === 0 && ((loanRequest.bids.length > 0 && loanRequest.borrower_id._id === user?._id) || loanRequest.borrower_id._id != user?._id))">
+                        <p>{{loanRequest?.currency_data?.symbol}}</p>
+                    </div>
+                </div>
+                <div class="form-group mb-2">
+                    <label for="label">Loan duration in days.</label>
+                    <select formControlName="loan_duration_days" (change)="calculateInterest()" class="form-control">
+                        <option *ngFor="let day of loanRequestDays" [value]="day.days">{{day.days}}</option>
+                    </select>
+                </div>
+                <div class="form-group position-relative mb-2">
+                    <label for="label">APR. <span>(Use whole numbers only.)</span></label>
+                    <input type="text" class="form-control" formControlName="loan_percentage"
+                        (keyup)="calculateInterest()" onkeypress="return(event.charCode > 47 && event.charCode < 58)"
+                        (paste)="(false)" autocomplete="off">
+                    <div class="requestloancurrency">%</div>
+                </div>
+                <div class="form-group position-relative mb-2">
+                    <label for="label" *ngIf="user._id === loanRequest.borrower_id._id">Interest amount at
+                        maturity.</label>
+                    <label for="label" *ngIf="user._id !== loanRequest.borrower_id._id">Total interests cost at
+                        maturity.</label>
+                    <input type="number" class="form-control" formControlName="interest_amount" readonly>
+                    <div class="requestloancurrency">
+                        <p>{{loanRequestForm.value?.currency_data?.symbol}}</p>
+                    </div>
+                </div>
+                <div class="form-group position-relative mb-4">
+                    <label for="label" *ngIf="user._id === loanRequest.borrower_id._id">Total amount at
+                        maturity.</label>
+                    <label for="label" *ngIf="user._id !== loanRequest.borrower_id._id">Total payoff amount at
+                        maturity.</label>
+                    <input type="number" class="form-control" formControlName="total_amount" readonly>
+                    <div class="requestloancurrency">
+                        <p>{{loanRequestForm.value?.currency_data?.symbol}}</p>
+                    </div>
+                </div>
+            </fieldset>
+        </ng-template>
+
+        <!-- Progress Modal -->
+        <div class="modal fade" [config]="{backdrop: 'static', keyboard: false}" bsModal #progressModal="bs-modal"
+            tabindex="-1" role="dialog">
+            <app-progress-modal [progressData]="progressData" (closeModal)="progressModal?.hide()" [modalRef]="progressModal" [showEstimation]="true"></app-progress-modal>
+        </div>
+
+        <!-- Confirmation Modal -->
+        <div class="modal fade" [config]="{backdrop: 'static', keyboard: false}" bsModal #confirmationModal="bs-modal"
+            tabindex="-1" role="dialog">
+            <app-confirmation-modal [confirmationData]="confirmationData" (closeModal)="confirmationModal.hide()"
+                (confirmPurchase)="confirmPurchase()"></app-confirmation-modal>
+        </div>
+
+        <!-- mail verification modal start -->
+        <div class="modal fade" [config]="{backdrop: 'static', keyboard: false}" bsModal #verificationModal="bs-modal"
+            tabindex="-1" role="dialog">
+            <app-mailverfication (closeModal)="verificationModal.hide()"
+                (openModal)="verificationModal.show()"></app-mailverfication>
+        </div>
+        <!-- mail verification modal end -->
+    </section>
+</div>
+<!--Show nft image show-->
+<div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true"
+    [ngClass]="{'show': isModalVisible}" [ngStyle]="{'display': isModalVisible ? 'block' : 'none'}">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content">
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col-lg-12">
+                        <div class="text-center">
+                            <img src="{{this.currentImage}}" alt="" class="img-fluid"
+                                style="margin:0 auto; cursor: default;">
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+<!--end-->

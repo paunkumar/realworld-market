@@ -1,0 +1,412 @@
+<div class="transaction-wrap" *ngIf="account?.walletAddress" [ngClass]="showtransactiondetail?'sucessview':''">
+    <div class="collapse-arrow cursor-pointer" (click)="showTransacation()">
+        <img src="assets/images/transacation-arrow.svg" alt="transaction collapse" width="24" height="24">
+    </div>
+    <div class="badges" *ngIf="transactions?.length != 0 && viewTransactionDetails?.['count']">
+        {{this.viewTransactionDetails?.['count'] > 99 ? '99+' : this.viewTransactionDetails?.['count']}}</div>
+    <div class="transaction-details" [ngClass]="showtransactiondetail?'sucessview':''">
+        <!--sticky top-->
+        <div class="staticview">
+            <div class="d-flex align-items-start justify-content-between mb-18">
+                <div class="d-flex align-items-center">
+                    <h3>Transaction.</h3>
+                    <div *ngIf="transactions.length != 0" class="badges-secondary">{{transactions.length}}</div>
+                </div>
+                <div class="hide-arrow cursor-pointer" (click)="showTransacation()">
+                    <img src="assets/images/transacation-arrow.svg" alt="transaction collapse" width="16" height="16">
+                </div>
+            </div>
+            <!--searchbar-->
+            <div class="position-relative">
+                <input type="text" #searchBox id="search-box" class="form-control" (input)="transactionLoader = true;"
+                    [formControl]="searchControl" placeholder="Search transaction.">
+                <div class="searchIcon">
+                    <img src="assets/images/transacation-search.svg" alt="search" width="24" height="24">
+                </div>
+            </div>
+            <!--end-->
+        </div>
+        <!--end-->
+        <!--hr-->
+        <hr>
+        <!--hr-->
+        <!--approve-->
+        <ng-container *ngIf="!transactionLoader">
+            <div class="transaction-card" *ngFor="let transaction of transactions; let transactionIndex = index">
+                <div class="transaction-header">
+                    <div class="px-12">
+                        <h4>Contract call to <span>{{transaction.to?.slice(0,
+                                5)}}...{{transaction.to?.slice(transaction.to.length -
+                                4)}}.</span></h4>
+                    </div>
+                </div>
+                <div class="transaction-body">
+                    <h5>{{transaction.transaction_name}}.</h5>
+                    <div class="transaction-footer">
+                        <div class="p-12">
+                            <div class="d-flex align-items-center justify-content-between mb-8">
+                                <div class="d-flex align-items-center" *ngIf="transaction.status === 0">
+                                    <h5 class="approve">Inprogress.</h5>
+                                    <i class="bi bi-info-circle-fill approve"></i>
+                                </div>
+                                <div class="d-flex align-items-center" *ngIf="transaction.status === 1">
+                                    <h5 class="success">Success.</h5>
+                                    <i class="bi bi-info-circle-fill success"></i>
+                                </div>
+                                <div class="d-flex align-items-start gap-2 " *ngIf="transaction.status === 2">
+                                    <div class="position-relative">
+                                        <h5 class="in_balance">{{transaction.error_message}}. </h5>
+                                        <div class="possb">
+                                            <i class="bi bi-info-circle-fill in_balance"></i>
+                                        </div>
+                                    </div>
+
+
+                                </div>
+                                <div>
+                                    <h6>{{transaction.createdAt | date: 'dd/MM/YYYY hh:mm:ss a'}}.</h6>
+                                </div>
+                            </div>
+                            <div class="progress" role="progressbar" aria-label="Basic example" aria-valuenow="0"
+                                aria-valuemin="0" aria-valuemax="100" *ngIf="transaction.status === 0">
+                                <div class="progress-bar approve" style="width: 30%"></div>
+                            </div>
+                            <div class="progress" role="progressbar" aria-label="Basic example" aria-valuenow="0"
+                                aria-valuemin="0" aria-valuemax="100" *ngIf="transaction.status === 1">
+                                <div class="progress-bar success" style="width: 100%"></div>
+                            </div>
+                        </div>
+                        <div class="nftitems" *ngIf="transaction.nft_id.length > 1">
+                            <div *ngFor="let nfts of transaction.nft_id; let nftIndex = index">
+                                <div class="normalview"
+                                    [ngClass]="{'active': activeIndices[transactionIndex] === nftIndex}">
+                                    <img *ngIf="nfts?.fileType !== 'html'"
+                                        src="{{nfts?.primary_media ? nfts?.primary_media : nfts?.secondary_media[0]}}"
+                                        alt="img" width="46" height="46"
+                                        (click)="setActiveIndex(transactionIndex, nftIndex)">
+
+                                    <img *ngIf="nfts?.fileType === 'html'"
+                                        [src]="nfts?.preview_image ? nfts?.preview_image : nfts?.secondary_media[0]"
+                                        onerror="this.src='assets/images/default-nft.svg'" (load)="imageLoading = false"
+                                        alt="nft" class="img-fluid" width="46" height="46"
+                                        (click)="setActiveIndex(transactionIndex, nftIndex)">
+                                </div>
+                                <!-- <div class="gemsView"
+                 [ngClass]="{'active': activeIndices[transactionIndex] === nftIndex}"
+                 >
+
+            </div>  -->
+
+                            </div>
+
+
+                        </div>
+                    </div>
+                    <div class="tbodyhead">
+                        <div class="nft_image">
+                            <img *ngIf="transaction.active_nft?.fileType !== 'html'"
+                                src={{transaction.active_nft?.primary_media}} alt="">
+                            <img *ngIf="transaction.active_nft?.fileType === 'html'"
+                                [src]="transaction.active_nft?.preview_image ? transaction.active_nft?.preview_image : transaction.active_nft?.secondary_media[0] "
+                                onerror="this.src='assets/images/default-nft.svg'" (load)="imageLoading = false"
+                                alt="nft">
+                        </div>
+                        <div class="d-flex align-items-start justify-content-between gap-2 deisgn-view">
+                            <h6>{{transaction.active_nft?.name}}.</h6>
+                            <a class="cursor-pointer"
+                                (click)="openTransactionDetailsPopup(transaction, transaction.active_nft)"><img
+                                    src="assets/images/transacation-external.svg" alt="" width="18" height="18"></a>
+                        </div>
+                    </div>
+                    <div class="user-detail">
+                        <div>
+                            <h5>Interacted with (to).</h5>
+                            <h6>{{transaction.to?.slice(0, 5)}}...{{transaction.to?.slice(transaction.to.length - 4)}}.
+                            </h6>
+                        </div>
+                        <div class="">
+                            <h5>Tx hash.</h5>
+                            <div class="d-flex gap-2 align-items-center">
+                                <p>{{transaction.transaction_hash?.slice(0,
+                                    5)}}...{{transaction.transaction_hash?.slice(transaction.transaction_hash.length -
+                                    4)}}.</p>
+                                <a *ngIf="transaction.status" target="_blank"
+                                    href="{{transhUrl}}/tx/{{transaction.transaction_hash}}">
+                                    <img *ngIf="transaction.transaction_hash"
+                                        src="assets/images/transacation-external.svg" alt="" width="18" height="18"></a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </ng-container>
+        <ng-container *ngIf="transactionLoader">
+            <div class="loadingview">
+                <h6>Loading.</h6>
+                <span class="Loaders"></span>
+            </div>
+        </ng-container>
+        <ng-container *ngIf="transactions.length == 0 && !transactionLoader">
+            <div class="notfound-transaction">
+                <div class="text-center">
+                    <img src="assets/images/no-found-transaction.png" alt="no transaction" class="img-fluid mb-3">
+                    <h6>No transaction found.</h6>
+                </div>
+            </div>
+        </ng-container>
+        <!--approve-->
+        <!--broadcasting-->
+        <!-- <div class="transaction-card">
+      <div class="transaction-header">
+        <div class="px-12">
+          <h4>Contract call to <span>0xe4...e54B3</span></h4>
+        </div>
+      </div>
+      <div class="transaction-body">
+        <h5>Create Loan</h5>
+        <div class="transaction-footer">
+          <div class="p-12">
+          <div class="d-flex align-items-center justify-content-between mb-8">
+            <div class="d-flex align-items-center">
+              <h5 class="broadcasting">Broadcasting <i class="bi bi-info-circle-fill broadcasting infoview"></i></h5>
+
+            </div>
+            <div>
+              <h6>30/01/2024 12:01 PM</h6>
+            </div>
+          </div>
+          <div class="progress" role="progressbar" aria-label="Basic example" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">
+            <div class="progress-bar broadcasting" style="width: 50%"></div>
+          </div>
+          </div>
+        </div>
+        <div class="tbodyhead">
+            <img src="assets/images/nft-3.png" alt="" class="nft_image">
+            <div class="d-flex align-items-center justify-content-between deisgn-view">
+              <h6>Franck Muller - Long Island</h6>
+              <a><img src="assets/images/transacation-external.svg" alt="" width="18" height="18"></a>
+            </div>
+        </div>
+        <div class="user-detail">
+            <div>
+              <h5>Vault</h5>
+              <h6>pavithran@sparkouttech.com</h6>
+            </div>
+            <div>
+            <h5>One Time Address</h5>
+            <p>0x0eE4aC...0efE40b52</p>
+            </div>
+            <div>
+            <a> <img src="assets/images/transacation-external.svg" alt="" width="18" height="18"></a>
+            </div>
+        </div>
+        <div class="user-detail">
+          <div>
+            <h5>Vault</h5>
+            <h6>pavithran@sparkouttech.com</h6>
+          </div>
+          <div>
+            <h5>One Time Address</h5>
+            <p>0x0eE4aC...0efE40b52</p>
+          </div>
+          <div>
+            <a> <img src="assets/images/transacation-external.svg" alt="" width="18" height="18"></a>
+          </div>
+        </div>
+      </div>
+
+    </div> -->
+        <!--end-->
+        <!--success-->
+        <!-- <div class="transaction-card">
+      <div class="transaction-header">
+        <div class="px-12">
+          <h4>Contract call to <span>0xe4...e54B3</span></h4>
+        </div>
+      </div>
+      <div class="transaction-body">
+        <h5>Create Loan</h5>
+        <div class="transaction-footer">
+          <div class="p-12">
+          <div class="d-flex align-items-center justify-content-between mb-8">
+            <div class="d-flex align-items-center">
+              <h5 class="success">Success <i class="bi bi-info-circle-fill success infoview"></i></h5>
+
+            </div>
+            <div>
+              <h6>30/01/2024 12:01 PM</h6>
+            </div>
+          </div>
+          <div class="progress" role="progressbar" aria-label="Basic example" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">
+            <div class="progress-bar success" style="width: 100%"></div>
+          </div>
+          </div>
+        </div>
+        <div class="tbodyhead">
+            <img src="assets/images/nft-3.png" alt="" class="nft_image">
+            <div class="d-flex align-items-center justify-content-between deisgn-view">
+              <h6>Franck Muller - Long Island</h6>
+              <a><img src="assets/images/transacation-external.svg" alt="" width="18" height="18"></a>
+            </div>
+        </div>
+
+        <div class="user-detail">
+            <div>
+              <h5>Vault</h5>
+              <h6>pavithran@sparkouttech.com</h6>
+            </div>
+            <div>
+            <h5>One Time Address</h5>
+            <p>0x0eE4aC...0efE40b52</p>
+            </div>
+            <div>
+            <a> <img src="assets/images/transacation-external.svg" alt="" width="18" height="18"></a>
+            </div>
+        </div>
+        <div class="user-detail">
+          <div>
+            <h5>Vault</h5>
+            <h6>pavithran@sparkouttech.com</h6>
+          </div>
+          <div>
+            <h5>One Time Address</h5>
+            <p>0x0eE4aC...0efE40b52</p>
+          </div>
+          <div>
+            <a> <img src="assets/images/transacation-external.svg" alt="" width="18" height="18"></a>
+          </div>
+        </div>
+      </div>
+
+    </div> -->
+        <!--end-->
+        <!--In sufficent-->
+        <!-- <div class="transaction-card">
+      <div class="transaction-header">
+        <div class="px-12">
+          <h4>Contract call to <span>0xe4...e54B3</span></h4>
+        </div>
+      </div>
+      <div class="transaction-body">
+        <h5>Create Loan</h5>
+        <div class="transaction-footer">
+          <div class="p-12">
+          <div class="d-flex align-items-center justify-content-between mb-8">
+            <div class="d-flex align-items-center">
+              <h5 class="in_balance">Insufficient Balance <i class="bi bi-info-circle-fill in_balance infoview"></i></h5>
+
+            </div>
+            <div>
+              <h6>30/01/2024 12:01 PM</h6>
+            </div>
+          </div>
+          </div>
+        </div>
+        <div class="tbodyhead">
+            <img src="assets/images/nft-3.png" alt="" class="nft_image">
+            <div class="d-flex align-items-center justify-content-between deisgn-view">
+              <h6>Franck Muller - Long Island</h6>
+              <a><img src="assets/images/transacation-external.svg" alt="" width="18" height="18"></a>
+            </div>
+        </div>
+
+        <div class="user-detail">
+            <div>
+              <h5>Vault</h5>
+              <h6>pavithran@sparkouttech.com</h6>
+            </div>
+            <div>
+            <h5>One Time Address</h5>
+            <p>0x0eE4aC...0efE40b52</p>
+            </div>
+            <div>
+            <a> <img src="assets/images/transacation-external.svg" alt="" width="18" height="18"></a>
+            </div>
+        </div>
+        <div class="user-detail">
+          <div>
+            <h5>Vault</h5>
+            <h6>pavithran@sparkouttech.com</h6>
+          </div>
+          <div>
+            <h5>One Time Address</h5>
+            <p>0x0eE4aC...0efE40b52</p>
+          </div>
+          <div>
+            <a> <img src="assets/images/transacation-external.svg" alt="" width="18" height="18"></a>
+          </div>
+        </div>
+      </div>
+
+    </div> -->
+        <!--end-->
+        <!--In sufficent-->
+        <!-- <div class="transaction-card">
+      <div class="transaction-header">
+        <div class="px-12">
+          <h4>Contract call to <span>0xe4...e54B3</span></h4>
+        </div>
+      </div>
+      <div class="transaction-body">
+        <h5>Create Loan</h5>
+        <div class="transaction-footer">
+          <div class="p-12">
+          <div class="d-flex align-items-center justify-content-between mb-8 gap-21">
+            <div class="d-flex align-items-start ">
+              <h5 class="in_balance">Insufficient Balance in wallet to process this transaction.<i class="bi bi-info-circle-fill in_balance infoview"></i> </h5>
+
+            </div>
+            <div>
+              <h6>30/01/2024 12:01 PM</h6>
+            </div>
+          </div>
+          </div>
+        </div>
+        <div class="tbodyhead">
+            <img src="assets/images/nft-3.png" alt="" class="nft_image">
+            <div class="d-flex align-items-center justify-content-between deisgn-view">
+              <h6>Franck Muller - Long Island</h6>
+              <a><img src="assets/images/transacation-external.svg" alt="" width="18" height="18"></a>
+            </div>
+        </div>
+        <div class="user-detail">
+            <div>
+              <h5>Vault</h5>
+              <h6>pavithran@sparkouttech.com</h6>
+            </div>
+            <div>
+            <h5>One Time Address</h5>
+            <p>0x0eE4aC...0efE40b52</p>
+            </div>
+            <div>
+            <a> <img src="assets/images/transacation-external.svg" alt="" width="18" height="18"></a>
+            </div>
+        </div>
+        <div class="user-detail">
+          <div>
+            <h5>Vault</h5>
+            <h6>pavithran@sparkouttech.com</h6>
+          </div>
+          <div>
+            <h5>One Time Address</h5>
+            <p>0x0eE4aC...0efE40b52</p>
+          </div>
+          <div>
+            <a> <img src="assets/images/transacation-external.svg" alt="" width="18" height="18"></a>
+          </div>
+        </div>
+      </div>
+
+    </div> -->
+        <!--end-->
+    </div>
+</div>
+
+<!-- Transaction details Modal starts -->
+<div class="modal fade" [config]="{backdrop: 'static', keyboard: false}" bsModal #transactionDetailsModal="bs-modal"
+    tabindex="-1" role="dialog">
+    <app-transaction-details-modal [transactionModalData]="transactionModalData"
+        (closeModal)="closeTransactionModal()"></app-transaction-details-modal>
+</div>
+<!-- Transaction details Modal ends -->

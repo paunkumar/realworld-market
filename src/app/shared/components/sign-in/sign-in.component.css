@@ -1,0 +1,18 @@
+/* .sliderwrap img {
+    width: 50%;
+    margin: 0 auto;
+  }
+  */
+
+  .slidetext{
+    position: absolute;
+    left: 50%;
+    width: 100%;
+    bottom: 30px;
+    transform: translateX(-50%);
+  }
+  @media(max-width:991px){
+    .slidetext{
+      bottom: 10px;
+    }
+  }

@@ -1,0 +1,456 @@
+<div class="header sticky-top">
+    <div class="announcement" *ngIf="announceData.enabled==true">
+        <div [ngStyle]="{backgroundColor: announceData.background_color, color:announceData.font_color}">
+            <div [innerHTML]="announceData.announcement_title | safeHtml" class="w-100 m-0 px-3"></div>
+        </div>
+    </div>
+    <nav class="navbar navbar-expand-xl bg-grey navbar-nav-scrol" aria-label="">
+        <div class="container-fluid">
+            <a class="navbar-brand cursor-pointer" [routerLink]="['/']"><img src="assets/images/logo.png" alt="logo"
+                    class="img-fluid" width="200" /></a>
+            <button class="navbar-toggler" type="button" (click)="toggleMenu()">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse align-items-center " [ngClass]="{ show: showMenu }">
+                <div class="main-view-header">
+                    <div class="search_postion" *ngIf="router.url === '/' && isShowSearch">
+                        <input type="text" (keyup)="clickSearch()" (click)="isSearch = true;this.getRecentSearch()"
+                            class="form-control" [formControl]="searchControl"
+                            [ngClass]="loaderStatus ? 'cursor-not-allowed' : ''" placeholder="Quick Search...">
+                        <div class="search_icon_pos">
+                            <a class="btn btn-outline-success cursor-auto"
+                                [ngClass]="loaderStatus ? 'cursor-not-allowed' : ''" type="submit"><img
+                                    src="assets/images/search.svg" alt="search" width="18" height="18"></a>
+                        </div>
+                        <div class="showdrop" [ngClass]="isSearch?'showsearch':''"
+                            *ngIf="isSearch && (isSearchLoading || recentSearch.length > 0 || this.account?.walletAddress)">
+                            <p *ngIf="isSearchLoading">Loading.</p>
+                            <hr *ngIf="this.account?.walletAddress">
+                            <span class="recent-search" *ngIf="this.account?.walletAddress">
+                                <label for="">Recent search.</label>
+                                <ng-container *ngIf="recentSearch.length > 0;else noRecentSearch">
+                                    <p *ngFor="let data of recentSearch" (click)="search(data.search_content)"
+                                        class="cursor-pointer">{{data.search_content}}</p>
+                                </ng-container>
+                                <ng-template #noRecentSearch>
+                                    <label class="recent-search-not">No recent search found.</label>
+                                </ng-template>
+                            </span>
+
+                            <div>
+
+                            </div>
+                        </div>
+                    </div>
+                    <div class="right_side_menu">
+
+
+                        <a class="onboard-btn" [routerLink]="['/onboardassets']"><i class="bi bi-plus"></i>Onboard.
+                            <span class="bi bi-question-circle position-relative  mt-1">
+                                <span class="pos_tooltip_wallet ms-2">Onboard and digitalize your personal valuables
+                                    here. Afterwards you’ll be able to transact them on chain and borrow funds using
+                                    them as collateral.</span>
+                            </span></a>
+                        <div class="d-flex align-items-center gap-2">
+
+                            <div>
+                                <p class="mb-0 ms-2"><span class="bi bi-question-circle position-relative  mt-1">
+                                        <span class="pos_tooltip_wallet ms-2">Activate Self-Custody to connect directly
+                                            with your existing self-custody wallet. Otherwise a custodial wallet
+                                            associated with your user profile will be used.</span>
+                                    </span> Self-Custody.</p>
+                            </div>
+                            <div>
+                                <label class="switch">
+                                    <input type="checkbox" (change)="slideToggle()" [checked]="!regulated">
+                                    <span class="slider round"></span>
+                                </label>
+                            </div>
+                        </div>
+                        <!--strat notiifcation-->
+                        <div class="dropdown">
+                            <a class="dropdown-toggle notificationlink" #notificationToggle type="button" data-bs-toggle="dropdown"
+                                data-bs-auto-close="outside">
+                                <img src="assets/images/notification.svg" alt="notification icon" width="22"
+                                    height="22">
+                                <!--no messages-->
+                                <!-- <div class="notification-count">
+                                <div class="dots"></div>
+                                </div> -->
+                                <!--end-->
+                                <!--message counts-->
+                                <div class="notiofication-count-message" *ngIf="notificationCount > 0">
+                                    <div class="messagecount">{{notificationCount}}</div>
+                                </div>
+                                <!--end-->
+                            </a>
+                            <ul class="dropdown-menu dropdown-menu-end dropdown-notification">
+                                <ng-container *ngIf="notifications && notifications.length > 0">
+                                    <a class="readall" (click)="readAllNotification()"
+                                        *ngIf="hasUnreadNotifications">Read all.</a>
+                                    <div class="dropdown-view" [ngClass]="{'unread': notification.read === 0}"
+                                        *ngFor="let notification of notifications">
+                                        
+                                        <div style="width:50px; height: 50px;" class="position-relative z-1">
+                                            <!-- User related notification image -->
+                                            <img src="assets/images/default-user.jpeg" alt="dropdown image"
+                                                class="profile_image"
+                                                *ngIf="notification?.event_type === _notification.BLOCKED || notification?.event_type === _notification.UNBLOCKED">
+                                            <!-- All other notification image except user related-->
+                                            <img [src]="notification?.image" 
+                                                onerror="this.src='assets/images/default-nft.svg'"
+                                                *ngIf="notification?.event_type != _notification.BLOCKED  || notification?.event_type != _notification.UNBLOCKED">
+                                            <div *ngIf="getTotalCollateralAssets(notification) > 1" class="nft_imagemore">+{{getTotalCollateralAssets(notification) - 1}}</div>
+                                        </div>
+                                        <div (click)="readNotification(notification); notificationToggle.click()" class="cursor-pointer w-100">
+                                            <h3 class="mb-1" [class.show]="notification.isExpand" #content><span
+                                                    class="notificationuser" [innerHTML]="notification?.message"></span>
+                                            </h3>
+                                            <div class="d-flex  justify-content-between w-100">
+                                                <div class="expandview">
+                                                    <div *ngIf="content.scrollHeight > 60">
+                                                        <a *ngIf="!notification.isExpand"
+                                                            (click)="expandCollapse($event, notification)"><img
+                                                                src="assets/images/expand.svg"
+                                                                alt="expand and collapse">Expand.</a>
+                                                    </div>
+                                                    <a *ngIf="notification.isExpand"
+                                                        (click)="expandCollapse($event, notification)"><img
+                                                            src="assets/images/expand.svg" alt="expand and collapse"
+                                                            class="rotate-icon">Collapse.</a>
+                                                </div>
+                                                <div class="d-flex gap-2 align-items-center">
+                                                    <img src="assets/images/clock.svg" alt="clock" width="11"
+                                                        height="11" class="clock">
+                                                    <h5>{{notification?.timeDiff}}.</h5>
+                                                </div>
+                                            </div>
+
+                                        </div>
+                                        <!-- Icons Based on Notification Event Type With Tooltip -->
+                                        <div class="icon-view" *ngIf="notification?.event_type != ''">
+                                            <!-- Collateral for Loan -->
+                                            <span class="position-relative"
+                                                *ngIf="notification?.event_type === _notification.LENDER_COUNTER_OFFER || notification?.event_type === _notification.BORROWER_RECOUNTER_OFFER">
+                                                <img src="assets/images/for-loan.svg" alt="forloadn" width="24"
+                                                    height="24" class="loans">
+                                                <span class="loan-details-tooltip for-loan-tooltip">Collateral for Loan
+                                                    - This item is currently being
+                                                    offered as collateral for loan. If you are interested in lending
+                                                    against this item, please go to
+                                                    the Lending page on the site menu.</span>
+                                            </span>
+                                            <!-- In live loan -->
+                                            <span class="position-relative"
+                                                *ngIf="notification?.event_type === _notification.LENDER_ACCEPTED_LOAN_REQUEST || notification?.event_type === _notification.BORROWER_ACCEPT_COUNTER || notification?.event_type === _notification.LENDER_ACCEPT_RECOUNTER || notification?.event_type.LOAN_BID_APPROVED ">
+                                                <img src="assets/images/on-loan.svg" alt="forloadn" width="24"
+                                                    height="24" class="loans">
+                                                <span class="loan-details-tooltip">In live loan.</span>
+                                            </span>
+                                            <!-- Transferred -->
+                                            <span class="position-relative" *ngIf="notification?.event_type === _notification.ITEM_TRANSFERRED">
+                                                <img src="assets/images/transfer.png" alt="forloadn" width="24"
+                                                    height="24" class="loans">
+                                                <span class="loan-details-tooltip">Transferred.</span>
+                                            </span>
+                                        </div>
+                                    </div>
+                                </ng-container>
+                                <div class="dropdown-view d-flex justify-content-center align-items-center h-100"
+                                    *ngIf="notifications.length === 0">No notifications.</div>
+                            </ul>
+                        </div>
+                        <!--end-->
+                        <a class="wallet-web" [ngClass]="regulated ?'d-block':'d-none'" *ngIf="!user?.wallet_address"
+                            [routerLink]="['/sign-in']" (click)="setRoute()">Log in.</a>
+
+                        <div class="dropdown align-items-center justify-content-center"
+                            [ngClass]="regulated ?'d-flex':'d-none'" *ngIf="user?.wallet_address">
+                            <a class="onboard-dropdown dropdown-toggle" type="button" data-bs-toggle="dropdown"
+                                data-bs-auto-close="outside" (click)="addOverlay()">
+                                <img src="assets/images/default-user.jpeg" alt="dropdown image"
+                                    class="profile_image">{{user.name}}
+                            </a>
+                            <ul class="dropdown-menu dropdown-menu-end ">
+                                <div class="user-info-wrap">
+                                    <img src="assets/images/user.png" alt="" class="user-profile">
+                                    <div>
+                                        <h3>{{user?.name}}.</h3>
+                                        <h5>{{user?.email}}.</h5>
+                                    </div>
+                                </div>
+                                <div class="wallet-details">
+                                    <div class="profile-info">
+                                        <div class="user-wallet-info">
+                                            <div class="userwallet-view">
+                                                <h3>Wallet address.</h3>
+                                                <div class="wallet-address-view">
+                                                    <h4>{{account.walletAddress.slice(0,
+                                                        15)}}...{{account.walletAddress.slice(account.walletAddress.length-15)}}
+                                                    </h4>
+                                                    <span (click)="copyWalletAddress(account.walletAddress)"
+                                                        class="cursor-pointer">
+                                                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18"
+                                                            viewBox="0 0 19 18" fill="none">
+                                                            <g clip-path="url(#clip0_2249_9233)">
+                                                                <path
+                                                                    d="M5.75 7.25025C5.75 6.71975 5.96074 6.21098 6.33586 5.83586C6.71098 5.46074 7.21975 5.25 7.75025 5.25H14.2498C14.5124 5.25 14.7725 5.30174 15.0152 5.40226C15.2579 5.50278 15.4784 5.65012 15.6641 5.83586C15.8499 6.0216 15.9972 6.24211 16.0977 6.48479C16.1983 6.72747 16.25 6.98757 16.25 7.25025V13.7498C16.25 14.0124 16.1983 14.2725 16.0977 14.5152C15.9972 14.7579 15.8499 14.9784 15.6641 15.1641C15.4784 15.3499 15.2579 15.4972 15.0152 15.5977C14.7725 15.6983 14.5124 15.75 14.2498 15.75H7.75025C7.48757 15.75 7.22747 15.6983 6.98479 15.5977C6.74211 15.4972 6.5216 15.3499 6.33586 15.1641C6.15012 14.9784 6.00278 14.7579 5.90226 14.5152C5.80174 14.2725 5.75 14.0124 5.75 13.7498V7.25025Z"
+                                                                    stroke="#8E8E93" stroke-width="1.125"
+                                                                    stroke-linecap="round" stroke-linejoin="round" />
+                                                                <path
+                                                                    d="M3.509 12.5528C3.27901 12.4216 3.0877 12.2321 2.95443 12.0034C2.82116 11.7746 2.75064 11.5147 2.75 11.25V3.75C2.75 2.925 3.425 2.25 4.25 2.25H11.75C12.3125 2.25 12.6185 2.53875 12.875 3"
+                                                                    stroke="#8E8E93" stroke-width="1.125"
+                                                                    stroke-linecap="round" stroke-linejoin="round" />
+                                                            </g>
+                                                            <defs>
+                                                                <clipPath id="clip0_2249_9233">
+                                                                    <rect width="18" height="18" fill="white"
+                                                                        transform="translate(0.5)" />
+                                                                </clipPath>
+                                                            </defs>
+                                                        </svg>
+                                                    </span>
+                                                </div>
+
+                                            </div>
+                                            <div class="kydetails">
+                                                <div>
+                                                    <div *ngIf="kycStatus?.kyc_verified === 2">
+                                                        <a class="onboards reverify"> Reverify Identity. <span
+                                                                class="pl-8"><svg xmlns="http://www.w3.org/2000/svg"
+                                                                    width="13" height="12" viewBox="0 0 13 12"
+                                                                    fill="none">
+                                                                    <path
+                                                                        d="M6.0494 1.5C4.2249 1.50329 3.26949 1.54808 2.65891 2.15876C2 2.81778 2 3.87846 2 5.99979C2 8.12114 2 9.18184 2.65891 9.84084C3.31782 10.4999 4.37834 10.4999 6.49935 10.4999C8.62035 10.4999 9.68085 10.4999 10.3398 9.84084C10.9503 9.23019 10.9951 8.27459 10.9984 6.44984"
+                                                                        stroke="currentColor" stroke-opacity="1"
+                                                                        stroke-width="0.75" stroke-linecap="round"
+                                                                        stroke-linejoin="round" />
+                                                                    <path
+                                                                        d="M10.7771 1.748L6.02344 6.52927M10.7771 1.748C10.5301 1.50069 8.86629 1.52374 8.51454 1.52875M10.7771 1.748C11.0241 1.99531 11.0011 3.6613 10.9961 4.01351"
+                                                                        stroke="currentColor" stroke-opacity="1"
+                                                                        stroke-width="0.75" stroke-linecap="round"
+                                                                        stroke-linejoin="round" />
+                                                                </svg></span></a>
+
+                                                    </div>
+                                                    <div>
+                                                        <button *ngIf="kycStatus?.kyc_verified === 0"
+                                                            class="kyc-status btn kyc-verfied" target="_blank"
+                                                            [routerLink]="['/kyc']" (click)="setRoute()"
+                                                            [disabled]="!kycStatus.kyc_enable || !kycStatus?.admin_kyc_enable"
+                                                            [ngClass]="{'disabled position-relative': !kycStatus.kyc_enable || !kycStatus?.admin_kyc_enable}">
+                                                            Verify Identity.
+                                                            <span class="bi bi-question-circle "
+                                                                *ngIf="!kycStatus.kyc_enable || !kycStatus?.admin_kyc_enable">
+                                                                <span class="pos_tooltip_coll"> Identity validation is
+                                                                    disabled by admin.
+                                                                </span>
+                                                            </span>
+                                                            <span
+                                                                *ngIf="kycStatus.kyc_enable && kycStatus?.admin_kyc_enable"
+                                                                class="pl-8"><svg xmlns="http://www.w3.org/2000/svg"
+                                                                    width="13" height="12" viewBox="0 0 13 12"
+                                                                    fill="none">
+
+                                                                    <path
+                                                                        d="M6.0494 1.5C4.2249 1.50329 3.26949 1.54808 2.65891 2.15876C2 2.81778 2 3.87846 2 5.99979C2 8.12114 2 9.18184 2.65891 9.84084C3.31782 10.4999 4.37834 10.4999 6.49935 10.4999C8.62035 10.4999 9.68085 10.4999 10.3398 9.84084C10.9503 9.23019 10.9951 8.27459 10.9984 6.44984"
+                                                                        stroke="#f43f5e" stroke-opacity="1"
+                                                                        stroke-width="0.75" stroke-linecap="round"
+                                                                        stroke-linejoin="round" />
+                                                                    <path
+                                                                        d="M10.7771 1.748L6.02344 6.52927M10.7771 1.748C10.5301 1.50069 8.86629 1.52374 8.51454 1.52875M10.7771 1.748C11.0241 1.99531 11.0011 3.6613 10.9961 4.01351"
+                                                                        stroke="#f43f5e" stroke-opacity="1"
+                                                                        stroke-width="0.75" stroke-linecap="round"
+                                                                        stroke-linejoin="round" />
+                                                                </svg></span>
+                                                        </button>
+                                                    </div>
+
+                                                    <div class=" btn btn-success" *ngIf="kycStatus?.kyc_verified === 1">
+                                                        Verified Identity.
+                                                    </div>
+                                                </div>
+                                                <div class="mywalletsdetail" *ngIf="nftCount > 0">
+                                                    <a class="cursor-pointer btn btn-success"
+                                                        [routerLink]="['/my-wallet']">
+                                                        <ng-container *ngIf="nftCount === 1">{{ nftCount }} item in your
+                                                            wallet.<span><svg xmlns="http://www.w3.org/2000/svg"
+                                                                    width="13" height="12" viewBox="0 0 13 12"
+                                                                    fill="none">
+                                                                    <path
+                                                                        d="M6.0494 1.50012C4.2249 1.50341 3.26949 1.54821 2.65891 2.15888C2 2.8179 2 3.87858 2 5.99991C2 8.12126 2 9.18196 2.65891 9.84096C3.31782 10.5 4.37834 10.5 6.49935 10.5C8.62035 10.5 9.68085 10.5 10.3398 9.84096C10.9503 9.23031 10.9951 8.27471 10.9984 6.44996"
+                                                                        stroke="#006736" stroke-opacity="0.45"
+                                                                        stroke-width="0.75" stroke-linecap="round"
+                                                                        stroke-linejoin="round" />
+                                                                    <path
+                                                                        d="M10.779 1.74813L6.02539 6.52939M10.779 1.74813C10.5321 1.50082 8.86824 1.52387 8.51649 1.52887M10.779 1.74813C11.026 1.99543 11.003 3.66143 10.998 4.01363"
+                                                                        stroke="#006736" stroke-opacity="0.45"
+                                                                        stroke-width="0.75" stroke-linecap="round"
+                                                                        stroke-linejoin="round" />
+                                                                </svg></span></ng-container>
+                                                        <ng-container *ngIf="nftCount > 1">{{ nftCount }} items in your
+                                                            wallet.<span><svg xmlns="http://www.w3.org/2000/svg"
+                                                                    width="13" height="12" viewBox="0 0 13 12"
+                                                                    fill="none">
+                                                                    <path
+                                                                        d="M6.0494 1.50012C4.2249 1.50341 3.26949 1.54821 2.65891 2.15888C2 2.8179 2 3.87858 2 5.99991C2 8.12126 2 9.18196 2.65891 9.84096C3.31782 10.5 4.37834 10.5 6.49935 10.5C8.62035 10.5 9.68085 10.5 10.3398 9.84096C10.9503 9.23031 10.9951 8.27471 10.9984 6.44996"
+                                                                        stroke="#006736" stroke-opacity="0.45"
+                                                                        stroke-width="0.75" stroke-linecap="round"
+                                                                        stroke-linejoin="round" />
+                                                                    <path
+                                                                        d="M10.779 1.74813L6.02539 6.52939M10.779 1.74813C10.5321 1.50082 8.86824 1.52387 8.51649 1.52887M10.779 1.74813C11.026 1.99543 11.003 3.66143 10.998 4.01363"
+                                                                        stroke="#006736" stroke-opacity="0.45"
+                                                                        stroke-width="0.75" stroke-linecap="round"
+                                                                        stroke-linejoin="round" />
+                                                                </svg></span></ng-container>
+                                                    </a>
+                                                </div>
+
+                                            </div>
+                                            <span class="d-block text-danger" *ngIf="kycStatus?.kyc_verified === 2"
+                                                style="font-size:10px;">KYC failed try again. </span>
+                                        </div>
+
+                                    </div>
+                                    <div class="wallet-info">
+                                        <div class="wallet-info-inner">
+                                            <div class="walletscroll">
+                                                <div class="user-wallet-amount" *ngFor="let currency of currencies"
+                                                    [ngClass]="{'disable-currency user-wallet-amount-disabled': currency.balance <= 0}">
+                                                    <div class="d-flex gap-8 align-items-center">
+                                                        <img src="{{currency.image ? currency.image : 'assets/images/currency.png'}}"
+                                                            alt="{{currency.symbol}}"
+                                                            onerror="this.src='assets/images/currency.png'">
+                                                        <div>
+                                                            <h4>{{currency.symbol}}.</h4>
+                                                            <p *ngIf="currency.usdValue > 0">${{(currency.balance *
+                                                                currency.usdValue).toFixed(2) || 0 | thousandSeparator}}
+                                                                USD</p>
+                                                        </div>
+                                                    </div>
+                                                    <h3>${{currency?.balance?.toFixed(2) || 0 | thousandSeparator }}
+                                                        {{currency.symbol}}</h3>
+                                                </div>
+                                                <div class="user-wallet-amount">
+                                                    <div class="d-flex gap-8 align-items-center">
+                                                        <img src="assets/images/polygon.png" alt="">
+                                                        <div>
+                                                            <h4>Polygon.</h4>
+                                                            <p *ngIf="maticPrice > 0">${{((regulatedBalance *
+                                                                maticPrice).toFixed(2))| thousandSeparator}} USD</p>
+                                                        </div>
+                                                    </div>
+                                                    <h3>{{(regulatedBalance.toFixed(2))| thousandSeparator}} MATIC</h3>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div><a (click)="logout()" class="logout"><svg xmlns="http://www.w3.org/2000/svg"
+                                                width="24" height="24" viewBox="0 0 24 24" fill="none">
+                                                <path
+                                                    d="M18 14L19.2929 12.7071C19.6834 12.3166 19.6834 11.6834 19.2929 11.2929L18 10"
+                                                    stroke="#AEAEB2" stroke-width="1.5" stroke-linecap="round"
+                                                    stroke-linejoin="round" />
+                                                <path
+                                                    d="M19 12L13 12M4 17.2663V7.26633M16 17.2663C16 18.3709 15.1046 19.2663 14 19.2663H10M16 7.26633C16 6.16176 15.1046 5.26633 14 5.26633H10M4.8906 19.8601L6.8906 21.1934C8.21971 22.0795 10 21.1267 10 19.5293V5.00336C10 3.40597 8.21971 2.45319 6.8906 3.33926L4.8906 4.6726C4.3342 5.04353 4 5.66799 4 6.3367V18.196C4 18.8647 4.3342 19.4891 4.8906 19.8601Z"
+                                                    stroke="#AEAEB2" stroke-width="1.5" stroke-linecap="round" />
+                                            </svg>Log out.</a></div>
+                                </div>
+
+                            </ul>
+                        </div>
+
+
+                        <w3m-button [ngClass]="!regulated ?'d-block':'d-none'" balance='hide'></w3m-button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </nav>
+</div>
+
+<!-- Switch Network Modal -->
+<div class="modal fade" bsModal #switchNetworkModal="bs-modal" role="dialog" tabindex="-1"
+    aria-labelledby="switchNetworkModal" [config]="modalConfig">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-body">
+                <div class="container">
+                    <div class="row my-4">
+                        <div class="col-lg-12">
+                            <div class="text-center">
+                                <div class="mb-3">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="36" height="36" fill="#ff0000"
+                                        viewBox="0 0 16 16">
+                                        <path
+                                            d="M7.938 2.016A.13.13 0 0 1 8.002 2a.13.13 0 0 1 .063.016.15.15 0 0 1 .054.057l6.857 11.667c.036.06.035.124.002.183a.2.2 0 0 1-.054.06.1.1 0 0 1-.066.017H1.146a.1.1 0 0 1-.066-.017.2.2 0 0 1-.054-.06.18.18 0 0 1 .002-.183L7.884 2.073a.15.15 0 0 1 .054-.057m1.044-.45a1.13 1.13 0 0 0-1.96 0L.165 13.233c-.457.778.091 1.767.98 1.767h13.713c.889 0 1.438-.99.98-1.767z" />
+                                        <path
+                                            d="M7.002 12a1 1 0 1 1 2 0 1 1 0 0 1-2 0M7.1 5.995a.905.905 0 1 1 1.8 0l-.35 3.507a.552.552 0 0 1-1.1 0z" />
+                                    </svg>
+                                </div>
+                                <h4>Incorrect Network.</h4>
+                                <p class="text-center">Please change your Network to use our marketplace.</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-lg-12">
+                            <div class="sign-in-wallet"
+                                *ngIf="account?.walletProvider === 'metamask' || account?.walletProvider === 'walletconnect'"
+                                (click)="switchNetwork(defaultNetwork)">
+                                <div class="d-flex align-items-center gap-2">
+                                    <p style="color: #fff;" *ngIf="defaultNetwork === '80002'">Switch to Polygon Amoy
+                                    </p>
+                                    <p style="color: #fff;" *ngIf="defaultNetwork === '137'">Switch to Polygon</p>
+                                    <img src="assets/images/polygon.webp" width="30" height="30">
+                                </div>
+                            </div>
+                            <div
+                                *ngIf="account?.walletProvider !== 'metamask' || account?.walletProvider === 'walletconnect'">
+                                <p class="mb-3">Unsupported chain. Logout and change network to access application</p>
+                                <div class="sign-in-wallet" (click)="logout()">
+                                    <p>Log out.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" [config]="{backdrop: 'static', keyboard: false}" bsModal #progressModal="bs-modal"
+        tabindex="-1" role="dialog">
+    </div>
+
+    <!-- Confirmation Modal -->
+    <div class="modal fade" [config]="{backdrop: 'static', keyboard: false}" bsModal #confirmationModal="bs-modal"
+        tabindex="-1" role="dialog">
+    </div>
+</div>
+<!--push notification-->
+<div class="push-notification-wrap" *ngIf="isNotification">
+    <div class="push-notification-inner">
+        <div>
+            <img src="assets/images/for-loan.svg" alt="for loan" width="36" height="36"
+                *ngIf="notification.event_type === _notification.LENDER_COUNTER_OFFER || notification.event_type === _notification.BORROWER_RECOUNTER_OFFER || notification.event_type === _notification.LENDER_RECOUNTER_OFFER">
+            <img src="assets/images/on-loan.svg" alt="onloan" width="36" height="36"
+                *ngIf="(notification?.event_type >= _notification.LENDING_AMOUNT_REPAID && notification?.event_type <= _notification.LENDER_ACCEPTED_LOAN_REQUEST) || notification?.event_type === _notification.BORROWER_ACCEPT_COUNTER || notification?.event_type === _notification.LENDER_ACCEPT_RECOUNTER || notification?.event_type === _notification.REMINDER_70_PERCENT_DUE || notification?.event_type === _notification.BORROWER_ACCEPT_RECOUNTER || notification?.event_type === _notification.REMINDER_24_HOURS_DUE || notification?.event_type === _notification.REMINDER_90_PERCENT_DUE">
+            <img src="assets/images/delivery.svg" alt="delivery" width="36" height="36"
+                *ngIf="(notification?.event_type >= _notification.DELIVERY_REQUEST_SENT && notification?.event_type <= _notification.DELIVERY_REQUEST_CANCELLED)">
+            <img src="assets/images/transfer.png" alt="delivery" width="36" height="36"
+                *ngIf="notification?.event_type === _notification.ITEM_TRANSFERRED">
+            <img src="assets/images/notification.svg" alt="delivery" width="36" height="36"
+                *ngIf="(notification?.event_type >= _notification.BLOCKED && notification?.event_type <= _notification.UNBLOCKED) || (notification?.event_type >= _notification.BID_RECEIVED && notification?.event_type <= _notification.BID_CANCELLED_NOTIFICATION_TO_SELLER)">
+        </div>
+        <div [innerHTML]="notification?.message" class="msg-view"></div>
+        <div>
+            <a (click)="closePushnotification()"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
+                    viewBox="0 0 24 24" fill="none">
+                    <path d="M19 5L5 19M5 5L19 19" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"
+                        stroke-linejoin="round" />
+                </svg></a>
+        </div>
+    </div>
+</div>
+<!--end-->

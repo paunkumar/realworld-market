@@ -1,0 +1,21 @@
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-lg-12">
+            <div class="not-found">
+                <div class="d-flex justify-content-center">
+                    <div class="text-center" *ngIf="kycVerified === 'success'">
+                        <img src="assets/images/check.png" class="d-block mb-3" style="margin:0 auto; width:96px">
+                        <h6>KYC verified successfully. Page will be redirected shortly.</h6>
+                    </div>
+                    <div class="text-center" *ngIf="kycVerified === 'failed'">
+                        <div class="mb-3">
+                            <i class="bi bi-exclamation-triangle fs-1 failed text-danger"></i>
+                        </div>
+                        <h6>KYC verification failed</h6>
+                        <a [routerLink]="['/kyc']" target="_top">Try to verify again.</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,74 @@
+
+<!-- Modal -->
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-body">
+          <div class="profile-section">
+            <div class="profile-outer">
+              <div class="lockicon">
+                <svg xmlns="http://www.w3.org/2000/svg" width="31" height="37" viewBox="0 0 31 37" fill="none">
+                  <path fill-rule="evenodd" clip-rule="evenodd" d="M15.4999 0.437988C10.4771 0.437988 6.40529 4.50979 6.40529 9.53261V9.53715H5.67119C2.64048 9.53715 0.183594 11.994 0.183594 15.0247V30.8548C0.183594 33.8855 2.64048 36.3424 5.6712 36.3424H25.3305C28.3612 36.3424 30.8181 33.8855 30.8181 30.8548V15.0248C30.8181 11.994 28.3612 9.53715 25.3305 9.53715H24.5945V9.53261C24.5945 4.50979 20.5227 0.437988 15.4999 0.437988ZM21.7226 9.53715V9.53261C21.7226 6.09595 18.9366 3.30998 15.4999 3.30998C12.0632 3.30998 9.27728 6.09595 9.27728 9.53261V9.53715H21.7226ZM19.3319 22.9376C19.3319 25.0525 17.6174 26.7669 15.5026 26.7669C13.3877 26.7669 11.6733 25.0525 11.6733 22.9376C11.6733 20.8227 13.3877 19.1083 15.5026 19.1083C17.6174 19.1083 19.3319 20.8227 19.3319 22.9376Z" fill="#006736"/>
+                </svg>
+              </div>
+            </div>
+          </div>
+          <div class="mail-verfication-wrap" id="step1" *ngIf="showStepOne || !user?.['is_valid'] || isEditing">
+              <h3>Enter details to proceed</h3>
+              <p>To get notified about the purchase, sell, negotiation kindly fill the below details.</p>
+              <form [formGroup]="emailForm" (ngSubmit)="onSubmit()">
+                <div class="form-group">
+                  <label for="">First name</label>
+                  <input type="text" class="form-control" placeholder="Ex: John" formControlName="fullName"  [ngClass]="{ 'is-invalid': submitted && f['fullName'].errors }" >
+                  <div class="input--error" *ngIf="(f &&f['fullName'].touched || submitted) &&f&& f['fullName']?.errors?.['required']"  >
+                   Fullname is required
+                  </div>
+                </div>
+                <div class="form-group">
+                  <label for="">Email Address</label>
+                  <input type="text" class="form-control" formControlName="email" placeholder="Ex: john@mail.com"  [ngClass]="{ 'is-invalid': submitted && f['email'].errors }">
+                  <div class="input--error" *ngIf="(f &&f['email'].touched || submitted) && f&&f['email'].errors?.['required']">
+                    Email is required.*
+                </div>
+                <div class="input--error" *ngIf="(f&& f['email'].touched || submitted) && f&&f['email'].errors?.['forbidUppercase']">
+                    Capital letters not allowed.*
+                </div>
+                <div class="input--error" *ngIf="(f&& f['email'].touched || submitted) && f&&f['email'].errors?.['email']">
+                    Enter valid email address.*
+                </div>
+                </div>
+                <p>By clicking verify email, i agree to the <a href="javascript:void();">privacy policy</a> and <a href="javascript:void();">terms of service</a>.</p>
+                <div class="d-flex gap-3 justify-content-between flex-wrap">
+                  <button type="button" (click)="closeStepOne()" class="onboard_cancel" data-bs-dismiss="modal">Cancel.</button>
+                  <button [disabled]="submitted" type="submit" class="onboard_verify">{{submitted ?'Processing...':'Verify Email'}}</button>
+                </div>
+              </form>
+          </div>
+          <div class="mail-verfication-wrap" id="step2" *ngIf="(showStepTwo || user?.['is_valid'] && !isEditing) && !showStepThree">
+            <h3>Check your email</h3>
+            <p>We have sent you an email to verify. Check your inbox for more information about the verification.</p>
+            <form>
+              <div class="form-group position-relative">
+                <label for="">Email Address</label>
+                <input type="text" class="form-control" [value]="user['email']" readonly>
+                <div class="editIcon">
+                  <img (click)="onEdit()" src="assets/images/edit.svg" alt="edit icon" width="18" height="18" class="cursor-pointer">
+                </div>
+              </div>
+              <p>Didn't receive the email? <a class="cursor-pointer"  [class.disabled]="isDisabled"
+                [attr.disabled]="isDisabled ? true : null" (click)="resendVerificationEmail()">Resend mail.</a></p>
+                <a class="onboard_cancel d-block text-center"(click)="closeModal.emit()">Cancel.</a>
+            </form>
+          </div>
+          <div class="mail-verfication-wrap" id="step3" *ngIf="showStepThree">
+            <div class="text-center">
+              <img src="assets/images/success-3.svg" alt="success" width="90" height="90" class="mb-3">
+            </div>
+            <h3>Account verified.</h3>
+            <p>Your account has been successfully verified. You can now enjoy full access to all features.</p>
+            <div class="pt-4">
+              <a (click)="showStepThree=false;closeModal.emit();" class="onboard_cancel d-block text-center">Close.</a>
+            </div>
+          </div>
+      </div>
+    </div>
+  </div>

@@ -1,0 +1,278 @@
+<div class="main-wrap">
+    <app-sidebar class="sidebarview"></app-sidebar>
+    <section class="section">
+        <div class="container-fluid">
+            <!--start grid view-->
+            <div class="row pr-0">
+
+                <div class="col-lg-10 col-md-12 mx-auto">
+                    <div class="borrow-card">
+                        <h1>Onboard New Asset.</h1>
+                        <p>Custody your luxury items with us and access flexible financing.</p>
+                        <hr>
+                        <form class="loanrequest my-3" [formGroup]="assetForm" (ngSubmit)="onboardNewAsset()">
+                            <div class="row mb-4" *ngIf="!account">
+                                <div class="col-lg-7 col-md-8 mx-auto">
+                                    <div class="text-center">
+                                        <img src="assets/images/conncect-wallet.png"
+                                            *ngIf="!account && regulated || !account && !regulated" alt="connect wallet"
+                                            class="img-fluid mb-4 d-block" style="margin:0 auto">
+                                        <a class="text-underline" (click)="connectWallet()"
+                                            *ngIf="!account && !regulated">Connect Wallet. </a>
+                                        <a [routerLink]="['/sign-in']" (click)="setRoute()"
+                                            *ngIf="!account && regulated" class="text-underlin">Log in. </a>
+
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row ">
+                                <div class="col-lg-12">
+                                    <div class="formgroup mb-4" *ngIf="account && regulated || account && !regulated">
+                                        <div class="onboard-wallet-address">
+                                            <p *ngIf="account && regulated">Wallet address:<span>
+                                                    {{account?.walletAddress}}</span> </p>
+                                            <p *ngIf="account && !regulated"> Wallet address:
+                                                <span>{{account?.walletAddress}}</span>
+                                            </p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-lg-6 col-md-6">
+                                    <div class="form-group mb-4">
+                                        <label for="label">Email.</label>
+                                        <span class="bi bi-question-circle position-relative">
+                                            <span class="pos_tooltip_coll">What email should we use to contact
+                                                you?</span>
+                                        </span>
+                                        <input type="text" formControlName="email" class="form-control"
+                                            placeholder="Enter the email." id="prinicipal">
+                                        <div class="input--error"
+                                            *ngIf="(assetFormControls['email'].touched || assetFormSubmitted) && assetFormControls['email'].errors?.['required']">
+                                            Email is required.*
+                                        </div>
+                                        <div class="input--error"
+                                            *ngIf="(assetFormControls['email'].touched || assetFormSubmitted) && assetFormControls['email'].errors?.['email']">
+                                            Email must be valid.*
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-lg-6 col-md-6">
+                                    <div class="form-group mb-4">
+                                        <label for="label">Brand./Maker.</label>
+                                        <span class="bi bi-question-circle position-relative">
+                                            <span class="pos_tooltip_coll">What is the brand or maker of the item to be
+                                                onboarded?</span>
+                                        </span>
+                                        <input type="text" formControlName="brand" class="form-control"
+                                            placeholder="Enter the brand.">
+                                        <div class="input--error"
+                                            *ngIf="(assetFormControls['brand'].touched || assetFormSubmitted) && assetFormControls['brand'].errors?.['required']">
+                                            Brand is required.*
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-lg-6 col-md-6">
+                                    <div class="form-group mb-4">
+                                        <label for="label">Model.</label>
+                                        <span class="bi bi-question-circle position-relative">
+                                            <span class="pos_tooltip_coll">What is the model of the item to be onboard?
+                                                Please include serial numbers, product numbers or limited edition
+                                                information.</span>
+                                        </span>
+                                        <input type="text" formControlName="model" class="form-control"
+                                            placeholder="Enter the modal.">
+                                        <div class="input--error"
+                                            *ngIf="(assetFormControls['model'].touched || assetFormSubmitted) && assetFormControls['model'].errors?.['required']">
+                                            Model is required.*
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-lg-6 col-md-6">
+                                    <div class="form-group mb-4">
+                                        <label>Custody destination.</label>
+                                        <span class="bi bi-question-circle position-relative">
+                                            <span class="pos_tooltip_coll">What is the brand or maker of the item to be
+                                                onboarded?</span>
+                                        </span>
+                                        <select class="form-control" formControlName="custody_destination">
+                                            <option *ngFor="let option of nftTraits" [value]="option">{{ option }}
+                                            </option>
+                                        </select>
+                                        <div class="input--error"
+                                            *ngIf="(assetFormControls['custody_destination'].touched || assetFormSubmitted) && assetFormControls['custody_destination'].errors?.['required']">
+                                            Custody destination is required.*
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-lg-12">
+                                    <div class="form-group mb-4">
+                                        <label>Description.</label>
+                                        <span class="bi bi-question-circle position-relative">
+                                            <span class="pos_tooltip_coll">Insert all information that might be relevant
+                                                to appraise the provenance of your item.</span>
+                                        </span>
+                                        <textarea formControlName="description" class="form-control"
+                                            placeholder="Enter the description."></textarea>
+                                        <div class="input--error"
+                                            *ngIf="(assetFormControls['description'].touched || assetFormSubmitted) && assetFormControls['description'].errors?.['required']">
+                                            Description is required.*
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-lg-6 col-md-6">
+                                    <div class="form-group mb-4">
+                                        <label for="label">Provenance documents.</label>
+                                        <span class="bi bi-question-circle position-relative">
+                                            <span class="pos_tooltip_coll">Insert scanned documents that prove ownership
+                                                and provenance of your item.</span>
+                                        </span>
+
+                                        <ngx-file-drop dropZoneLabel="Drop files here" (onFileDrop)="dropped($event)">
+                                            <ng-template ngx-file-drop-content-tmp
+                                                let-openFileSelector="openFileSelector">
+                                                <div class="uploadfiles text-center">
+                                                    <img src="assets/images/upload.svg" alt="upload icon" width="106"
+                                                        height="64">
+                                                    <p>Drag and drop your document here or <a
+                                                            (click)="openFileSelector()"> click here to browse.</a></p>
+                                                </div>
+                                            </ng-template>
+                                        </ngx-file-drop>
+                                        <div class="file-view" *ngIf="files.length > 0">
+                                            <div *ngFor="let item of files; let i=index">
+                                                <div class="d-flex align-items-center gap-2">
+                                                    <ng-container *ngIf="item.relativePath.split('.').pop() === 'png'">
+                                                        <img src="assets/images/png.svg" alt="png" width="24"
+                                                            height="24">
+                                                    </ng-container>
+                                                    <ng-container
+                                                        *ngIf="item.relativePath.split('.').pop() === 'docs' ">
+                                                        <img src="assets/images/docs.svg" alt="png" width="24"
+                                                            height="24">
+                                                    </ng-container>
+                                                    <ng-container *ngIf="item.relativePath.split('.').pop() === 'jpg' ">
+                                                        <img src="assets/images/jpg.svg" alt="png" width="24"
+                                                            height="24">
+                                                    </ng-container>
+                                                    <ng-container *ngIf="item.relativePath.split('.').pop() === 'pdf'">
+                                                        <img src="assets/images/pdf.svg" alt="png" width="24"
+                                                            height="24">
+                                                    </ng-container>
+                                                    <h6>{{ item.relativePath}}</h6>
+                                                </div>
+                                            </div>
+                                            <div>
+                                                <a class="delete_btn">
+                                                    <svg xmlns="http://www.w3.org/2000/svg" width="21" height="20"
+                                                        viewBox="0 0 21 20" fill="none">
+                                                        <path
+                                                            d="M16.75 4.58594L16.2336 12.9402C16.1016 15.0746 16.0357 16.1419 15.5007 16.9092C15.2361 17.2885 14.8956 17.6087 14.5006 17.8493C13.7017 18.3359 12.6325 18.3359 10.4939 18.3359C8.3526 18.3359 7.28192 18.3359 6.48254 17.8484C6.08733 17.6074 5.74667 17.2866 5.48223 16.9066C4.9474 16.1381 4.88287 15.0694 4.75384 12.9319L4.25 4.58594"
+                                                            stroke="#FF3B30" stroke-width="1.5"
+                                                            stroke-linecap="round" />
+                                                        <path
+                                                            d="M3 4.58073H18M13.8797 4.58073L13.3109 3.40717C12.933 2.62761 12.744 2.23783 12.4181 1.99474C12.3458 1.94081 12.2693 1.89285 12.1892 1.85131C11.8283 1.66406 11.3951 1.66406 10.5287 1.66406C9.64067 1.66406 9.19667 1.66406 8.82973 1.85916C8.74842 1.9024 8.67082 1.95231 8.59774 2.00837C8.26803 2.26131 8.08386 2.66535 7.71551 3.47345L7.21077 4.58073"
+                                                            stroke="#FF3B30" stroke-width="1.5"
+                                                            stroke-linecap="round" />
+                                                        <path d="M8.41797 13.75V8.75" stroke="#FF3B30"
+                                                            stroke-width="1.5" stroke-linecap="round" />
+                                                        <path d="M12.582 13.75V8.75" stroke="#FF3B30" stroke-width="1.5"
+                                                            stroke-linecap="round" />
+                                                    </svg>
+                                                </a>
+                                            </div>
+                                        </div>
+                                        <div class="input--error"
+                                            *ngIf="(assetFormControls['provenance_documents'].touched || assetFormSubmitted) && assetFormControls['provenance_documents'].errors?.['required']">
+                                            Provenance documents are required.*
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-lg-6 col-md-6">
+                                    <div class="form-group mb-4">
+                                        <label for="label">Media.</label>
+                                        <span class="bi bi-question-circle position-relative">
+                                            <span class="pos_tooltip_coll">Insert photos and/or videos of your
+                                                item.</span>
+                                        </span>
+                                        <ngx-file-drop dropZoneLabel="Drop files here"
+                                            (onFileDrop)="droppedMedia($event)">
+                                            <ng-template ngx-file-drop-content-tmp
+                                                let-openFileSelector="openFileSelector">
+                                                <div class="uploadfiles text-center">
+                                                    <img src="assets/images/upload.svg" alt="upload icon" width="106"
+                                                        height="64">
+                                                    <p>Drag and drop your document here or <a
+                                                            (click)="openFileSelector()"> click here to browse.</a></p>
+                                                </div>
+                                            </ng-template>
+                                        </ngx-file-drop>
+                                        <div class="file-view" *ngIf="mediafiles.length > 0">
+                                            <div *ngFor="let media of mediafiles; let i=index">
+                                                <div class="d-flex align-items-center gap-2">
+                                                    <ng-container *ngIf="media.relativePath.split('.').pop() === 'png'">
+                                                        <img src="assets/images/png.svg" alt="png" width="24"
+                                                            height="24">
+                                                    </ng-container>
+                                                    <ng-container
+                                                        *ngIf="media.relativePath.split('.').pop() === 'docs' ">
+                                                        <img src="assets/images/docs.svg" alt="png" width="24"
+                                                            height="24">
+                                                    </ng-container>
+                                                    <div class="gridview">
+
+
+                                                    </div> <ng-container
+                                                        *ngIf="media.relativePath.split('.').pop() === 'pdf'">
+                                                        <img src="assets/images/pdf.svg" alt="png" width="24"
+                                                            height="24">
+                                                    </ng-container>
+                                                    <h6>{{ media.relativePath}}</h6>
+                                                </div>
+                                            </div>
+                                            <div>
+                                                <a class="delete_btn">
+                                                    <svg xmlns="http://www.w3.org/2000/svg" width="21" height="21"
+                                                        viewBox="0 0 21 20" fill="none">
+                                                        <path
+                                                            d="M16.75 4.58594L16.2336 12.9402C16.1016 15.0746 16.0357 16.1419 15.5007 16.9092C15.2361 17.2885 14.8956 17.6087 14.5006 17.8493C13.7017 18.3359 12.6325 18.3359 10.4939 18.3359C8.3526 18.3359 7.28192 18.3359 6.48254 17.8484C6.08733 17.6074 5.74667 17.2866 5.48223 16.9066C4.9474 16.1381 4.88287 15.0694 4.75384 12.9319L4.25 4.58594"
+                                                            stroke="#FF3B30" stroke-width="1.5"
+                                                            stroke-linecap="round" />
+                                                        <path
+                                                            d="M3 4.58073H18M13.8797 4.58073L13.3109 3.40717C12.933 2.62761 12.744 2.23783 12.4181 1.99474C12.3458 1.94081 12.2693 1.89285 12.1892 1.85131C11.8283 1.66406 11.3951 1.66406 10.5287 1.66406C9.64067 1.66406 9.19667 1.66406 8.82973 1.85916C8.74842 1.9024 8.67082 1.95231 8.59774 2.00837C8.26803 2.26131 8.08386 2.66535 7.71551 3.47345L7.21077 4.58073"
+                                                            stroke="#FF3B30" stroke-width="1.5"
+                                                            stroke-linecap="round" />
+                                                        <path d="M8.41797 13.75V8.75" stroke="#FF3B30"
+                                                            stroke-width="1.5" stroke-linecap="round" />
+                                                        <path d="M12.582 13.75V8.75" stroke="#FF3B30" stroke-width="1.5"
+                                                            stroke-linecap="round" />
+                                                    </svg>
+                                                </a>
+                                            </div>
+                                        </div>
+                                        <div class="input--error"
+                                            *ngIf="(assetFormControls['media'].touched || assetFormSubmitted) && assetFormControls['media'].errors?.['required']">
+                                            Media documents are required.*
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-lg-6">
+                                    <div class="d-flex gap-4 flex-wrap">
+                                        <button class="submit-onboard" *ngIf="!assetFormProcessing">Submit.</button>
+                                        <button class="delete" *ngIf="!assetFormProcessing">Clear.</button>
+                                        <button type="button" class="submit-onboard" *ngIf="assetFormProcessing"
+                                            class="onboard">Processing...</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+            <!--end grid view-->
+        </div>
+    </section>
+</div>

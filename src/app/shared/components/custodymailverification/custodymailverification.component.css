@@ -1,0 +1,143 @@
+.slidetext{
+  position: absolute;
+  left: 50%;
+  width: 100%;
+  bottom: 30px;
+  transform: translateX(-50%);
+
+}
+
+.disabled {
+  pointer-events: none;
+  color: gray;
+  cursor: not-allowed;
+}
+
+@media(max-width:991px){
+  .slidetext{
+    bottom: 10px;
+  }
+}
+  .mailverfication{
+    padding: 80px 110px;
+    display: flex;
+    align-items: flex-start;
+    justify-content: center;
+    flex-direction: column;
+    min-height: 100vh;
+    & h3{
+      color:  #0F172A;
+      font-size: 24px;
+      font-weight: 600;
+      line-height: 30px;
+      letter-spacing: 0.6px;
+      text-transform: uppercase;
+      padding: 0;
+      margin: 0 0 18px;
+    }
+    & h4{
+      color:  #636366;
+      font-size: 14px;
+      font-style: normal;
+      font-weight: 500;
+      line-height: 22.4px;
+      letter-spacing: -0.35px;
+      padding: 0;
+      margin-bottom: 36px;
+    }
+    & form{
+      width: 100%;
+    }
+    & label{
+      color: #232323;
+      font-size: 16px;
+      font-weight: 400;
+      line-height: 24px;
+      margin-bottom: 10px;
+    }
+    & .form-control{
+      border-radius: 8px;
+      padding: 13px 20px;
+      border: 1px solid  #C5C5C9;
+      background: var(--white);
+      color: #232323;
+      font-size: 16px;
+      font-weight: 400;
+      line-height: 24px;
+    }
+    & input::placeholder{
+        color:  #9CA3AF;
+    }
+    & .form-group{
+      margin-bottom: 18px;
+    }
+    & p{
+      color:#84848E;
+      font-size: 15px;
+      font-weight: 400;
+      line-height: 20px;
+      letter-spacing: -0.9px;
+      margin-bottom: 36px;
+    }
+    & a{
+      color: var(--primary-color pl-0 pr-0);
+      text-decoration: underline;
+      text-underline-offset: 2px;
+      font-weight: 600;
+    }
+    & .backbutton{
+        padding: 10px;
+        display: block;
+        width: 100%;
+        text-align: center;
+        color: var(--white);
+        font-size: 16px;
+        font-weight: 500;
+        background: var(--primary-color);
+        border-radius: 8px;
+        cursor: pointer;
+        transition: all .5s ease-in-out;
+    }
+    & .backbutton:hover{
+        background: rgba(0, 103, 54,.8);
+        transition: all .5s ease-in-out;
+    }
+    & .w-90{
+      width: 90%;
+      margin: 0 auto;
+    }
+  }
+  @media(max-width:1280px){
+    .mailverfication{
+      padding: 80px 70px;
+      & h3{
+        font-size: 20px;
+        margin-bottom: 10px;
+      }
+      & h4,p{
+        margin-bottom: 16px;
+      }
+      & label{
+        font-size: 14px;
+      }
+      & .form-control{
+        font-size: 14px;
+      }
+    }
+  }
+  @media(max-width:991px){
+    .mailverfication{
+      padding: 50px;
+      min-height: auto;
+    }
+  }
+  @media(max-width:575px){
+    .mailverfication{
+      padding: 25px;
+      min-height: 100vh;
+      & h3{
+        font-size: 18px;
+        line-height: 26px;
+      }
+    }
+  }

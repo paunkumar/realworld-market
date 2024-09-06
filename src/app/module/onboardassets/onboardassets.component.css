@@ -1,0 +1,185 @@
+.borrow-card{
+    background: var(--white);
+    border: 1px solid var(--hr);
+    padding: 14px 18px 5px;
+    border-radius: 12px;
+    height: 100%;
+    & hr{
+        border-top:1px solid  #E5E5EA;
+        margin: 32px 0px;
+        opacity: 1;
+    }
+    & .onboard-wallet-address{
+        padding: 12px 20px;
+        border-radius: 8px;
+        border: 1px solid #E5E5EA;
+        background: #F9F9F9;
+        margin-bottom: 32px;
+        width: fit-content;
+    }
+    & p span{
+        color: #1F2A37;
+        font-weight: var(--font-semibold);
+        word-break: break-word;
+    }
+    & .uploadfiles{
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-direction: column;
+        padding: 15px 0;
+        & p{
+            color: #3C3C4C;
+            text-align: center;
+            font-size: 12px !important;
+            font-weight: var(--font-medium) !important;
+            line-height: 18px; 
+            letter-spacing: -0.48px;
+            padding: 0;
+            margin: 0;
+            & a{
+                text-decoration: underline;
+                text-underline-offset: 3px;
+            }
+        }
+    }
+   & .file-view{
+        padding: 10px 0px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        & .delete_btn{
+            border-radius: 6px;
+            border: 1px solid #EBEBED;
+            background: var(--white);
+            padding: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+        }
+       
+        & h6{
+            font-size: 14px;
+            font-weight: var(--font-regular);
+            color: #3C3C4C;
+            line-height: 20px;
+            padding: 0;
+            margin: 0;
+        }
+   }
+}
+.form-group span.bi{
+    font-size:14px;
+}
+.borrow-card h1{
+    font-size:20px;
+    line-height: 30px;
+    letter-spacing: .4px;
+    color: var(--secondary-color);
+    font-weight: var(--font-semibold);
+    padding: 0 0 5px;
+    margin: 0;
+}
+.borrow-card p{
+    font-size:14px;
+    line-height: 20px;
+    letter-spacing: .4px;
+    color: var(--grey-5);
+    font-weight: var(--font-regular);
+    padding: 0;
+    margin: 0;
+}
+.loanrequest .form-control, .loanrequest .form-form-control{
+    padding: .70rem .75rem;
+    border:1px solid #D1D1D6;
+    border-radius: 5px;
+    font-size:14px;
+    font-weight: var(--font-medium);
+    color: var(--black-4);
+}
+.setloanterms label{
+    font-size: 14px;
+    line-height: 18px;
+    font-weight: var(--font-regular);
+    color: var(--grey-4);
+    padding: 0;
+    margin: 0;
+}
+::placeholder{
+    color:rgb(43, 43, 46,.5);
+    font-size:14px
+}
+.form-select{
+    font-size: 16px;
+    color: var(--white);
+}
+.form-select:focus {
+    border-color: var(--primary-color);
+    outline: 0;
+    box-shadow: 0 0 0 0.15rem rgba(0, 103, 54,.25);
+}
+.formgroup .onboard{
+    display: inline-block;
+    width: fit-content;
+}
+a:not([href]):not([class]){
+    color: var(--primary-color);
+    cursor: pointer;
+    word-break: break-word;
+    font-weight: var(--font-medium);
+}
+.text-underline{
+    text-decoration: underline !important;
+    cursor: pointer;
+    text-underline-offset: 5px;
+}
+.delete{
+    padding: 14px 36px;
+    font-size: 16px;
+    font-weight: var(--font-semibold);
+    color: var(--primary-color);
+    border-radius: 12px;
+    background: rgba(0, 103, 54, 0.06); 
+    border: 1px solid transparent;
+    transition:.5s all ease-in-out;
+   
+}
+ .delete:hover{
+    background: var(--primary-color);
+    color: var(--white);
+    transition:.5s all ease-in-out;
+}
+.delete:focus{
+    background: var(--primary-color);
+        color: var(--white);
+        transition:.5s all ease-in-out;
+}
+.submit-onboard{
+    padding: 14px 36px;
+    font-size: 16px;
+    font-weight: var(--font-semibold);
+    color: var(--white);
+    border-radius: 12px;
+    background: rgba(0, 103, 54, 1); 
+    border: 1px solid var(--primary-color);
+    transition:.5s all ease-in-out;
+   
+}
+ .submit-onboard:hover{
+    background: transparent;
+    color: var(--primary-color);
+    transition:.5s all ease-in-out;
+}
+.submit-onboard:focus{
+    background: transparent;
+    color: var(--primary-color);
+    transition:.5s all ease-in-out;
+
+}
+@media(max-width:767px){
+    .borrow-card h1{
+        font-size: 20px;
+        line-height: 30px;
+    }
+}
